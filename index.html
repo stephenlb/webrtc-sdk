@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+    <title>WebRTC Peer Connections</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+
+<button id="call">Call Phone</button>
+
+<!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- -->
+<!-- WebRTC Peer Connections -->
+<!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- -->
+<script src="https://cdn.pubnub.com/pubnub.min.js"></script>
+<script src="webrtc.js"></script>
+<script>(function(){
+
+// P2P Netwrok Config for ICE Relay
+var phoneconfig = {
+    publish_key   : 'pub-c-561a7378-fa06-4c50-a331-5c0056d0163c',
+    subscribe_key : 'sub-c-17b7db8a-3915-11e4-9868-02ee2ddab7fe',
+    phone         : '425-888-1234',
+    ssl           : true
+};
+
+// P2P Packet Exchanger for Peer Detection
+var phone = PHONE(phoneconfig);
+
+// Ready
+phone.ready(function(response){
+    console.log('ready');
+
+    // Call
+    PUBNUB.bind( 'click', PUBNUB.$('call'), function() {
+        phone.call(phoneconfig.phone);
+    } );
+});
+
+// Debug Output
+phone.debug(function(details){
+    console.log(details);
+});
+
+})();</script>
+</body>
+</html>
