@@ -5,36 +5,52 @@
 // WebRTC Peer Connection
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 var PHONE = window.PHONE = function(config) {
-    var PHONE        = function(){};
-    var pubnub       = PUBNUB(config);
-    var sessionid    = PUBNUB.uuid();
-    var readycb      = function(){};
-    var debugcb      = function(){};
-    var connectcb    = function(){};
-    var mystream     = null;
-    var disconnectcb = function(){};
-    var reconnectcb  = function(){};
+    var PHONE         = function(){};
+    var pubnub        = PUBNUB(config);
+    var sessionid     = PUBNUB.uuid();
+    var readycb       = function(){};
+    var debugcb       = function(){};
+    var connectcb     = function(){};
+    var mystream      = null;
+    var disconnectcb  = function(){};
+    var reconnectcb   = function(){};
+    var conversations = {};
 
+    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    // RTC Peer Connection Session (one per call)
+    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     var PeerConnection =
         window.RTCPeerConnection    ||
         window.mozRTCPeerConnection ||
         window.webkitRTCPeerConnection;
 
+    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    // ICE (many route options per call)
+    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     var IceCandidate =
         window.mozRTCIceCandidate ||
         window.RTCIceCandidate;
 
+    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    // Media Session Description (offer and answer per call)
+    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     var SessionDescription =
         window.RTCSessionDescription    ||
         window.mozRTCSessionDescription ||
         window.webkitRTCSessionDescription;
 
+    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    // Local Microphone and Camera Media (one per device)
+    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     navigator.getUserMedia = 
         navigator.getUserMedia       ||
         navigator.webkitGetUserMedia ||
         navigator.mozGetUserMedia    ||
         navigator.msGetUserMedia;
 
+    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    // STUN Server List Configuration (public STUN list)
+    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     var rtcconfig = { iceServers : [{ "url" :
         navigator.mozGetUserMedia    ? "stun:stun.services.mozilla.com" :
         navigator.webkitGetUserMedia ? "stun:stun.l.google.com:19302"   :
@@ -62,41 +78,59 @@ var PHONE = window.PHONE = function(config) {
         {url: "stun:stun.xten.com"}
     ] };
 
+    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // PHONE Events
+    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     PHONE.ready      = function(cb) { readycb      = cb };
     PHONE.debug      = function(cb) { debugcb      = cb };
     PHONE.connect    = function(cb) { connectcb    = cb };
     PHONE.disconnect = function(cb) { disconnectcb = cb };
     PHONE.reconnect  = function(cb) { reconnectcb  = cb };
 
+    // Add Conversation
+    function add_conversation(number) {
+        var talk = conversations[number] = {
+            number    : number,
+            pc        : new PeerConnection(rtcconfig)
+        };
+
+        // Setup Event Methods
+        talk.pc.onaddstream    = onaddstream;
+        talk.pc.onicecandidate = onicecandidate;
+
+        // Return Reference to Call
+        return talk;
+    }
+
     // Make Call
     PHONE.call = function(phone) {
         pc.calling = phone;
         pc.createOffer( function(offer) {
-            send( phone, offer );
+            transmit( phone, offer );
             pc.setLocalDescription( offer, debugcb, debugcb );
         }, debugcb );
     };
 
-    // Setup PeerConnection
-    var pc = new PeerConnection(rtcconfig);
-    pc.onaddstream = function(obj) {
-        // TODO // allow user to sepcify...
-        // TODO // allow user to sepcify...
+    // Display New Stream
+    //var pc = new PeerConnection(rtcconfig);
+    function onaddstream(obj) {
         // TODO // allow user to sepcify...
         var vid = document.createElement("video");
         vid.setAttribute( 'autoplay', 'autoplay' );
         vid.setAttribute( 'width', '100' );
         vid.src = URL.createObjectURL(obj.stream);
-        document.getElementsByTagName('body')[0].appendChild(vid);
-    };
-    pc.onicecandidate = function(event) {
+        (config.media || document.getElementsByTagName('body')[0])
+        .appendChild(vid);
+    }
+
+    // On ICE Route Candidate Discovery
+    function onicecandidate(event) {
+        var self = this;
         if (event.candidate == null) return;
-        console.log("CALLING --->",pc.caller || pc.calling);
-        send( pc.caller || pc.calling, event.candidate );
+        transmit( self.number , event.candidate );
     };
 
-    // Listen For ICE Candidates
+    // Listen For New Incomming Calls
     pubnub.subscribe({
         channel    : config.phone,
         message    : receive,
@@ -114,15 +148,11 @@ var PHONE = window.PHONE = function(config) {
 
     // Candidates Receiver Processor
     function receive(message) {
+
+        // Ignore Received Events From Local Device
         if (message.id === sessionid) return;
-        // Attempt peer connection or upgrade route if better route...
-        // Attempt peer connection or upgrade route if better route...
-        // Attempt peer connection or upgrade route if better route...
+
         debugcb(message);
-        //pc.onaddstream({ stream : stream });
-        // ... RTC Peer Connection upgrade/attempt ...
-        // Attempt peer connection or upgrade route if better route...
-        // Attempt peer connection or upgrade route if better route...
 
         pc.caller = message.caller;
         if (message.ice.sdp) {
@@ -134,7 +164,7 @@ var PHONE = window.PHONE = function(config) {
                         pc.createAnswer( function(answer) {
                             pc.setLocalDescription( answer, debugcb, debugcb );
 
-                            send( message.caller, answer );
+                            transmit( message.caller, answer );
                             console.log("ANSWER",answer," -- CALLER -> ",message.caller);
                         }, debugcb );
                 }, debugcb
@@ -149,18 +179,14 @@ var PHONE = window.PHONE = function(config) {
         }
     }
 
-    // Send Candidates
-    function send( phone, ice ) {
+    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    // Send SDP Call Offers/Answers and ICE Candidates to Peer
+    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    function transmit( phone, ice ) {
         if (!ice) return;
-        var message = { ice : ice, id  : sessionid, caller : phone };
+        var message = { ice : ice, id  : sessionid, number : phone };
         debugcb(message);
         pubnub.publish({ channel : phone, message : message });
-    }
-
-    // Create ICE Candidates
-    function emit_ice(phone) {
-
-        // PeerConnection
     }
 
     return PHONE;

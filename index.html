@@ -16,18 +16,16 @@
 <script src="webrtc.js"></script>
 <script>(function(){
 
-// P2P Netwrok Config for ICE Relay
-var phoneconfig = {
+// P2P Packet Exchanger for Peer Detection
+var phone = PHONE({
     publish_key   : 'pub-c-561a7378-fa06-4c50-a331-5c0056d0163c',
     subscribe_key : 'sub-c-17b7db8a-3915-11e4-9868-02ee2ddab7fe',
     phone         : '425-888-1234',
-    ssl           : true
-};
+    ssl           : true,
+    media         : document.getElementsByTagName('body')[0]
+});
 
-// P2P Packet Exchanger for Peer Detection
-var phone = PHONE(phoneconfig);
-
-// Ready
+// Ready to Receive Calls
 phone.ready(function(response){
     console.log('ready');
 
