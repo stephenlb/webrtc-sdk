@@ -7,7 +7,7 @@
 </head>
 <body>
 
-<button id="call">Call Phone</button>
+<button id="ring">Call Phone</button>
 
 <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- -->
 <!-- WebRTC Peer Connections -->
@@ -16,26 +16,31 @@
 <script src="webrtc.js"></script>
 <script>(function(){
 
-// P2P Packet Exchanger for Peer Detection
+// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+// Calling & Answering Service
+// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 var phone = PHONE({
     publish_key   : 'pub-c-561a7378-fa06-4c50-a331-5c0056d0163c',
     subscribe_key : 'sub-c-17b7db8a-3915-11e4-9868-02ee2ddab7fe',
     phone         : '425-888-1234',
     ssl           : true,
-    media         : document.getElementsByTagName('body')[0]
+    media         : document.getElementsByTagName('body')[0],
+    onaddstream   : null // optional override function
 });
 
+// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 // Ready to Receive Calls
+// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 phone.ready(function(response){
-    console.log('ready');
-
-    // Call
-    PUBNUB.bind( 'click', PUBNUB.$('call'), function() {
-        phone.call(phoneconfig.phone);
+    PUBNUB.bind( 'click', PUBNUB.$('ring'), function() {
+        // Make a Phone Call
+        phone.ring(phoneconfig.phone);
     } );
 });
 
+// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 // Debug Output
+// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 phone.debug(function(details){
     console.log(details);
 });
