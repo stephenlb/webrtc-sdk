@@ -83,6 +83,7 @@ var PHONE = window.PHONE = function(config) {
     var disconnectcb = function(){};
     var reconnectcb  = function(){};
     var callstatuscb = function(){};
+    var receivercb   = function(){};
 
     PHONE.ready      = function(cb) { readycb      = cb };
     PHONE.callstatus = function(cb) { callstatuscb = cb };
@@ -90,21 +91,31 @@ var PHONE = window.PHONE = function(config) {
     PHONE.connect    = function(cb) { connectcb    = cb };
     PHONE.disconnect = function(cb) { disconnectcb = cb };
     PHONE.reconnect  = function(cb) { reconnectcb  = cb };
+    PHONE.receiver   = function(cb) { receivercb   = cb };
 
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // Add/Get Conversation - Creates a new PC or Returns Existing PC
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-    function get_conversation(number) {
+    function get_conversation( number, params ) {
         var talk = conversations[number] || (function(){
             var talk = {
-                number : number,
-                status : '',
-                pc     : new PeerConnection(rtcconfig)
+                number     : number,
+                status     : '',
+                pc         : new PeerConnection(rtcconfig),
+                establish  : params && params.establish  || function(){},
+                disconnect : params && params.disconnect || function(){}
             };
 
             // Setup Event Methods
             talk.pc.onaddstream    = config.onaddstream || onaddstream;
             talk.pc.onicecandidate = onicecandidate;
+            talk.pc.number         = number;
+
+            // Disconnect and Hangup
+            talk.hangup = function(signal) {
+                if (signal !== false) transmit( number, { hangup : true } );
+                talk.pc.close();
+            };
             
             // Add Local Media Streams Audio Video Mic Camera
             talk.pc.addStream(mystream);
@@ -133,11 +144,15 @@ var PHONE = window.PHONE = function(config) {
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // Make Call - Create new PeerConnection
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-    PHONE.ring = function(number) {
-        var talk = get_conversation(number);
-        var pc   = talk.pc;
+    PHONE.dial = function(params) {
+        var number = params.number;
+        var talk   = get_conversation( number, params );
+        var pc     = talk.pc;
+
+        // Send SDP Offer (Call)
         pc.createOffer( function(offer) {
-            transmit( phone, offer );
+            offer.receiver = true;
+            transmit( number, offer );
             pc.setLocalDescription( offer, debugcb, debugcb );
         }, debugcb );
     };
@@ -158,9 +173,8 @@ var PHONE = window.PHONE = function(config) {
     // On ICE Route Candidate Discovery
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     function onicecandidate(event) {
-        var self = this;
         if (event.candidate == null) return;
-        transmit( self.number , event.candidate );
+        transmit( this.number, event.candidate );
     };
 
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -200,12 +214,23 @@ var PHONE = window.PHONE = function(config) {
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     function receive(message) {
         // Ignore Received Events From Local Device
-        if (message.id === sessionid) return;
+        // if (message.id === sessionid) return;
         debugcb(message);
 
         // Get Call Reference
         var talk = get_conversation(message.number);
-        var pc   = talk.pc;
+
+        // If Hangup Request
+        if (message.packet.hangup) {
+            talk.disconnect(talk);
+            return talk.hangup(false);
+        }
+
+        // If Peer Connection is Successfully Established
+        if (message.packet.establish) talk.establish(talk);
+
+        // If Peer Calling In
+        if (message.packet.receiver) receivercb(talk);
 
         // Update Peer Connection with SDP Offer or ICE Routes
         if (message.packet.sdp) add_sdp_offer(message);
@@ -226,11 +251,14 @@ var PHONE = window.PHONE = function(config) {
         // Add SDP Offer/Answer
         pc.setRemoteDescription(
             new SessionDescription(message.packet), function() {
-                if (pc.remoteDescription.type != "offer") return;
+                // Call Online and Ready
+                if (pc.remoteDescription.type != "offer")
+                    return transmit( message.number, { establish : true } );
 
                 // Create Answer to Call
                 pc.createAnswer( function(answer) {
                     pc.setLocalDescription( answer, debugcb, debugcb );
+                    answer.establish = true;
                     transmit( message.number, answer );
                 }, debugcb );
             }, debugcb

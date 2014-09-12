@@ -7,7 +7,8 @@
 </head>
 <body>
 
-<button id="ring">Call Phone</button>
+<input id="number" value="425-888-1234">
+<button id="dial">Call Phone</button>
 
 <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- -->
 <!-- WebRTC Peer Connections -->
@@ -20,7 +21,7 @@
 // Calling & Answering Service
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 var phone = PHONE({
-    phone         : '425-888-1234',
+    phone         : '425-888-1234', // listen on this line
     publish_key   : 'pub-c-561a7378-fa06-4c50-a331-5c0056d0163c',
     subscribe_key : 'sub-c-17b7db8a-3915-11e4-9868-02ee2ddab7fe',
     ssl           : true,
@@ -29,13 +30,30 @@ var phone = PHONE({
 });
 
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-// Ready to Receive Calls
+// Ready to Send or Receive Calls
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 phone.ready(function(response){
-    PUBNUB.bind( 'click', PUBNUB.$('ring'), function() {
+    PUBNUB.bind( 'click', PUBNUB.$('dial'), function() {
+
         // Make a Phone Call
-        phone.ring(phoneconfig.phone);
+        phone.dial({
+            number     : PUBNUB.$("number").value,
+            establish  : function(session){},
+            disconnect : function(session){}
+        });
+
     } );
+});
+
+// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+// Receive Incoming Calls
+// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+phone.receiver(function(session){
+    console.log(session);
+    // ...
+
+    // Hangup Call
+    //session.hangup();
 });
 
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
