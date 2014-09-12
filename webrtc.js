@@ -98,7 +98,7 @@ var PHONE = window.PHONE = function(config) {
         var talk = conversations[number] || (function(){
             var talk = {
                 number : number,
-                status : 'connecting',
+                status : '',
                 pc     : new PeerConnection(rtcconfig)
             };
 
@@ -110,7 +110,7 @@ var PHONE = window.PHONE = function(config) {
             talk.pc.addStream(mystream);
 
             // Notify of Call Status
-            update_conversation( number, status );
+            update_conversation( number, 'connecting' );
 
             // Return Brand New Talk Reference
             return talk;
@@ -164,16 +164,6 @@ var PHONE = window.PHONE = function(config) {
     };
 
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-    // Send SDP Call Offers/Answers and ICE Candidates to Peer
-    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-    function transmit( phone, ice ) {
-        if (!ice) return;
-        var message = { ice : ice, id  : sessionid, number : phone };
-        debugcb(message);
-        pubnub.publish({ channel : phone, message : message });
-    }
-
-    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // Listen For New Incoming Calls
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     pubnub.subscribe({
@@ -181,51 +171,86 @@ var PHONE = window.PHONE = function(config) {
         message    : receive,
         disconnect : disconnectcb,
         reconnect  : reconnectcb,
-        connect    : function() {
-            navigator.getUserMedia( mediaconf, function(stream) {
-                mystream = stream;
-                connectcb();
-                readycb();
-            }, debugcb );
-        }
+        connect    : connected
     });
+
+    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    // When Ready to Receive Calls, Prepare Local Media Camera and Mic
+    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    function connected() {
+        navigator.getUserMedia( mediaconf, function(stream) {
+            mystream = stream;
+            connectcb();
+            readycb();
+        }, debugcb );
+    }
+
+    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    // Send SDP Call Offers/Answers and ICE Candidates to Peer
+    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    function transmit( phone, packet ) {
+        if (!packet) return;
+        var message = { packet : packet, id  : sessionid, number : phone };
+        debugcb(message);
+        pubnub.publish({ channel : phone, message : message });
+    }
 
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // SDP Offers & ICE Candidates Receivable Processing
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     function receive(message) {
-
         // Ignore Received Events From Local Device
         if (message.id === sessionid) return;
         debugcb(message);
 
-        // TODO: ...
-        // TODO: getcreate conversation and update as needed.
-        // TODO: ...
+        // Get Call Reference
+        var talk = get_conversation(message.number);
+        var pc   = talk.pc;
 
-        pc.caller = message.caller;
-        if (message.ice.sdp) {
-            console.log("!!!!!! SDP !!!!!!!!!! ");
-            pc.setRemoteDescription(
-                new SessionDescription(message.ice),
-                function () {
-                    if (pc.remoteDescription.type == "offer")
-                        pc.createAnswer( function(answer) {
-                            pc.setLocalDescription( answer, debugcb, debugcb );
+        // Update Peer Connection with SDP Offer or ICE Routes
+        if (message.packet.sdp) add_sdp_offer(message);
+        else                    add_ice_route(message);
+    }
 
-                            transmit( message.caller, answer );
-                            console.log("ANSWER",answer," -- CALLER -> ",message.caller);
-                        }, debugcb );
-                }, debugcb
-            );
-        }
-        else {
-            pc.addIceCandidate(
-                new IceCandidate(message.ice),
-                debugcb,
-                debugcb
-            );
-        }
+    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    // Add SDP Offer/Answers
+    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    function add_sdp_offer(message) {
+        // Get Call Reference
+        var talk = get_conversation(message.number);
+        var pc   = talk.pc;
+
+        // Notify of Call Status
+        update_conversation( number, 'routing' );
+
+        // Add SDP Offer/Answer
+        pc.setRemoteDescription(
+            new SessionDescription(message.packet), function() {
+                if (pc.remoteDescription.type != "offer") return;
+
+                // Create Answer to Call
+                pc.createAnswer( function(answer) {
+                    pc.setLocalDescription( answer, debugcb, debugcb );
+                    transmit( message.number, answer );
+                }, debugcb );
+            }, debugcb
+        );
+    }
+
+    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    // Add ICE Candidate Routes
+    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    function add_ice_route(message) {
+        // Get Call Reference
+        var talk = get_conversation(message.number);
+        var pc   = talk.pc;
+
+        // Add ICE Candidate Routes
+        pc.addIceCandidate(
+            new IceCandidate(message.packet),
+            debugcb,
+            debugcb
+        );
     }
 
     return PHONE;
