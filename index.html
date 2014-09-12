@@ -15,6 +15,7 @@
 <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- -->
 <script src="https://cdn.pubnub.com/pubnub.min.js"></script>
 <script src="webrtc.js"></script>
+<script src="sound.js"></script>
 <script>(function(){
 
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -50,7 +51,9 @@ phone.ready(function(response){
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 phone.receiver(function(session){
     console.log(session);
-    // ...
+
+    // Play Sound Incoming Call
+    sounds.play('tone/ring-in');
 
     // Hangup Call
     //session.hangup();

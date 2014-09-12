@@ -229,7 +229,7 @@ var PHONE = window.PHONE = function(config) {
         // If Peer Connection is Successfully Established
         if (message.packet.establish) talk.establish(talk);
 
-        // If Peer Calling In
+        // If Peer Calling Inbound (Incoming)
         if (message.packet.receiver) receivercb(talk);
 
         // Update Peer Connection with SDP Offer or ICE Routes
