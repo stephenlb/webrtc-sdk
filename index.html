@@ -4,25 +4,97 @@
     <title>WebRTC Peer Connections</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="css/bootstrap.min.css" rel="stylesheet" type="text/css">
+    <link href="css/styles.css" rel="stylesheet" type="text/css">
 </head>
 <body>
 
-<input id="number" value="425-888-1234">
-<button id="dial">Call Phone</button>
+<!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
+<!-- My Phone Number & Dial Areas -->
+<!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
+<div class="container">
+    <div class="row">
+        <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
+        <!-- MY PHONE NUMBER -->
+        <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
+        <div class="col-sm-6">
+            <div id="my-number-section" class="text-center">
+                <div id="my-number">LOADING</div>
+                <div id="my-number-title">
+                    call me. this is my phone number.
+                </div>
+            </div>
+        </div>
+
+        <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
+        <!-- MY PHONE NUMBER -->
+        <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
+        <div class="col-sm-6">
+            <!-- DISPLAY -->
+            <div id="video-display">
+                <span class="glyphicon glyphicon-facetime-video"></span>
+            </div>
+            
+            <!-- DIAL CONTROLS -->
+            <div class="row">
+            <div class="col-xs-4">
+                <div class="form-group"><div class="input-group">
+                <div class="input-group-addon">
+                    <span class="glyphicon glyphicon-earphone"></span>
+                </div>
+                <input id="number" class="form-control" placeholder="...">
+                </div></div>
+            </div><div class="col-xs-3">
+                <button id="dial" class="btn btn-primary">Call Friend</button>
+            </div></div>
+        </div>
+    </div>
+</div>
+
+<!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
+<!-- TODO -->
+<!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
+
+<div class="container">
+    <div class="row">
+        <div class="col-xs-6">
+            <ol>
+                <li> resend SDP periodically and dedupe
+                <li> 
+                <li> 
+            </ol>
+        </div>
+        <div class="col-xs-6">
+            <ol>
+                <li> resend SDP periodically and dedupe
+                <li> 
+                <li> 
+            </ol>
+        </div>
+    </div>
+</div>
+
 
 <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- -->
 <!-- WebRTC Peer Connections -->
 <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- -->
 <script src="https://cdn.pubnub.com/pubnub.min.js"></script>
-<script src="webrtc.js"></script>
-<script src="sound.js"></script>
+<script src="js/webrtc.js"></script>
+<script src="js/sound.js"></script>
 <script>(function(){
+
+// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+// Random Number
+// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+var my_number = PUBNUB.$('my-number');
+my_number.number    = Math.floor(Math.random()*1000);
+my_number.innerHTML = ''+my_number.number;
 
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 // Calling & Answering Service
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 var phone = PHONE({
-    phone         : '425-888-1234', // listen on this line
+    phone         : my_number.number, // listen on this line
     publish_key   : 'pub-c-561a7378-fa06-4c50-a331-5c0056d0163c',
     subscribe_key : 'sub-c-17b7db8a-3915-11e4-9868-02ee2ddab7fe',
     ssl           : true,
@@ -34,13 +106,14 @@ var phone = PHONE({
 // Ready to Send or Receive Calls
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 phone.ready(function(response){
+    // Bind Button Click
     PUBNUB.bind( 'click', PUBNUB.$('dial'), function() {
 
         // Make a Phone Call
         phone.dial({
-            number     : PUBNUB.$("number").value,
-            establish  : function(session){},
-            disconnect : function(session){}
+            number  : PUBNUB.$("number").value,
+            connect : function(session){},
+            hangup  : function(session){}
         });
 
     } );

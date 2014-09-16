@@ -102,8 +102,8 @@ var PHONE = window.PHONE = function(config) {
                 number     : number,
                 status     : '',
                 pc         : new PeerConnection(rtcconfig),
-                establish  : params && params.establish  || function(){},
-                disconnect : params && params.disconnect || function(){}
+                establish  : params && params.connect || function(){},
+                disconnect : params && params.hangup  || function(){}
             };
 
             // Setup Event Methods
@@ -121,9 +121,10 @@ var PHONE = window.PHONE = function(config) {
             talk.pc.addStream(mystream);
 
             // Notify of Call Status
-            update_conversation( number, 'connecting' );
+            update_conversation( talk, 'connecting' );
 
             // Return Brand New Talk Reference
+            conversations[number] = talk;
             return talk;
         })();
 
@@ -134,8 +135,7 @@ var PHONE = window.PHONE = function(config) {
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // Notify of Call Status Events
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-    function update_conversation( number, status ) {
-        var talk = conversations[number];
+    function update_conversation( talk, status ) {
         talk.status = status;
         callstatuscb(talk);
         return talk;
@@ -246,7 +246,7 @@ var PHONE = window.PHONE = function(config) {
         var pc   = talk.pc;
 
         // Notify of Call Status
-        update_conversation( number, 'routing' );
+        update_conversation( talk, 'routing' );
 
         // Add SDP Offer/Answer
         pc.setRemoteDescription(

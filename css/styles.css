@@ -1,0 +1,33 @@
+/* =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= */
+/* Phone Number Display */
+/* =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= */
+#my-number-section {
+    margin: 100px 0px;
+}
+#my-number-title {
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 20px;
+}
+#my-number {
+    font-family: "Helvetica Neue";
+    font-size: 110px;
+    line-height: 110px;
+    font-weight: 100;
+}
+
+/* =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= */
+/* Video Display */
+/* =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= */
+#video-display {
+    display: inline-block;
+    width: 98%;
+    height: 300px;
+    border: 1px solid #eee;
+    border-radius: 3px;
+    margin: 20px 0px;
+    text-align: center;
+    color: #eee;
+    font-size: 150px;
+    line-height: 300px;
+}
