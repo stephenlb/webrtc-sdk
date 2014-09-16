@@ -30,19 +30,19 @@
 /* =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= */
 /* Video Display */
 /* =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= */
-#video-display {
-    display: inline-block;
-    width: 100%;
-    height: 340px;
-    border: 1px solid #eee;
-    border-radius: 3px;
+#video-border {
+    padding: 10px;
     margin: 20px 0px;
+    overflow: hidden;
+}
+#video-display {
+    height: 340px;
     text-align: center;
     color: #eee;
     font-size: 150px;
     line-height: 340px;
 }
 #video-display video {
+    border-radius: 6px;
     height: 300px;
-    margin: 20px 0 0 0;
 }

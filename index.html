@@ -10,40 +10,11 @@
 <body>
 
 <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
-<!-- Dial Pad -->
-<!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
-<!--
-<div class="container">
-    <div style="width: 140px;" class="dialpad">
-        <div class="row">
-            <button class="btn col-xs-4" data-value="1">1<br /><span>&nbsp;</span></button>
-            <button class="btn col-xs-4" data-value="2">2<br /><span>ABC</span></button>
-            <button class="btn col-xs-4" data-value="3">3<br /><span>DEF</span></button>
-        </div>
-        <div class="row">
-            <button class="btn col-xs-4" data-value="4">4<br /><span>GHI</span></button>
-            <button class="btn col-xs-4" data-value="5">5<br /><span>JKL</span></button>
-            <button class="btn col-xs-4" data-value="6">6<br /><span>MNO</span></button>
-        </div>
-        <div class="row">
-            <button class="btn col-xs-4" data-value="7">7<br /><span>PQRS</span></button>
-            <button class="btn col-xs-4" data-value="8">8<br /><span>TUV</span></button>
-            <button class="btn col-xs-4" data-value="9">9<br /><span>WXYZ</span></button>
-        </div>
-        <div class="row">
-            <button class="btn col-xs-4 empty" data-value="*">*</button>
-            <button class="btn col-xs-4 empty" data-value="0">0</button>
-            <button class="btn col-xs-4 empty" data-value="#">#</button>
-        </div>
-    </div>
-</div>
--->
-
-<!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
 <!-- My Phone Number & Dial Areas -->
 <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
 <div class="container">
     <div class="row">
+
         <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
         <!-- MY PHONE NUMBER -->
         <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
@@ -66,9 +37,11 @@
         <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
         <div class="col-sm-6">
             <!-- DISPLAY -->
-            <div id="video-display">
-                <span class="glyphicon glyphicon-flash"></span>
-            </div>
+            <div class="row"><div class="col-xs-12">
+                <div id="video-border"><div id="video-display">
+                    <span class="glyphicon glyphicon-flash"></span>
+                </div></div>
+            </div></div>
             
             <!-- DIAL CONTROLS -->
             <div class="row"><div class="col-xs-4">
@@ -78,41 +51,18 @@
                 </div>
                 <input id="number" class="form-control" placeholder="">
                 </div></div>
-            </div><div class="col-xs-6">
-                <button id="dial" class="btn btn-primary">Call</button>
-                <button id="hangup" class="btn btn-danger">Hangup</button>
+            </div><div class="col-xs-4">
+                <button id="dial" class="col-xs-12 btn btn-primary">
+                    <span class="glyphicon glyphicon-earphone"></span>
+                </button>
+            </div><div class="col-xs-4">
+                <button id="hangup" class="col-xs-12 btn btn-danger">
+                    <span class="glyphicon glyphicon-ban-circle"></span>
+                </button>
             </div></div>
         </div>
     </div>
 </div>
-
-<!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
-<!-- TODO -->
-<!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
-
-<div class="container">
-    <div class="row">
-        <div class="col-xs-6">
-            <h1> Vertical Ideas </h1>
-            <ol>
-                <li> SOS Button - Help! (Mayday)
-                <li> Chatroulette
-                <li> insta call (this demo is insta call)
-                <li> announce board - (locked announc screen)
-                <li> Dial Pad
-                <li> friend list
-            </ol>
-        </div>
-        <div class="col-xs-6">
-            <h1> TODOs </h1>
-            <ol>
-                <li>  race condition - fast call / hangup button press
-                <li> 
-            </ol>
-        </div>
-    </div>
-</div>
-
 
 <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- -->
 <!-- WebRTC Peer Connections -->
@@ -280,7 +230,6 @@ phone.unable(function(details){
 phone.debug(function(details){
      // console.log(details);
 });
-
 
 })();</script>
 </body>

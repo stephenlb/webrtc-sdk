@@ -1,5 +1,12 @@
 PubNub WebRTC SDK - A simplified approach to RTC Peer Connections
 
+                <li> SOS Button - Help! (Mayday)
+                <li> Chatroulette
+                <li> insta call (this demo is insta call)
+                <li> announce board - (locked announc screen)
+                <li> Dial Pad
+                <li> friend list
+
 [PubNub](http://www.pubnub.com/)
 
 
