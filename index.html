@@ -106,15 +106,7 @@
         <div class="col-xs-6">
             <h1> TODOs </h1>
             <ol>
-                <li> BUG: hangup not work on 1 party
-                <li> BUG: on reload party/left - hangup /cleansession
-                <li> set call number on inboud call in callbox!
-                <li> on-unload...
-                <li> fix sounds
-                <li> sounds
-                <li> presence
-                <li> make pretty - focus on BIG BRother approach 
-                <li> 
+                <li>  race condition - fast call / hangup button press
                 <li> 
             </ol>
         </div>
@@ -196,7 +188,8 @@ function connected(session) {
     video_out.innerHTML = '';
     video_out.appendChild(video);
 
-    //sounds.play('sound/hi');
+    PUBNUB.$('number').value = ''+session.number;
+    sounds.play('sound/hi');
     console.log("Hi!");
 }
 
@@ -205,7 +198,7 @@ function connected(session) {
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 function ended(session) {
     set_icon('facetime-video');
-    //sounds.play('sound/goodbye');
+    sounds.play('sound/goodbye');
     console.log("Bye!");
 }
 
@@ -223,6 +216,9 @@ function set_icon(icon) {
 function dial(number) {
     // Dial Number
     var session = phone.dial(number);
+
+    // No Dupelicate Dialing
+    if (!session) return;
 
     // Call Connected
     session.connected(connected);

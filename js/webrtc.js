@@ -170,13 +170,13 @@ var PHONE = window.PHONE = function(config) {
         var pc   = talk.pc;
 
         // Prevent Repeat Calls
-        if (talk.dialed) return talk;
+        if (talk.dialed) return false;
         talk.dialed = true;
 
         // Send SDP Offer (Call)
         pc.createOffer( function(offer) {
             offer.receiver = true;
-            transmit( number, offer, 3 );
+            transmit( number, offer, 2 );
             pc.setLocalDescription( offer, debugcb, debugcb );
         }, debugcb );
 
@@ -359,7 +359,7 @@ var PHONE = window.PHONE = function(config) {
                 pc.createAnswer( function(answer) {
                     pc.setLocalDescription( answer, debugcb, debugcb );
                     answer.establish = true;
-                    transmit( message.number, answer, 3 );
+                    transmit( message.number, answer, 2 );
                 }, debugcb );
             }, debugcb
         );
