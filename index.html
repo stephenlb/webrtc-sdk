@@ -91,7 +91,7 @@
         <div class="col-xs-6">
             <ol>
                 <li> sounds
-                <li> on hangup - chage back bo video ikcon
+                <li> RESTORE TRUE...
             </ol>
         </div>
         <div class="col-xs-6">
@@ -101,7 +101,7 @@
                 <li> session.video indtead
                 <li> fix sounds
                 <li> make pretty - focus on BIG BRother approach 
-                <li> 
+                <li> instant link widget - on page - copy/pasta url
                 <li> 
                 <li> 
             </ol>
@@ -128,9 +128,8 @@ my_number.innerHTML = ''+my_number.number;
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 // Calling & Answering Service
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-var session;
 var video_out = PUBNUB.$('video-display');
-var phone = PHONE({
+var phone     = PHONE({
     phone         : my_number.number, // listen on this line
     publish_key   : 'pub-c-561a7378-fa06-4c50-a331-5c0056d0163c',
     subscribe_key : 'sub-c-17b7db8a-3915-11e4-9868-02ee2ddab7fe',
@@ -138,15 +137,21 @@ var phone = PHONE({
 });
 
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-// Place to Show/Hide Video Feed
+// Video Session Connected
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 function connected(session) {
     var video = session.video;
+
     video_out.innerHTML = '';
     video_out.appendChild(video);
+
     //sounds.play('sound/hi');
     console.log("Hi!");
 }
+
+// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+// Video Session Ended
+// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 function ended(session) {
     video_out.innerHTML =
         '<span class="glyphicon glyphicon-facetime-video"></span>';
@@ -158,15 +163,14 @@ function ended(session) {
 // Ready to Send or Receive Calls
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 phone.ready(function(response){
-    // -------------------------------------------------------------------
+
     // Make a Phone Call
-    // -------------------------------------------------------------------
     PUBNUB.bind( 'click', PUBNUB.$('dial'), function() {
-        var phone_number = PUBNUB.$("number").value;
+        var phone_number = PUBNUB.$('number').value;
         if (!phone_number) return;
 
-        // Dial Now
-        session = phone.dial({ number : phone_number });
+        // Dial Number
+        var session = phone.dial(phone_number);
 
         // Call Connected
         session.connected(connected);
@@ -175,21 +179,21 @@ phone.ready(function(response){
         session.ended(ended);
     } );
 
-    // -------------------------------------------------------------------
-    // Hanup
-    // -------------------------------------------------------------------
+    // Hanup Call
     PUBNUB.bind( 'click', PUBNUB.$('hangup'), function() {
-        session.hangup();
+        var phone_number = PUBNUB.$('number').value;
+        phone.hangup(phone_number);
     } );
+
 });
 
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 // Received Incoming Call
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-phone.receiver(function(ses){
-    session = ses;
+phone.receiver(function(session){
     session.connected(connected);
     session.ended(ended);
+    //session.hangup()
 });
 
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-

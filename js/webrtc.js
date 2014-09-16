@@ -98,14 +98,14 @@ var PHONE = window.PHONE = function(config) {
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // Add/Get Conversation - Creates a new PC or Returns Existing PC
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-    function get_conversation( number, params ) {
+    function get_conversation(number) {
         var talk = conversations[number] || (function(){
             var talk = {
                 number     : number,
                 status     : '',
                 pc         : new PeerConnection(rtcconfig),
-                establish  : params && params.connect || function(){},
-                disconnect : params && params.hangup  || function(){}
+                establish  : function(){},
+                disconnect : function(){}
             };
 
             // Setup Event Methods
@@ -125,9 +125,9 @@ var PHONE = window.PHONE = function(config) {
             };
 
             // Nice Accessor to Update Disconnect & Establis CBs
-            talk.ended     = function(cb) { talk.disconnect = cb };
-            talk.connected = function(cb) { talk.establish  = cb };
-            
+            talk.ended     = function(cb) {talk.disconnect = cb; return talk};
+            talk.connected = function(cb) {talk.establish  = cb; return talk};
+
             // Add Local Media Streams Audio Video Mic Camera
             talk.pc.addStream(mystream);
 
@@ -163,10 +163,9 @@ var PHONE = window.PHONE = function(config) {
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // Make Call - Create new PeerConnection
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-    PHONE.dial = function(params) {
-        var number = params.number;
-        var talk   = get_conversation( number, params );
-        var pc     = talk.pc;
+    PHONE.dial = function(number) {
+        var talk = get_conversation(number);
+        var pc   = talk.pc;
 
         // Prevent Repeat Calls
         if (talk.dialed) return talk;
@@ -181,6 +180,16 @@ var PHONE = window.PHONE = function(config) {
 
         // Return Session Reference
         return talk;
+    };
+
+    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    // End Call - Close All Calls or a Specific Call
+    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    PHONE.hangup = function(number) {
+        if (number) return get_conversation(number).hangup();
+        PUBNUB.each( conversations, function( number, talk ) {
+            talk.hangup();
+        } );
     };
 
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -212,6 +221,7 @@ var PHONE = window.PHONE = function(config) {
     // Listen For New Incoming Calls
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     pubnub.subscribe({
+        // restore    : true,
         channel    : config.phone,
         message    : receive,
         disconnect : disconnectcb,
