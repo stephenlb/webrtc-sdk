@@ -7,6 +7,8 @@
 var PHONE = window.PHONE = function(config) {
     var PHONE         = function(){};
     var pubnub        = PUBNUB(config);
+    var pubkey        = config.publish_key   || 'demo';
+    var subkey        = config.subscribe_key || 'demo';
     var sessionid     = PUBNUB.uuid();
     var mystream      = null;
     var mediaconf     = { audio : true, video : true };
@@ -191,6 +193,31 @@ var PHONE = window.PHONE = function(config) {
             talk.hangup();
         } );
     };
+    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    // Auto-hangup on Leave
+    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    PUBNUB.bind( 'unload,beforeunload', window, function() {
+        if (PHONE.goodbye) return true;
+        PHONE.goodbye = true;
+
+        PUBNUB.each( conversations, function( number, talk ) {
+            var mynumber = config.phone;
+            var packet   = { hangup:true };
+            var message  = { packet:packet, id:sessionid, number:mynumber };
+            var client   = new XMLHttpRequest();
+            var url      =  'http://pubsub.pubnub.com/publish/'
+                            + pubkey + '/'
+                            + subkey + '/0/'
+                            + number + '/0/'
+                            + JSON.stringify(message);
+
+            client.open( "GET", url, false );
+            client.send();
+            talk.hangup();
+        } );
+
+        return true;
+    } );
 
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // Visually Display New Stream
@@ -259,7 +286,7 @@ var PHONE = window.PHONE = function(config) {
     function transmit( phone, packet, times, time ) {
         if (!packet) return;
         var number  = config.phone;
-        var message = { packet : packet, id  : sessionid, number : number };
+        var message = { packet : packet, id : sessionid, number : number };
         debugcb(message);
         pubnub.publish({ channel : phone, message : message });
 
