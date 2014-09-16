@@ -42,10 +42,11 @@
                 <div class="input-group-addon">
                     <span class="glyphicon glyphicon-earphone"></span>
                 </div>
-                <input id="number" class="form-control" placeholder="...">
+                <input id="number" class="form-control" placeholder="">
                 </div></div>
-            </div><div class="col-xs-3">
-                <button id="dial" class="btn btn-primary">Call Friend</button>
+            </div><div class="col-xs-6">
+                <button id="dial" class="btn btn-primary">Call</button>
+                <button id="hangup" class="btn btn-danger">Hangup</button>
             </div></div>
         </div>
     </div>
@@ -59,16 +60,12 @@
     <div class="row">
         <div class="col-xs-6">
             <ol>
-                <li> resend SDP periodically and dedupe
-                <li> 
-                <li> 
+                <li> sounds
             </ol>
         </div>
         <div class="col-xs-6">
             <ol>
-                <li> resend SDP periodically and dedupe
-                <li> 
-                <li> 
+                <li> presence
             </ol>
         </div>
     </div>
@@ -87,12 +84,13 @@
 // Random Number
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 var my_number = PUBNUB.$('my-number');
-my_number.number    = Math.floor(Math.random()*1000);
+my_number.number    = Math.floor(Math.random()*19+1);
 my_number.innerHTML = ''+my_number.number;
 
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 // Calling & Answering Service
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+var session;
 var phone = PHONE({
     phone         : my_number.number, // listen on this line
     publish_key   : 'pub-c-561a7378-fa06-4c50-a331-5c0056d0163c',
@@ -113,47 +111,71 @@ phone.display(function(video){
 // Ready to Send or Receive Calls
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 phone.ready(function(response){
-    // Bind Button Click
+    // -------------------------------------------------------------------
+    // Make a Phone Call
+    // -------------------------------------------------------------------
     PUBNUB.bind( 'click', PUBNUB.$('dial'), function() {
+        var phone_number = PUBNUB.$("number").value;
+        if (!phone_number) return;
 
-        // Make a Phone Call
-        phone.dial({
-            number  : PUBNUB.$("number").value,
-            connect : function(session){
-                console.log("WOWOWOOWOWOW!!!!!!!!!!!!!!!!!!!");
-                window.SES = session;
-            },
-            hangup  : function(session){
-                console.log("BYE BYE !!!!!!!!!!!!!!!!!!!");
-            }
+        // Dial Now
+        session = phone.dial({ number : phone_number });
+
+        // Call Connected Successfully
+        session.connected(function(session){
+            console.log("Hi!");
         });
 
+        // Call Ended
+        session.ended(function(session){
+            console.log("Bye!");
+            // sounds.play('sound/goodbye');
+        });
+
+    } );
+
+    // -------------------------------------------------------------------
+    // Hanup
+    // -------------------------------------------------------------------
+    PUBNUB.bind( 'click', PUBNUB.$('hangup'), function() {
+        session.hangup();
     } );
 });
 
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 // Receive Incoming Calls
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-phone.receiver(function(session){
-    console.log(session);
-
-    session.disconnect = function() {
-        console.log("BYE BYE !!!!!!!!!!!!!!!!!!!");
-    };
+phone.receiver(function(ses){
+    // Call Established
+    console.log("Hi!");
 
     // Play Sound Incoming Call
-    //sounds.play('tone/ring-in');
-    window.SES = session;
+    // sounds.play('sound/hi');
 
-    // Hangup Call
-    //session.hangup();
+    session = ses;
+
+    // On Session Ended
+    session.ended(function(){
+        console.log("Bye!");
+        // sounds.play('sound/goodbye');
+    });
+
+});
+
+// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+// Problem Occured During Init
+// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+phone.unable(function(details){
+    console.log("Alert! - Reload Page.");
+    console.log(details);
+    if(confirm("Phone error.  Try again?")) document.location.reload(0);
 });
 
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 // Debug Output
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 phone.debug(function(details){
-    // console.log(details);
+     // console.log(details);
 });
 
 })();</script>

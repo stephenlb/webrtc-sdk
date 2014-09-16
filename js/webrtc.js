@@ -78,6 +78,7 @@ var PHONE = window.PHONE = function(config) {
     // PHONE Events
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     var readycb      = function(){};
+    var unablecb     = function(){};
     var displaycb    = null;
     var debugcb      = function(){};
     var connectcb    = function(){};
@@ -87,6 +88,7 @@ var PHONE = window.PHONE = function(config) {
     var receivercb   = function(){};
 
     PHONE.ready      = function(cb) { readycb      = cb };
+    PHONE.unable     = function(cb) { unablecb     = cb };
     PHONE.display    = function(cb) { displaycb    = cb };
     PHONE.callstatus = function(cb) { callstatuscb = cb };
     PHONE.debug      = function(cb) { debugcb      = cb };
@@ -115,10 +117,17 @@ var PHONE = window.PHONE = function(config) {
 
             // Disconnect and Hangup
             talk.hangup = function(signal) {
+                if (talk.closed) return;
+                talk.closed = true;
+
                 if (signal !== false) transmit( number, { hangup : true } );
                 talk.pc.close();
                 close_conversation(number);
             };
+
+            // Nice Accessor to Update Disconnect & Establis CBs
+            talk.ended     = function(cb) { talk.disconnect = cb };
+            talk.connected = function(cb) { talk.establish  = cb };
             
             // Add Local Media Streams Audio Video Mic Camera
             talk.pc.addStream(mystream);
@@ -160,12 +169,19 @@ var PHONE = window.PHONE = function(config) {
         var talk   = get_conversation( number, params );
         var pc     = talk.pc;
 
+        // Prevent Repeat Calls
+        if (talk.dialed) return talk;
+        talk.dialed = true;
+
         // Send SDP Offer (Call)
         pc.createOffer( function(offer) {
             offer.receiver = true;
             transmit( number, offer, 5 );
             pc.setLocalDescription( offer, debugcb, debugcb );
         }, debugcb );
+
+        // Return Session Reference
+        return talk;
     };
 
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -203,21 +219,33 @@ var PHONE = window.PHONE = function(config) {
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     function connected() {
         navigator.getUserMedia( mediaconf, function(stream) {
+            if (!stream) return unablecb(stream);
             mystream = stream;
             connectcb();
             readycb();
-        }, debugcb );
+        }, function(info) {
+            debugcb(info);
+            return unablecb(info);
+        } );
     }
 
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // Send SDP Call Offers/Answers and ICE Candidates to Peer
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-    function transmit( phone, packet ) {
+    function transmit( phone, packet, times, time ) {
         if (!packet) return;
         var number  = config.phone;
         var message = { packet : packet, id  : sessionid, number : number };
         debugcb(message);
         pubnub.publish({ channel : phone, message : message });
+
+        // Recurse if Requested for
+        if (!times) return;
+        time = time || 1;
+        if (time++ >= times) return;
+        setTimeout( function(){
+            transmit( phone, packet, times, time );
+        }, 500 );
     }
 
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -239,10 +267,16 @@ var PHONE = window.PHONE = function(config) {
         }
 
         // If Peer Connection is Successfully Established
-        if (message.packet.establish) talk.establish(talk);
+        if (message.packet.establish && !talk.establisehd) {
+            talk.establisehd = true;
+            talk.establish(talk);
+        }
 
         // If Peer Calling Inbound (Incoming)
-        if (message.packet.receiver) receivercb(talk);
+        if (message.packet.receiver && !talk.received) {
+            talk.received = true;
+            receivercb(talk);
+        }
 
         // Update Peer Connection with SDP Offer or ICE Routes
         if (message.packet.sdp) add_sdp_offer(message);
@@ -260,6 +294,7 @@ var PHONE = window.PHONE = function(config) {
         // Deduplicate SDP Offerings
         if (talk.answered) return;
         talk.answered = true;
+        talk.dialed   = true;
 
         // Notify of Call Status
         update_conversation( talk, 'routing' );
