@@ -53,6 +53,11 @@
                 <div id="my-number-title">
                     call me. this is my phone number.
                 </div>
+                <div id="my-number-permalink">
+                    <span class="glyphicon glyphicon-link"></span>
+                    call link:
+                    <a id="my-number-link" href="...">http://...</a>
+                </div>
             </div>
         </div>
 
@@ -62,12 +67,11 @@
         <div class="col-sm-6">
             <!-- DISPLAY -->
             <div id="video-display">
-                <span class="glyphicon glyphicon-facetime-video"></span>
+                <span class="glyphicon glyphicon-flash"></span>
             </div>
             
             <!-- DIAL CONTROLS -->
-            <div class="row">
-            <div class="col-xs-4">
+            <div class="row"><div class="col-xs-4">
                 <div class="form-group"><div class="input-group">
                 <div class="input-group-addon">
                     <span class="glyphicon glyphicon-earphone"></span>
@@ -89,19 +93,27 @@
 <div class="container">
     <div class="row">
         <div class="col-xs-6">
+            <h1> Vertical Ideas </h1>
             <ol>
-                <li> sounds
-                <li> RESTORE TRUE...
+                <li> SOS Button - Help! (Mayday)
+                <li> Chatroulette
+                <li> insta call (this demo is insta call)
+                <li> announce board - (locked announc screen)
+                <li> Dial Pad
+                <li> friend list
             </ol>
         </div>
         <div class="col-xs-6">
+            <h1> TODOs </h1>
             <ol>
+                <li>  BUG: hangup not work on 1 party
+                <li>  BUG: on reload party/left - hangup /cleansession
+                <li> fix sounds
+                <li> sounds
                 <li> presence
                 <li> url link for easy call
-                <li> session.video indtead
-                <li> fix sounds
-                <li> make pretty - focus on BIG BRother approach 
                 <li> instant link widget - on page - copy/pasta url
+                <li> make pretty - focus on BIG BRother approach 
                 <li> 
                 <li> 
             </ol>
@@ -119,11 +131,50 @@
 <script>(function(){
 
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-// Random Number
+// Generate Random Number if Needed
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-var my_number = PUBNUB.$('my-number');
-my_number.number    = Math.floor(Math.random()*19+1);
+var urlargs         = urlparams();
+var my_number       = PUBNUB.$('my-number');
+var my_link         = PUBNUB.$('my-number-link');
+var number          = urlargs.number || Math.floor(Math.random()*999+1);
+
+my_number.number    = number;
 my_number.innerHTML = ''+my_number.number;
+my_link.href        = location.href.split('?')[0] + '?call=' + number;
+my_link.innerHTML   = my_link.href;
+
+// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+// Update Location if Not Set
+// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+if (!('number' in urlargs)) {
+    urlargs.number = my_number.number;
+    location.href = urlstring(urlargs);
+    return;
+}
+
+// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+// Get URL Params
+// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+function urlparams() {
+    var params = {};
+    if (location.href.indexOf('?') < 0) return params;
+
+    PUBNUB.each(
+        location.href.split('?')[1].split('&'),
+        function(data) { var d = data.split('='); params[d[0]] = d[1]; }
+    );
+
+    return params;
+}
+
+// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+// Construct URL Param String
+// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+function urlstring(params) {
+    return location.href.split('?')[0] + '?' + PUBNUB.map(
+        params, function( key, val) { return key + '=' + val }
+    ).join('&');
+}
 
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 // Calling & Answering Service
@@ -153,38 +204,61 @@ function connected(session) {
 // Video Session Ended
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 function ended(session) {
-    video_out.innerHTML =
-        '<span class="glyphicon glyphicon-facetime-video"></span>';
+    set_icon('facetime-video');
     //sounds.play('sound/goodbye');
     console.log("Bye!");
+}
+
+// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+// Video Session Ended
+// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+function set_icon(icon) {
+    video_out.innerHTML = '<span class="glyphicon glyphicon-' +
+        icon + '"></span>';
+}
+
+// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+// Start Phone Call
+// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+function dial(number) {
+    // Dial Number
+    var session = phone.dial(number);
+
+    // Call Connected
+    session.connected(connected);
+
+    // Call Ended
+    session.ended(ended);
+
+    // Show Connecting Status
+    set_icon('send');
 }
 
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 // Ready to Send or Receive Calls
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 phone.ready(function(response){
+    // Ready To Call
+    set_icon('facetime-video');
+
+    // Auto Call
+    if ('call' in urlargs) {
+        var number = urlargs['call'];
+        PUBNUB.$('number').value = number;
+        dial(number);
+    }
 
     // Make a Phone Call
-    PUBNUB.bind( 'click', PUBNUB.$('dial'), function() {
-        var phone_number = PUBNUB.$('number').value;
-        if (!phone_number) return;
-
-        // Dial Number
-        var session = phone.dial(phone_number);
-
-        // Call Connected
-        session.connected(connected);
-
-        // Call Ended
-        session.ended(ended);
+    PUBNUB.bind( 'click', PUBNUB.$('dial'), function(){
+        var number = PUBNUB.$('number').value;
+        if (!number) return;
+        dial(number);
     } );
 
     // Hanup Call
     PUBNUB.bind( 'click', PUBNUB.$('hangup'), function() {
-        var phone_number = PUBNUB.$('number').value;
-        phone.hangup(phone_number);
+        phone.hangup();
     } );
-
 });
 
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -193,7 +267,6 @@ phone.ready(function(response){
 phone.receiver(function(session){
     session.connected(connected);
     session.ended(ended);
-    //session.hangup()
 });
 
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -202,9 +275,7 @@ phone.receiver(function(session){
 phone.unable(function(details){
     console.log("Alert! - Reload Page.");
     console.log(details);
-    video_out.innerHTML =
-        '<span class="glyphicon glyphicon-remove"></span>';
-    if(confirm("Phone error.  Try again?")) document.location.reload(0);
+    set_icon('remove');
 });
 
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -213,6 +284,7 @@ phone.unable(function(details){
 phone.debug(function(details){
      // console.log(details);
 });
+
 
 })();</script>
 </body>

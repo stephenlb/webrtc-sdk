@@ -220,24 +220,33 @@ var PHONE = window.PHONE = function(config) {
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // Listen For New Incoming Calls
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-    pubnub.subscribe({
-        // restore    : true,
-        channel    : config.phone,
-        message    : receive,
-        disconnect : disconnectcb,
-        reconnect  : reconnectcb,
-        connect    : connected
-    });
+    function subscribe() {
+        pubnub.subscribe({
+            restore    : true,
+            channel    : config.phone,
+            message    : receive,
+            disconnect : disconnectcb,
+            reconnect  : reconnectcb,
+            connect    : connected
+        });
+    }
 
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-    // When Ready to Receive Calls, Prepare Local Media Camera and Mic
+    // When Ready to Receive Calls
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     function connected() {
+        connectcb();
+        readycb();
+    }
+
+    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    // Prepare Local Media Camera and Mic
+    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    function getusermedia() {
         navigator.getUserMedia( mediaconf, function(stream) {
             if (!stream) return unablecb(stream);
             mystream = stream;
-            connectcb();
-            readycb();
+            subscribe();
         }, function(info) {
             debugcb(info);
             return unablecb(info);
@@ -348,6 +357,11 @@ var PHONE = window.PHONE = function(config) {
             debugcb
         );
     }
+
+    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    // Main - Request Camera and Mic
+    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    getusermedia()
 
     return PHONE;
 };
