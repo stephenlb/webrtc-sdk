@@ -10,6 +10,36 @@
 <body>
 
 <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
+<!-- Dial Pad -->
+<!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
+<!--
+<div class="container">
+    <div style="width: 140px;" class="dialpad">
+        <div class="row">
+            <button class="btn col-xs-4" data-value="1">1<br /><span>&nbsp;</span></button>
+            <button class="btn col-xs-4" data-value="2">2<br /><span>ABC</span></button>
+            <button class="btn col-xs-4" data-value="3">3<br /><span>DEF</span></button>
+        </div>
+        <div class="row">
+            <button class="btn col-xs-4" data-value="4">4<br /><span>GHI</span></button>
+            <button class="btn col-xs-4" data-value="5">5<br /><span>JKL</span></button>
+            <button class="btn col-xs-4" data-value="6">6<br /><span>MNO</span></button>
+        </div>
+        <div class="row">
+            <button class="btn col-xs-4" data-value="7">7<br /><span>PQRS</span></button>
+            <button class="btn col-xs-4" data-value="8">8<br /><span>TUV</span></button>
+            <button class="btn col-xs-4" data-value="9">9<br /><span>WXYZ</span></button>
+        </div>
+        <div class="row">
+            <button class="btn col-xs-4 empty" data-value="*">*</button>
+            <button class="btn col-xs-4 empty" data-value="0">0</button>
+            <button class="btn col-xs-4 empty" data-value="#">#</button>
+        </div>
+    </div>
+</div>
+-->
+
+<!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
 <!-- My Phone Number & Dial Areas -->
 <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
 <div class="container">
@@ -61,11 +91,19 @@
         <div class="col-xs-6">
             <ol>
                 <li> sounds
+                <li> on hangup - chage back bo video ikcon
             </ol>
         </div>
         <div class="col-xs-6">
             <ol>
                 <li> presence
+                <li> url link for easy call
+                <li> session.video indtead
+                <li> fix sounds
+                <li> make pretty - focus on BIG BRother approach 
+                <li> 
+                <li> 
+                <li> 
             </ol>
         </div>
     </div>
@@ -91,6 +129,7 @@ my_number.innerHTML = ''+my_number.number;
 // Calling & Answering Service
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 var session;
+var video_out = PUBNUB.$('video-display');
 var phone = PHONE({
     phone         : my_number.number, // listen on this line
     publish_key   : 'pub-c-561a7378-fa06-4c50-a331-5c0056d0163c',
@@ -99,13 +138,21 @@ var phone = PHONE({
 });
 
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-// Place to Show Video
+// Place to Show/Hide Video Feed
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-var video_display = PUBNUB.$('video-display');
-phone.display(function(video){
-    video_display.innerHTML = '';
-    video_display.appendChild(video);
-});
+function connected(session) {
+    var video = session.video;
+    video_out.innerHTML = '';
+    video_out.appendChild(video);
+    //sounds.play('sound/hi');
+    console.log("Hi!");
+}
+function ended(session) {
+    video_out.innerHTML =
+        '<span class="glyphicon glyphicon-facetime-video"></span>';
+    //sounds.play('sound/goodbye');
+    console.log("Bye!");
+}
 
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 // Ready to Send or Receive Calls
@@ -121,17 +168,11 @@ phone.ready(function(response){
         // Dial Now
         session = phone.dial({ number : phone_number });
 
-        // Call Connected Successfully
-        session.connected(function(session){
-            console.log("Hi!");
-        });
+        // Call Connected
+        session.connected(connected);
 
         // Call Ended
-        session.ended(function(session){
-            console.log("Bye!");
-            // sounds.play('sound/goodbye');
-        });
-
+        session.ended(ended);
     } );
 
     // -------------------------------------------------------------------
@@ -143,23 +184,12 @@ phone.ready(function(response){
 });
 
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-// Receive Incoming Calls
+// Received Incoming Call
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 phone.receiver(function(ses){
-    // Call Established
-    console.log("Hi!");
-
-    // Play Sound Incoming Call
-    // sounds.play('sound/hi');
-
     session = ses;
-
-    // On Session Ended
-    session.ended(function(){
-        console.log("Bye!");
-        // sounds.play('sound/goodbye');
-    });
-
+    session.connected(connected);
+    session.ended(ended);
 });
 
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -168,6 +198,8 @@ phone.receiver(function(ses){
 phone.unable(function(details){
     console.log("Alert! - Reload Page.");
     console.log(details);
+    video_out.innerHTML =
+        '<span class="glyphicon glyphicon-remove"></span>';
     if(confirm("Phone error.  Try again?")) document.location.reload(0);
 });
 

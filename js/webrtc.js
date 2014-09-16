@@ -79,7 +79,6 @@ var PHONE = window.PHONE = function(config) {
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     var readycb      = function(){};
     var unablecb     = function(){};
-    var displaycb    = null;
     var debugcb      = function(){};
     var connectcb    = function(){};
     var disconnectcb = function(){};
@@ -89,7 +88,6 @@ var PHONE = window.PHONE = function(config) {
 
     PHONE.ready      = function(cb) { readycb      = cb };
     PHONE.unable     = function(cb) { unablecb     = cb };
-    PHONE.display    = function(cb) { displaycb    = cb };
     PHONE.callstatus = function(cb) { callstatuscb = cb };
     PHONE.debug      = function(cb) { debugcb      = cb };
     PHONE.connect    = function(cb) { connectcb    = cb };
@@ -121,6 +119,7 @@ var PHONE = window.PHONE = function(config) {
                 talk.closed = true;
 
                 if (signal !== false) transmit( number, { hangup : true } );
+                talk.disconnect(talk);
                 talk.pc.close();
                 close_conversation(number);
             };
@@ -176,7 +175,7 @@ var PHONE = window.PHONE = function(config) {
         // Send SDP Offer (Call)
         pc.createOffer( function(offer) {
             offer.receiver = true;
-            transmit( number, offer, 5 );
+            transmit( number, offer, 3 );
             pc.setLocalDescription( offer, debugcb, debugcb );
         }, debugcb );
 
@@ -188,11 +187,17 @@ var PHONE = window.PHONE = function(config) {
     // Visually Display New Stream
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     function onaddstream(obj) {
-        var vid = document.createElement("video");
+        var vid    = document.createElement("video");
+        var stream = obj.stream;
+        var number = obj.srcElement.number;
+        var talk   = get_conversation(number);
+        talk.video = vid;
+
         vid.setAttribute( 'autoplay', 'autoplay' );
-        vid.src = URL.createObjectURL(obj.stream);
-        if (displaycb) return displaycb(vid);
-        document.getElementsByTagName('body')[0].appendChild(vid);
+        vid.src = URL.createObjectURL(stream);
+
+        stream.onended = function() { talk.hangup() };
+        talk.establish(talk);
     }
 
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -245,7 +250,7 @@ var PHONE = window.PHONE = function(config) {
         if (time++ >= times) return;
         setTimeout( function(){
             transmit( phone, packet, times, time );
-        }, 500 );
+        }, 150 );
     }
 
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -261,7 +266,6 @@ var PHONE = window.PHONE = function(config) {
 
         // If Hangup Request
         if (message.packet.hangup) {
-            talk.disconnect(talk);
             talk.hangup(false);
             return close_conversation(message.number);
         }
@@ -269,7 +273,6 @@ var PHONE = window.PHONE = function(config) {
         // If Peer Connection is Successfully Established
         if (message.packet.establish && !talk.establisehd) {
             talk.establisehd = true;
-            talk.establish(talk);
         }
 
         // If Peer Calling Inbound (Incoming)
@@ -310,7 +313,7 @@ var PHONE = window.PHONE = function(config) {
                 pc.createAnswer( function(answer) {
                     pc.setLocalDescription( answer, debugcb, debugcb );
                     answer.establish = true;
-                    transmit( message.number, answer, 5 );
+                    transmit( message.number, answer, 3 );
                 }, debugcb );
             }, debugcb
         );
