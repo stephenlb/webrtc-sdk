@@ -31,3 +31,7 @@
     font-size: 150px;
     line-height: 300px;
 }
+#video-display video {
+    height: 240px;
+    margin: 20px 0 0 0;
+}

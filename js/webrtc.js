@@ -78,6 +78,7 @@ var PHONE = window.PHONE = function(config) {
     // PHONE Events
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     var readycb      = function(){};
+    var displaycb    = null;
     var debugcb      = function(){};
     var connectcb    = function(){};
     var disconnectcb = function(){};
@@ -86,6 +87,7 @@ var PHONE = window.PHONE = function(config) {
     var receivercb   = function(){};
 
     PHONE.ready      = function(cb) { readycb      = cb };
+    PHONE.display    = function(cb) { displaycb    = cb };
     PHONE.callstatus = function(cb) { callstatuscb = cb };
     PHONE.debug      = function(cb) { debugcb      = cb };
     PHONE.connect    = function(cb) { connectcb    = cb };
@@ -115,6 +117,7 @@ var PHONE = window.PHONE = function(config) {
             talk.hangup = function(signal) {
                 if (signal !== false) transmit( number, { hangup : true } );
                 talk.pc.close();
+                close_conversation(number);
             };
             
             // Add Local Media Streams Audio Video Mic Camera
@@ -130,6 +133,14 @@ var PHONE = window.PHONE = function(config) {
 
         // Return Existing or New Reference to Caller
         return talk;
+    }
+
+    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    // Remove Conversation
+    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    function close_conversation(number) {
+        conversations[number] = null;
+        delete conversations[number];
     }
 
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -152,7 +163,7 @@ var PHONE = window.PHONE = function(config) {
         // Send SDP Offer (Call)
         pc.createOffer( function(offer) {
             offer.receiver = true;
-            transmit( number, offer );
+            transmit( number, offer, 5 );
             pc.setLocalDescription( offer, debugcb, debugcb );
         }, debugcb );
     };
@@ -163,17 +174,16 @@ var PHONE = window.PHONE = function(config) {
     function onaddstream(obj) {
         var vid = document.createElement("video");
         vid.setAttribute( 'autoplay', 'autoplay' );
-        vid.setAttribute( 'width', '100' );
         vid.src = URL.createObjectURL(obj.stream);
-        (config.media || document.getElementsByTagName('body')[0])
-        .appendChild(vid);
+        if (displaycb) return displaycb(vid);
+        document.getElementsByTagName('body')[0].appendChild(vid);
     }
 
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // On ICE Route Candidate Discovery
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     function onicecandidate(event) {
-        if (event.candidate == null) return;
+        if (!event.candidate) return;
         transmit( this.number, event.candidate );
     };
 
@@ -204,7 +214,8 @@ var PHONE = window.PHONE = function(config) {
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     function transmit( phone, packet ) {
         if (!packet) return;
-        var message = { packet : packet, id  : sessionid, number : phone };
+        var number  = config.phone;
+        var message = { packet : packet, id  : sessionid, number : number };
         debugcb(message);
         pubnub.publish({ channel : phone, message : message });
     }
@@ -223,7 +234,8 @@ var PHONE = window.PHONE = function(config) {
         // If Hangup Request
         if (message.packet.hangup) {
             talk.disconnect(talk);
-            return talk.hangup(false);
+            talk.hangup(false);
+            return close_conversation(message.number);
         }
 
         // If Peer Connection is Successfully Established
@@ -245,6 +257,10 @@ var PHONE = window.PHONE = function(config) {
         var talk = get_conversation(message.number);
         var pc   = talk.pc;
 
+        // Deduplicate SDP Offerings
+        if (talk.answered) return;
+        talk.answered = true;
+
         // Notify of Call Status
         update_conversation( talk, 'routing' );
 
@@ -259,7 +275,7 @@ var PHONE = window.PHONE = function(config) {
                 pc.createAnswer( function(answer) {
                     pc.setLocalDescription( answer, debugcb, debugcb );
                     answer.establish = true;
-                    transmit( message.number, answer );
+                    transmit( message.number, answer, 5 );
                 }, debugcb );
             }, debugcb
         );
@@ -269,6 +285,10 @@ var PHONE = window.PHONE = function(config) {
     // Add ICE Candidate Routes
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     function add_ice_route(message) {
+        // Leave if Non-good ICE Packet
+        if (!message.packet)           return;
+        if (!message.packet.candidate) return;
+
         // Get Call Reference
         var talk = get_conversation(message.number);
         var pc   = talk.pc;

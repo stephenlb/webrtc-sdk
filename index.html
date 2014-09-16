@@ -97,9 +97,16 @@ var phone = PHONE({
     phone         : my_number.number, // listen on this line
     publish_key   : 'pub-c-561a7378-fa06-4c50-a331-5c0056d0163c',
     subscribe_key : 'sub-c-17b7db8a-3915-11e4-9868-02ee2ddab7fe',
-    ssl           : true,
-    media         : document.getElementsByTagName('body')[0],
-    onaddstream   : null // optional override function
+    ssl           : true
+});
+
+// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+// Place to Show Video
+// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+var video_display = PUBNUB.$('video-display');
+phone.display(function(video){
+    video_display.innerHTML = '';
+    video_display.appendChild(video);
 });
 
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -112,8 +119,13 @@ phone.ready(function(response){
         // Make a Phone Call
         phone.dial({
             number  : PUBNUB.$("number").value,
-            connect : function(session){},
-            hangup  : function(session){}
+            connect : function(session){
+                console.log("WOWOWOOWOWOW!!!!!!!!!!!!!!!!!!!");
+                window.SES = session;
+            },
+            hangup  : function(session){
+                console.log("BYE BYE !!!!!!!!!!!!!!!!!!!");
+            }
         });
 
     } );
@@ -125,8 +137,13 @@ phone.ready(function(response){
 phone.receiver(function(session){
     console.log(session);
 
+    session.disconnect = function() {
+        console.log("BYE BYE !!!!!!!!!!!!!!!!!!!");
+    };
+
     // Play Sound Incoming Call
-    sounds.play('tone/ring-in');
+    //sounds.play('tone/ring-in');
+    window.SES = session;
 
     // Hangup Call
     //session.hangup();
@@ -136,7 +153,7 @@ phone.receiver(function(session){
 // Debug Output
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 phone.debug(function(details){
-    console.log(details);
+    // console.log(details);
 });
 
 })();</script>
