@@ -2,7 +2,7 @@
 
 
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-// WebRTC Peer Connection
+// WebRTC Simple Calling API + Mobile
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 var PHONE = window.PHONE = function(config) {
     var PHONE         = function(){};
@@ -95,7 +95,7 @@ var PHONE = window.PHONE = function(config) {
     PHONE.connect    = function(cb) { connectcb    = cb };
     PHONE.disconnect = function(cb) { disconnectcb = cb };
     PHONE.reconnect  = function(cb) { reconnectcb  = cb };
-    PHONE.receiver   = function(cb) { receivercb   = cb };
+    PHONE.receive    = function(cb) { receivercb   = cb };
 
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // Add/Get Conversation - Creates a new PC or Returns Existing PC
@@ -103,11 +103,11 @@ var PHONE = window.PHONE = function(config) {
     function get_conversation(number) {
         var talk = conversations[number] || (function(){
             var talk = {
-                number     : number,
-                status     : '',
-                pc         : new PeerConnection(rtcconfig),
-                establish  : function(){},
-                disconnect : function(){}
+                number  : number,
+                status  : '',
+                pc      : new PeerConnection(rtcconfig),
+                connect : function(){},
+                end     : function(){}
             };
 
             // Setup Event Methods
@@ -121,14 +121,14 @@ var PHONE = window.PHONE = function(config) {
                 talk.closed = true;
 
                 if (signal !== false) transmit( number, { hangup : true } );
-                talk.disconnect(talk);
+                talk.end(talk);
                 talk.pc.close();
                 close_conversation(number);
             };
 
             // Nice Accessor to Update Disconnect & Establis CBs
-            talk.ended     = function(cb) {talk.disconnect = cb; return talk};
-            talk.connected = function(cb) {talk.establish  = cb; return talk};
+            talk.ended     = function(cb) {talk.end     = cb; return talk};
+            talk.connected = function(cb) {talk.connect = cb; return talk};
 
             // Add Local Media Streams Audio Video Mic Camera
             talk.pc.addStream(mystream);
@@ -192,6 +192,7 @@ var PHONE = window.PHONE = function(config) {
             talk.hangup();
         } );
     };
+
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // Auto-hangup on Leave
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -200,7 +201,7 @@ var PHONE = window.PHONE = function(config) {
         PHONE.goodbye = true;
 
         PUBNUB.each( conversations, function( number, talk ) {
-            var mynumber = config.phone;
+            var mynumber = config.number;
             var packet   = { hangup:true };
             var message  = { packet:packet, id:sessionid, number:mynumber };
             var client   = new XMLHttpRequest();
@@ -210,7 +211,7 @@ var PHONE = window.PHONE = function(config) {
                             + number + '/0/'
                             + JSON.stringify(message);
 
-            client.open( "GET", url, false );
+            client.open( 'GET', url, false );
             client.send();
             talk.hangup();
         } );
@@ -222,17 +223,16 @@ var PHONE = window.PHONE = function(config) {
     // Visually Display New Stream
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     function onaddstream(obj) {
-        var vid    = document.createElement("video");
+        var vid    = document.createElement('video');
         var stream = obj.stream;
         var number = (obj.srcElement || obj.target).number;
         var talk   = get_conversation(number);
-        talk.video = vid;
 
         vid.setAttribute( 'autoplay', 'autoplay' );
         vid.src = URL.createObjectURL(stream);
 
-        //stream.onended = function() { talk.hangup() };
-        talk.establish(talk);
+        talk.video = vid;
+        talk.connect(talk);
     }
 
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -249,18 +249,18 @@ var PHONE = window.PHONE = function(config) {
     function subscribe() {
         pubnub.subscribe({
             restore    : true,
-            channel    : config.phone,
+            channel    : config.number,
             message    : receive,
             disconnect : disconnectcb,
             reconnect  : reconnectcb,
-            connect    : connected
+            connect    : onsubscribe
         });
     }
 
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // When Ready to Receive Calls
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-    function connected() {
+    function onsubscribe() {
         connectcb();
         readycb();
     }
@@ -284,7 +284,7 @@ var PHONE = window.PHONE = function(config) {
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     function transmit( phone, packet, times, time ) {
         if (!packet) return;
-        var number  = config.phone;
+        var number  = config.number;
         var message = { packet : packet, id : sessionid, number : number };
         debugcb(message);
         pubnub.publish({ channel : phone, message : message });
@@ -315,11 +315,6 @@ var PHONE = window.PHONE = function(config) {
             return close_conversation(message.number);
         }
 
-        // If Peer Connection is Successfully Established
-        if (message.packet.establish && !talk.establisehd) {
-            talk.establisehd = true;
-        }
-
         // If Peer Calling Inbound (Incoming)
         if (
             message.packet.sdp             &&
@@ -342,11 +337,12 @@ var PHONE = window.PHONE = function(config) {
         // Get Call Reference
         var talk = get_conversation(message.number);
         var pc   = talk.pc;
+        var type = message.packet.type == 'offer' ? 'offer' : 'answer';
 
-        // Deduplicate SDP Offerings
-        if (talk.answered) return;
-        talk.answered = true;
-        talk.dialed   = true;
+        // Deduplicate SDP Offerings/Answers
+        if (type in talk) return;
+        talk[type]  = true;
+        talk.dialed = true;
 
         // Notify of Call Status
         update_conversation( talk, 'routing' );
@@ -355,13 +351,11 @@ var PHONE = window.PHONE = function(config) {
         pc.setRemoteDescription(
             new SessionDescription(message.packet), function() {
                 // Call Online and Ready
-                if (pc.remoteDescription.type != "offer")
-                    return transmit( message.number, { establish : true } );
+                if (pc.remoteDescription.type != 'offer') return;
 
                 // Create Answer to Call
                 pc.createAnswer( function(answer) {
                     pc.setLocalDescription( answer, debugcb, debugcb );
-                    answer.establish = true;
                     transmit( message.number, answer, 2 );
                 }, debugcb );
             }, debugcb

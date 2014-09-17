@@ -1,11 +1,137 @@
-PubNub WebRTC SDK - A simplified approach to RTC Peer Connections
+# WebRTC Simple Calling API + Mobile
+
+At PubNub we believe in simplicity and production readiness.
+We've taken a simplified approach to WebRTC Peer Connections by creating
+and easy-to-use SDK for developers.
+These ideas should span all platforms and devices too and
+that's why we also support **Android** WebRTC mobile calling.
+You can write once and deploy everywhere.
+Here we will start with a copy/paste example of our SDK;
+
+### Simple Example Walkthrough
+
+This Simple Example Comes in **Two WebRTC Calling Sections**.
+*Part One* will talk about how you can **Make a WebRTC Call**.
+*Part Two* will teach you about **Receiving a WebRTC Call**.
+
+#### Making a WebRTC Call - *Part One*
+
+Make your first html file named `dial.html` and copy/paste the following:
+
+```html
+<!-- dial.html -->
+<!-- Video Output Zone -->
+<div id="video-out"> Making a Call </div>
+
+<!-- Libs and Scripts -->
+<script src="https://cdn.pubnub.com/pubnub.min.js"></script>
+<script src="http://stephenlb.github.io/webrtc-sdk/js/webrtc.js"></script>
+<script>(function(){
+
+    // Initialize the Phone
+    // The phone number can by any string value
+    var phone = PHONE({ number : '1234' });
+
+    // As soon as the phone is ready we can make calls
+    phone.ready(function(){
+
+        // Dial a Number and get the Call Session
+        var session = phone.dial('4321');
+
+        // Call Connected
+        session.connected(function(session){
+
+            // Display Your Friend's Live Video
+            PUBNUB.$('video-out').appendChild(session.video);
+
+        });
+
+    });
+
+})();</script>
+```
+
+#### Receiving a WebRTC Call - *Part Two*
+
+Make a Second Page called `receive.html` and copy/paste the following.
+
+```html
+<!-- receive.html -->
+<!-- Video Output Zone -->
+<div id="video-out"> Waiting for Call </div>
+
+<!-- Libs and Scripts -->
+<script src="https://cdn.pubnub.com/pubnub.min.js"></script>
+<script src="http://stephenlb.github.io/webrtc-sdk/js/webrtc.js"></script>
+<script>(function(){
+
+    // Initialize the Phone
+    // The phone number can by any string value
+    var phone = PHONE({ number : '4321' });
+
+    // When someone calls you
+    phone.receive(function(session){
+
+        // Session Connected
+        session.connected(function(session){
+
+            // Display Your Friend's Live Video
+            PUBNUB.$('video-out').appendChild(session.video);
+
+        });
+
+    });
+
+})();</script>
+```
+
+### Full Live Example
+
+We have a live running WebRTC Demo which uses our WebRTC SDK.
+This demo includes a soft-touch UI for an easy calling experience.
+
+> try the **live WebRTC demo**:
+[WebRTC Simple Calling API + Mobile](http://stephenlb.github.io/webrtc-sdk/)
+
+
+
+
+TODOs
+    -  supported devices list ios android chrom operaff
+    - live demo ready to try
+    - full SESSION and PHONE docs
+    - idea section
+    - getn your pubnub keys
+    - landing page
+    - add pubnub logo to demo
+    - enable SSL
+    - mobile Calling
+    - 
+    - 
+    - 
+    - 
+    - 
+    - 
+    - 
+    - 
+
+PubNub WebRTC SDK - A 
 
                 <li> SOS Button - Help! (Mayday)
+                <li> instant calling
+                <li> skype
                 <li> Chatroulette
                 <li> insta call (this demo is insta call)
                 <li> announce board - (locked announc screen)
                 <li> Dial Pad
                 <li> friend list
+                <li> sales calls
+                <li> customer contact questions
+                <li> remote meetings
+                <li> live presentations
+                <li> live specialist advice center
+                <li> 
+                <li> 
 
 [PubNub](http://www.pubnub.com/)
 

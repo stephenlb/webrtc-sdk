@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/html">
 <head>
-    <title>WebRTC Peer Connections</title>
+    <title>WebRTC Simple Calling API + Mobile</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="css/bootstrap.min.css" rel="stylesheet" type="text/css">
@@ -123,7 +123,7 @@ function urlstring(params) {
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 var video_out = PUBNUB.$('video-display');
 var phone     = PHONE({
-    phone         : my_number.number, // listen on this line
+    number        : my_number.number, // listen on this line
     publish_key   : 'pub-c-561a7378-fa06-4c50-a331-5c0056d0163c',
     subscribe_key : 'sub-c-17b7db8a-3915-11e4-9868-02ee2ddab7fe',
     ssl           : true
@@ -183,7 +183,7 @@ function dial(number) {
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 // Ready to Send or Receive Calls
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-phone.ready(function(response){
+phone.ready(function(){
     // Ready To Call
     set_icon('facetime-video');
 
@@ -210,7 +210,7 @@ phone.ready(function(response){
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 // Received Incoming Call
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-phone.receiver(function(session){
+phone.receive(function(session){
     session.connected(connected);
     session.ended(ended);
 });
