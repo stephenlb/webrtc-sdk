@@ -6,10 +6,23 @@ and easy-to-use SDK for developers.
 These ideas should span all platforms and devices too and
 that's why we also support **Android** WebRTC mobile calling
 with compatibility for iOS native Objective-C based WebRTC SDK.
-Here we will start with a copy/paste example of our SDK.
+This WebRTC SDK is powered by [PubNub](http://www.pubnub.com/).
+
+### Supported WebRTC Calling API Mobile Devices and Browser
+
+List of supported WebRTC Calling Clients including Android and Chrome.
+
+ 1. Chrome
+ 2. Firefox
+ 3. Opera
+ 4. Mobile Chrome - Android
+ 5. Mobile Firefox - Android
+ 6. *iOS Native Objective-C Compatible*
+ 6. *Android Native Java Compatible*
 
 ### Simple Example Walkthrough
 
+Next we will start with a copy/paste example of our SDK.
 This Simple Example Comes in **Two WebRTC Calling Sections**.
 
  1. *Part One* will talk about how you can **Make a WebRTC Call**.
@@ -90,6 +103,8 @@ Make a Second Page called `receive.html` and copy/paste the following.
 
 ### Full Live Example
 
+If you combine both the **WebRTC Dialer** and the **WebRTC Receiver**
+you will get a complete working phone.
 We have a live running WebRTC Demo which uses our WebRTC SDK.
 This demo includes a soft-touch UI for an easy calling experience.
 
@@ -101,9 +116,31 @@ This demo includes a soft-touch UI for an easy calling experience.
 You can click the link above to try our live WebRTC Demo
 which is powered by our easy to use SDK.
 
+### What Can you build with a WebRTC Simple Calling API?
+
+There are a plethera of important and useful applications which may
+be built using the PubNub WebRTC Calling SDK.
+I have cataloged a list of ideas for **WebRTC Use Cases**:
+
+ 1. Amazon Mayday Help Button
+ 2. Salesforce SOS Help Button
+ 3. WebRTC Skype Replica
+ 4. Traditional Phone Replacement
+ 5. Chatroulette
+ 6. VoIP Replacement
+ 7. Customer Support Calls
+ 8. In-bound Sales Calls
+ 9. Easy Remote Meetings
+ 10. Call Assistant or Specialists
+ 11. Big Screen Public Announcemnt
+ 12. Live Presentations
+
+So many different options and even more use cases
+that have yet to be discovered.
+
 
 TODOs
-    -  supported devices list ios android chrom operaff
+    - supported devices list ios android chrom operaff
     - live demo ready to try
     - full SESSION and PHONE docs
     - idea section
@@ -112,7 +149,7 @@ TODOs
     - add pubnub logo to demo
     - enable SSL
     - mobile Calling
-    - 
+    - audio only mode
     - 
     - 
     - 
@@ -123,23 +160,8 @@ TODOs
 
 PubNub WebRTC SDK - A 
 
-                <li> SOS Button - Help! (Mayday)
-                <li> instant calling
-                <li> skype
-                <li> Chatroulette
-                <li> insta call (this demo is insta call)
-                <li> announce board - (locked announc screen)
-                <li> Dial Pad
-                <li> friend list
-                <li> sales calls
-                <li> customer contact questions
-                <li> remote meetings
-                <li> live presentations
-                <li> live specialist advice center
                 <li> 
                 <li> 
-
-[PubNub](http://www.pubnub.com/)
 
 
 Most people will look down on place holder answers...Please answer fully when you have a full answer... –  Benjamin Trent Jun 20 at 20:08
