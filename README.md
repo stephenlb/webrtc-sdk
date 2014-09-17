@@ -21,6 +21,22 @@ List of supported WebRTC Calling Clients including Android and Chrome.
  6. *iOS Native Objective-C Compatible*
  6. *Android Native Java Compatible*
 
+### The Basic Concepts
+
+Make a phone call.
+
+```javascript
+var session = phone.dial('123-456');
+```
+
+Recieve a phone call.
+
+```javascript
+phone.receive(function(session){
+    // ...
+});
+```
+
 ### Simple Example Walkthrough
 
 Next we will start with a copy/paste example of our SDK.
@@ -169,6 +185,27 @@ Once one party member disconnects or leaves, the session will be terminated.
 You have access to several helper methods for
 `session.connected()` and `session.ended()` events.
 
+## API Documentation Reference
+
+The WebRTC Simple SDK API Reference will provide to you all the options
+available to you as the developer.
+
+### The PHONE Object
+
+### The Session Object
+
+A Session represents the connection between two parties with access
+to the `session.video` element as well as the place to register
+event callbacks as needed such as
+`session.connected(function(session){})` and
+`session.ended(function(session){})`.
+
+A session object is generated automatically for you upon executing
+`var session = phone.dial('...')` or inside registered event callbacks
+and also inside a `phone.receive(function(session){})` callback.
+
+
+
 ## DOCUMENTATION TODOs
 
     - full SESSION and PHONE docs
@@ -177,6 +214,19 @@ You have access to several helper methods for
     - mobile calling
     - audio only mode
 
+## SDK Upgrade TODOs
+
+    - Wire-pulled Disconnect Detect via DataChannels Pings
+    - Auto-reconnect re-SDP/ICE Recovery
+    - 
+
+## Implementation Reference TODOs
+
+    - Pre-Allow Transmit - Before "allow" fire a pubnub message
+    - Chat
+    - Multi-Party Video
+    - Full Screen
+    - Controlable iFrame
 
 ### What is Happens Inside the Simple WebRTC SDK
 
