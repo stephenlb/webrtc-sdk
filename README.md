@@ -96,7 +96,10 @@ This demo includes a soft-touch UI for an easy calling experience.
 > try the **live WebRTC demo**:
 [WebRTC Simple Calling API + Mobile](http://stephenlb.github.io/webrtc-sdk/)
 
+[![WebRTC Simple Calling API + Mobile](http://pubnub.s3.amazonaws.com/assets/webrtc-simple-sdk-calling-api.png)](http://stephenlb.github.io/webrtc-sdk/)
 
+You can click the link above to try our live WebRTC Demo
+which is powered by our easy to use SDK.
 
 
 TODOs
