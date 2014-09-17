@@ -158,7 +158,8 @@ Once one party member disconnects or leaves, the session will be terminated.
 You have access to several helper methods for
 `session.connected()` and `session.ended()` events.
 
-TODOs
+## DOCUMENTATION TODOs
+
     - supported devices list ios android chrom operaff
     - live demo ready to try
     - full SESSION and PHONE docs
@@ -169,37 +170,24 @@ TODOs
     - mobile calling
     - audio only mode
     - 
-    - 
-    - 
-    - 
-    - 
-    - 
-    - 
-
-PubNub WebRTC SDK - A 
-
-                <li> 
-                <li> 
 
 
-Most people will look down on place holder answers...Please answer fully when you have a full answer... –  Benjamin Trent Jun 20 at 20:08
-1	 	
-Agreed! :-) Got side tracked and it's updated above, answer is in better shape now. –  PubNub Jun 21 at 2:10    
-  	
- 		
-THank you! This is extremely helpful :D –  JerryFox Jun 21 at 21:06
-  	
- 		
-Do you know if pubunb could handle 10k+ peers trying to connect to a single broadcast at the same time? –  JerryFox Jun 21 at 21:07
-1	 	
-@JerryFox - Yes! :-) PubNub today has peaked over 3 million broadcast for single broadcast on a channel. In a pool of over quarter billion devices connected. –  PubNub Jun 23 at 17:59    
+### What is Happens Inside the Simple WebRTC SDK
 
+##### Signaling and Exchanging ICE Candidates via PubNub 
 
-# WebRTC Signaling Exchanging ICE Candidates via PubNub 
+The goal is to exchange ICE candidate packets between two peers.
+`ICE candidate packets` are structured payloads which contain possible
+path recommendations between two peers.
+You can use a lib which will take care of the nitty gritty such as
+[WebRTC Simple Calling API + Mobile](https://github.com/stephenlb/webrtc-sdk)
+however below is the general direction that is taken inside the SDK itself.
 
-The goal is to exchange ICE candidate packets between two peers. `ICE candidate packets are structured payloads which contain possible path recommendations between two peers.`  You can use a lib which will take care of the nitty gritty such as http://www.sinch.com/ and below is the general direction you want to take:
+Note that the demonstration code below is intintionally incomplete.
+Note however the PubNub WebRTC Signaling SDK properly covers
+most Calling Situations.
 
-### Signaling Example Code Follows
+#### Signaling Example Code Follows
 
     <script src="http://cdn.pubnub.com/pubnub-3.6.3.min.js"></script>
     <script>(function(){
@@ -214,20 +202,20 @@ The goal is to exchange ICE candidate packets between two peers. `ICE candidate 
         // exchange ICE Candidates.
         var exchange_channel = "p2p-exchange";
         
-        // LISTEN FOR ICE CANDIDATES
+        // LISTEN FOR SDP and ICE CANDIDATES
         pubnub.subscribe({
             channel : exchange_channel,
             message : receive_ice_candidates
         })
         
-        // ICE CANDIDATES RECEIVER PROCESSOR FUNCTION
+        // SDP and ICE CANDIDATES RECEIVER PROCESSOR FUNCTION
         function receive_ice_candidates(ice_candidate) {
             // Attempt peer connection or upgrade route if better route...
             console.log(ice_candidate);
             // ... RTC Peer Connection upgrade/attempt ...
         }
         
-        // SEND ICE CANDIDATE
+        // SEND SDP and ICE CANDIDATES
         function send_ice_candidate(ice) {
             pubnub.publish({
                 channel : exchange_channel,
@@ -236,7 +224,7 @@ The goal is to exchange ICE candidate packets between two peers. `ICE candidate 
         }
 
 
-### Generate ICE Candidates Example Code Follows:
+#### Generate ICE Candidates Example Code Follows:
 
         // CREATE ICE CANDIDATES
         var pc = new RTCPeerConnection();
@@ -246,17 +234,11 @@ The goal is to exchange ICE candidate packets between two peers. `ICE candidate 
             pc.createOffer( function(offer) {
                 pc.setLocalDescription(
                     new RTCSessionDescription(offer),
-                    send_ice_candidate, // - SEND ICE CANDIDATE via PUBNUB
+                    send_ice_candidate,
                     error
                 );
             }, error );
         } );
-        
-        // ERROR CALLBACK
-        function error(e) {
-            console.log(e);
-        }
+
     })();</script>
 
-
-More fun details await - https://developer.mozilla.org/en-US/docs/Web/API/RTCPeerConnection
