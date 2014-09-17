@@ -47,11 +47,16 @@ Make your first html file named `dial.html` and copy/paste the following:
     // Initialize the Phone
     // The phone number can by any string value
 
-    // ~Warning~ For simplicity this example excludes API Keys.
+    // ~Warning~ For simplicity this example uses demo API Keys.
     // ~Warning~ You must get your own API Keys for non-demo purposes.
-    // ~Warning~ This document will describe where to get your API Keys.
+    // ~Warning~ This document will later describe where to get your API Keys.
 
-    var phone = PHONE({ number : '1234' });
+    var phone = PHONE({
+        number        : '1234',
+        publish_key   : 'pub-c-561a7378-fa06-4c50-a331-5c0056d0163c',
+        subscribe_key : 'sub-c-17b7db8a-3915-11e4-9868-02ee2ddab7fe',
+        ssl           : true
+    });
 
     // As soon as the phone is ready we can make calls
     phone.ready(function(){
@@ -90,11 +95,16 @@ Make a Second Page called `receive.html` and copy/paste the following.
     // Initialize the Phone
     // The phone number can by any string value
 
-    // ~Warning~ For simplicity this example excludes API Keys.
+    // ~Warning~ For simplicity this example uses demo API Keys.
     // ~Warning~ You must get your own API Keys for non-demo purposes.
-    // ~Warning~ This document will describe where to get your API Keys.
+    // ~Warning~ This document will later describe where to get your API Keys.
 
-    var phone = PHONE({ number : '4321' });
+    var phone = PHONE({
+        number        : '4321',
+        publish_key   : 'pub-c-561a7378-fa06-4c50-a331-5c0056d0163c',
+        subscribe_key : 'sub-c-17b7db8a-3915-11e4-9868-02ee2ddab7fe',
+        ssl           : true
+    });
 
     // When someone calls you
     phone.receive(function(session){
