@@ -175,7 +175,6 @@ var PHONE = window.PHONE = function(config) {
 
         // Send SDP Offer (Call)
         pc.createOffer( function(offer) {
-            offer.receiver = true;
             transmit( number, offer, 2 );
             pc.setLocalDescription( offer, debugcb, debugcb );
         }, debugcb );
@@ -225,14 +224,14 @@ var PHONE = window.PHONE = function(config) {
     function onaddstream(obj) {
         var vid    = document.createElement("video");
         var stream = obj.stream;
-        var number = obj.srcElement.number;
+        var number = (obj.srcElement || obj.target).number;
         var talk   = get_conversation(number);
         talk.video = vid;
 
         vid.setAttribute( 'autoplay', 'autoplay' );
         vid.src = URL.createObjectURL(stream);
 
-        stream.onended = function() { talk.hangup() };
+        //stream.onended = function() { talk.hangup() };
         talk.establish(talk);
     }
 
@@ -322,7 +321,11 @@ var PHONE = window.PHONE = function(config) {
         }
 
         // If Peer Calling Inbound (Incoming)
-        if (message.packet.receiver && !talk.received) {
+        if (
+            message.packet.sdp             &&
+            message.packet.type == 'offer' &&
+            !talk.received
+        ) {
             talk.received = true;
             receivercb(talk);
         }
