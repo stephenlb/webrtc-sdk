@@ -6,7 +6,8 @@ and easy-to-use SDK for developers.
 These ideas should span all platforms and devices too and
 that's why we also support **Android** WebRTC mobile calling
 with compatibility for iOS native Objective-C based WebRTC SDK.
-This simple developer WebRTC SDK is powered by [PubNub Data Stream Network](http://www.pubnub.com/).
+This simple developer WebRTC SDK is powered by
+[PubNub Data Stream Network](http://www.pubnub.com/).
 
 ### Supported WebRTC Calling API Mobile Devices and Browser
 
@@ -160,16 +161,11 @@ You have access to several helper methods for
 
 ## DOCUMENTATION TODOs
 
-    - supported devices list ios android chrom operaff
-    - live demo ready to try
     - full SESSION and PHONE docs
-    - idea section
     - getn your pubnub keys
-    - landing page
     - how to enable SSL
     - mobile calling
     - audio only mode
-    - 
 
 
 ### What is Happens Inside the Simple WebRTC SDK
@@ -189,56 +185,62 @@ most Calling Situations.
 
 #### Signaling Example Code Follows
 
-    <script src="http://cdn.pubnub.com/pubnub-3.6.3.min.js"></script>
-    <script>(function(){
-        
-        // INIT P2P Packet Exchanger
-        var pubnub = PUBNUB({
-            publish_key   : 'demo',
-            subscribe_key : 'demo'
-        })
-        
-        // You need to specify the exchange channel for the peers to
-        // exchange ICE Candidates.
-        var exchange_channel = "p2p-exchange";
-        
-        // LISTEN FOR SDP and ICE CANDIDATES
-        pubnub.subscribe({
+```html
+<script src="http://cdn.pubnub.com/pubnub-3.6.3.min.js"></script>
+<script>(function(){
+    
+    // INIT P2P Packet Exchanger
+    var pubnub = PUBNUB({
+        publish_key   : 'demo',
+        subscribe_key : 'demo'
+    })
+    
+    // You need to specify the exchange channel for the peers to
+    // exchange ICE Candidates.
+    var exchange_channel = "p2p-exchange";
+    
+    // LISTEN FOR SDP and ICE CANDIDATES
+    pubnub.subscribe({
+        channel : exchange_channel,
+        message : receive_ice_candidates
+    })
+    
+    // SDP and ICE CANDIDATES RECEIVER PROCESSOR FUNCTION
+    function receive_ice_candidates(ice_candidate) {
+        // Attempt peer connection or upgrade route if better route...
+        console.log(ice_candidate);
+        // ... RTC Peer Connection upgrade/attempt ...
+    }
+    
+    // SEND SDP and ICE CANDIDATES
+    function send_ice_candidate(ice) {
+        pubnub.publish({
             channel : exchange_channel,
-            message : receive_ice_candidates
+            message : ice
         })
-        
-        // SDP and ICE CANDIDATES RECEIVER PROCESSOR FUNCTION
-        function receive_ice_candidates(ice_candidate) {
-            // Attempt peer connection or upgrade route if better route...
-            console.log(ice_candidate);
-            // ... RTC Peer Connection upgrade/attempt ...
-        }
-        
-        // SEND SDP and ICE CANDIDATES
-        function send_ice_candidate(ice) {
-            pubnub.publish({
-                channel : exchange_channel,
-                message : ice
-            })
-        }
+    }
 
+})();</script>
+```
 
 #### Generate ICE Candidates Example Code Follows:
 
-        // CREATE ICE CANDIDATES
-        var pc = new RTCPeerConnection();
-        navigator.getUserMedia( {video: true}, function(stream) {
-            pc.onaddstream({stream:stream});
-            pc.addStream(stream);
-            pc.createOffer( function(offer) {
-                pc.setLocalDescription(
-                    new RTCSessionDescription(offer),
-                    send_ice_candidate,
-                    error
-                );
-            }, error );
-        } );
+```html
+<script>(function(){
+    // CREATE ICE CANDIDATES
+    var pc = new RTCPeerConnection();
+    navigator.getUserMedia( {video: true}, function(stream) {
+        pc.onaddstream({stream:stream});
+        pc.addStream(stream);
+        pc.createOffer( function(offer) {
+            pc.setLocalDescription(
+                new RTCSessionDescription(offer),
+                send_ice_candidate,
+                error
+            );
+        }, error );
+    } );
 
-    })();</script>
+})();</script>
+```
 
