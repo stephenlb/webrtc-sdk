@@ -6,7 +6,7 @@ and easy-to-use SDK for developers.
 These ideas should span all platforms and devices too and
 that's why we also support **Android** WebRTC mobile calling
 with compatibility for iOS native Objective-C based WebRTC SDK.
-This WebRTC SDK is powered by [PubNub](http://www.pubnub.com/).
+This simple developer WebRTC SDK is powered by [PubNub Data Stream Network](http://www.pubnub.com/).
 
 ### Supported WebRTC Calling API Mobile Devices and Browser
 
