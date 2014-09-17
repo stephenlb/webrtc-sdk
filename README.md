@@ -45,6 +45,11 @@ Make your first html file named `dial.html` and copy/paste the following:
 
     // Initialize the Phone
     // The phone number can by any string value
+
+    // ~Warning~ For simplicity this example excludes API Keys.
+    // ~Warning~ You must get your own API Keys for non-demo purposes.
+    // ~Warning~ This document will describe where to get your API Keys.
+
     var phone = PHONE({ number : '1234' });
 
     // As soon as the phone is ready we can make calls
@@ -83,6 +88,11 @@ Make a Second Page called `receive.html` and copy/paste the following.
 
     // Initialize the Phone
     // The phone number can by any string value
+
+    // ~Warning~ For simplicity this example excludes API Keys.
+    // ~Warning~ You must get your own API Keys for non-demo purposes.
+    // ~Warning~ This document will describe where to get your API Keys.
+
     var phone = PHONE({ number : '4321' });
 
     // When someone calls you
@@ -139,6 +149,15 @@ So many different options and even more use cases
 that have yet to be discovered.
 
 
+### What is a WebRTC Session?
+
+A WebRTC `Session` is a reference to a call instance
+between two connected parties.
+The idea is the session is active as long as the two parties are connected.
+Once one party member disconnects or leaves, the session will be terminated.
+You have access to several helper methods for
+`session.connected()` and `session.ended()` events.
+
 TODOs
     - supported devices list ios android chrom operaff
     - live demo ready to try
@@ -146,9 +165,8 @@ TODOs
     - idea section
     - getn your pubnub keys
     - landing page
-    - add pubnub logo to demo
-    - enable SSL
-    - mobile Calling
+    - how to enable SSL
+    - mobile calling
     - audio only mode
     - 
     - 
