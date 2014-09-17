@@ -1,18 +1,19 @@
 # WebRTC Simple Calling API + Mobile
 
-At PubNub we believe in simplicity and production readiness.
+At PubNub we believe in simplicity of our SDK usability.
 We've taken a simplified approach to WebRTC Peer Connections by creating
 and easy-to-use SDK for developers.
 These ideas should span all platforms and devices too and
-that's why we also support **Android** WebRTC mobile calling.
-You can write once and deploy everywhere.
-Here we will start with a copy/paste example of our SDK;
+that's why we also support **Android** WebRTC mobile calling
+with compatibility for iOS native Objective-C based WebRTC SDK.
+Here we will start with a copy/paste example of our SDK.
 
 ### Simple Example Walkthrough
 
 This Simple Example Comes in **Two WebRTC Calling Sections**.
-*Part One* will talk about how you can **Make a WebRTC Call**.
-*Part Two* will teach you about **Receiving a WebRTC Call**.
+
+ 1. *Part One* will talk about how you can **Make a WebRTC Call**.
+ 2. *Part Two* will teach you about **Receiving a WebRTC Call**.
 
 #### Making a WebRTC Call - *Part One*
 
@@ -20,6 +21,7 @@ Make your first html file named `dial.html` and copy/paste the following:
 
 ```html
 <!-- dial.html -->
+
 <!-- Video Output Zone -->
 <div id="video-out"> Making a Call </div>
 
@@ -57,6 +59,7 @@ Make a Second Page called `receive.html` and copy/paste the following.
 
 ```html
 <!-- receive.html -->
+
 <!-- Video Output Zone -->
 <div id="video-out"> Waiting for Call </div>
 
