@@ -200,6 +200,8 @@ available to you as the developer.
 ### WebRTC Phone Ready
 ### WebRTC Phone Receiving Calls
 ### WebRTC Phone Dialing Numbers
+### WebRTC Phone Multi-party Dialing
+### WebRTC Phone Broadcasting Mode
 ### WebRTC Phone Hangup
 ### WebRTC Phone Network Events
 ### WebRTC Phone Unable to Initialize
@@ -210,25 +212,20 @@ available to you as the developer.
 
 A WebRTC Session represents the connection between two parties with access
 to the `session.video` element as well as the place to register
-event callbacks as needed such as
-
-```javascript
-session.connected(function(session){})
-```
-
-and
+event callbacks as needed such as `session.connected`
+and also the ended callback for when the call disconnects or hangs up.
 
 ```javascript
 session.ended(function(session){})
 ```
 
-A session object is generated automatically for you upon executing
+A session object is generated automatically for you upon dialing
 
 ```javascript
 var session = phone.dial('...')
 ```
 
-or inside registered event callbacks and also inside a callback.
+and also inside registered event callbacks.
 
 ```javascript
 phone.receive(function(session){})
@@ -258,23 +255,56 @@ session.connected(function(session){
 });
 ```
 
-
+### WebRTC Session Ended Callback
 ##### `session.ended(function(session){})`
+
+> The session has ended by one of the parties.
+Any secondary session will continue to stream.
+
+```javascript
+session.ended(function(session){
+    sounds.play('sound/goodbye');
+    console.log("Bye!");
+});
+```
 
 ### WebRTC Session Hangup
 ##### `session.hangup()`
 
+> End the session right now.
+The `ended` callback will fire for both connected parties.
+
+```javascript
+$("#hangup").click(function(){
+    // End the call
+    session.hangup();
+});
+```
+
 ### WebRTC Session Video Element
+##### `session.video`
+
+> The Session Video Element is Accessable and Ready
+inside the `connected` only.
+The Session Video ref is an HTML Video Element `<video>`.
+
+```javascript
+session.connected(function(session){
+    var body  = document.getElementsByTagName('body')[0];
+    var video = session.video;
+
+    body.appendChild(video);
+});
+```
+
 ### WebRTC Session RTCPeerConnection Reference
-### WebRTC Session 
-### WebRTC Session 
-### WebRTC Session 
-### WebRTC Session 
-### WebRTC Session 
-### WebRTC Session 
-### WebRTC Session 
+##### `session.pc`
 
+> Reference to WebRTC RTCPeerConnection.
 
+```javascript
+var sesionPeerConnection = session.pc;
+```
 
 
 
@@ -285,6 +315,11 @@ session.connected(function(session){
     - Wire-pulled Disconnect Detect via DataChannels Pings
     - 5 Second Timeout to Retry with 30 Second of Retries
     - Auto-reconnect re-SDP/ICE Recovery
+    - Custom Message Events
+    - Presence
+    - Call History
+    - User Lists
+    - 
     - 
 
 ## Implementation Reference TODOs
