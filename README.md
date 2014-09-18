@@ -186,11 +186,15 @@ Once one party member disconnects or leaves, the session will be terminated.
 You have access to several helper methods for
 `session.connected()` and `session.ended()` events.
 
-## API Documentation Reference for WebRTC Calling SDK
+## API Documentation for WebRTC Calling SDK
 
 The WebRTC Simple SDK API Reference will provide to you all the options
 available to you as the developer.
 
+### WebRTC Phone SSL Mode
+### WebRTC Phone Audio Only Mode
+### WebRTC Phone Video and Audio Mode
+### WebRTC Phone Mobile Calling on Android
 ### WebRTC Phone Ready
 ### WebRTC Phone Receiving Calls
 ### WebRTC Phone Dialing Numbers
@@ -199,14 +203,6 @@ available to you as the developer.
 ### WebRTC Phone Unable to Initialize
 ### WebRTC Phone Debugging
 ### WebRTC Phone Auto Hangup and Goodbye on Unload
-### WebRTC Phone 
-### WebRTC Phone 
-### WebRTC Phone 
-### WebRTC Phone 
-
- - TODO
- - TODO
- - TODO
 
 ### The WebRTC Session Object
 
@@ -223,6 +219,7 @@ and also inside a `phone.receive(function(session){})` callback.
 ### WebRTC Session Number
 
 ##### `session.number`
+> Returns Phone Number associated with the Call Session.
 
 ### WebRTC Session Callbacks
 
@@ -240,18 +237,12 @@ and also inside a `phone.receive(function(session){})` callback.
 
 
 
-
-## DOCUMENTATION TODOs
-
-    - full SESSION and PHONE docs
-    - getn your pubnub keys
-    - how to enable SSL
-    - mobile calling
-    - audio only mode
+# TODOs
 
 ## SDK Upgrade TODOs
 
     - Wire-pulled Disconnect Detect via DataChannels Pings
+    - 5 Second Timeout to Retry with 30 Second of Retries
     - Auto-reconnect re-SDP/ICE Recovery
     - 
 
