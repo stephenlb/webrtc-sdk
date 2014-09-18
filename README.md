@@ -186,16 +186,31 @@ Once one party member disconnects or leaves, the session will be terminated.
 You have access to several helper methods for
 `session.connected()` and `session.ended()` events.
 
-## API Documentation Reference
+## API Documentation Reference for WebRTC Calling SDK
 
 The WebRTC Simple SDK API Reference will provide to you all the options
 available to you as the developer.
 
-### The PHONE Object
+### WebRTC Phone Ready
+### WebRTC Phone Receiving Calls
+### WebRTC Phone Dialing Numbers
+### WebRTC Phone Hangup
+### WebRTC Phone Network Events
+### WebRTC Phone Unable to Initialize
+### WebRTC Phone Debugging
+### WebRTC Phone Auto Hangup and Goodbye on Unload
+### WebRTC Phone 
+### WebRTC Phone 
+### WebRTC Phone 
+### WebRTC Phone 
 
-### The Session Object
+ - TODO
+ - TODO
+ - TODO
 
-A Session represents the connection between two parties with access
+### The WebRTC Session Object
+
+A WebRTC Session represents the connection between two parties with access
 to the `session.video` element as well as the place to register
 event callbacks as needed such as
 `session.connected(function(session){})` and
@@ -204,6 +219,25 @@ event callbacks as needed such as
 A session object is generated automatically for you upon executing
 `var session = phone.dial('...')` or inside registered event callbacks
 and also inside a `phone.receive(function(session){})` callback.
+
+### WebRTC Session Number
+
+##### `session.number`
+
+### WebRTC Session Callbacks
+
+##### `session.connected(function(session){})`
+##### `session.ended(function(session){})`
+
+### WebRTC Session Hangup
+##### `session.hangup()`
+
+### WebRTC Session Video
+
+### WebRTC Session RTCPeerConnection Reference
+
+
+
 
 
 
