@@ -21,23 +21,24 @@ List of supported WebRTC Calling Clients including Android and Chrome.
  6. *iOS Native Objective-C Compatible*
  6. *Android Native Java Compatible*
 
-### The Basic Concepts
+### The Basic Concepts of WebRTC Calling
 
-Make a phone call.
+Making a WebRTC phone call.
 
 ```javascript
+// Dial Number
 var session = phone.dial('123-456');
 ```
 
-Recieve a phone call.
+Receiving a WebRTC phone call.
 
 ```javascript
 phone.receive(function(session){
-    // ...
+    // On Call Receiving
 });
 ```
 
-### Simple Example Walkthrough
+### Simple WebRTC Walkthrough
 
 Next we will start with a copy/paste example of our SDK.
 This Simple Example Comes in **Two WebRTC Calling Sections**.
@@ -138,14 +139,14 @@ Make a Second Page called `receive.html` and copy/paste the following.
 })();</script>
 ```
 
-### Full Live Example
+### Live WebRTC Call Dialer 
 
 If you combine both the **WebRTC Dialer** and the **WebRTC Receiver**
 you will get a complete working phone.
 We have a live running WebRTC Demo which uses our WebRTC SDK.
 This demo includes a soft-touch UI for an easy calling experience.
 
-> try the **live WebRTC demo**:
+> try the **live WebRTC Dialing**:
 [WebRTC Simple Calling API + Mobile](http://stephenlb.github.io/webrtc-sdk/)
 
 [![WebRTC Simple Calling API + Mobile](http://pubnub.s3.amazonaws.com/assets/webrtc-simple-sdk-calling-api-peer-connect.png)](http://stephenlb.github.io/webrtc-sdk/)
