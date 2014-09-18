@@ -191,6 +191,8 @@ You have access to several helper methods for
 The WebRTC Simple SDK API Reference will provide to you all the options
 available to you as the developer.
 
+### WebRTC Phone Initialization
+### WebRTC Phone Number
 ### WebRTC Phone SSL Mode
 ### WebRTC Phone Audio Only Mode
 ### WebRTC Phone Video and Audio Mode
@@ -209,29 +211,68 @@ available to you as the developer.
 A WebRTC Session represents the connection between two parties with access
 to the `session.video` element as well as the place to register
 event callbacks as needed such as
-`session.connected(function(session){})` and
-`session.ended(function(session){})`.
+
+```javascript
+session.connected(function(session){})
+```
+
+and
+
+```javascript
+session.ended(function(session){})
+```
 
 A session object is generated automatically for you upon executing
-`var session = phone.dial('...')` or inside registered event callbacks
-and also inside a `phone.receive(function(session){})` callback.
+
+```javascript
+var session = phone.dial('...')
+```
+
+or inside registered event callbacks and also inside a callback.
+
+```javascript
+phone.receive(function(session){})
+```
 
 ### WebRTC Session Number
-
 ##### `session.number`
-> Returns Phone Number associated with the Call Session.
 
-### WebRTC Session Callbacks
+> Returns the 2nd party's (caller/callee)
+Phone Number associated with the Call Session.
 
+```javascript
+var session = phone.dial('12345');
+console.log(session.number == '12345');
+```
+
+### WebRTC Session Connected Callback
 ##### `session.connected(function(session){})`
+
+> Sets the callback for when the session is connected and
+the **video** stream is ready to display.
+
+```javascript
+session.connected(function(session){
+    var body = document.getElementsByTagName('body')[0];
+    body.appendChild(session.video);
+});
+```
+
+
 ##### `session.ended(function(session){})`
 
 ### WebRTC Session Hangup
 ##### `session.hangup()`
 
-### WebRTC Session Video
-
+### WebRTC Session Video Element
 ### WebRTC Session RTCPeerConnection Reference
+### WebRTC Session 
+### WebRTC Session 
+### WebRTC Session 
+### WebRTC Session 
+### WebRTC Session 
+### WebRTC Session 
+### WebRTC Session 
 
 
 
