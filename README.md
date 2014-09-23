@@ -209,18 +209,15 @@ var phone = PHONE({
 ```
 
 ### WebRTC Phone Number
-##### `PHONE({ ... })`
 
 > Your phone number is your true ring-in point of truth.
 You can set your phone number at init time from the 
-`PHONE({...})` factory.
 
 ```javascript
 var phone = PHONE({ number : '1234567890' });
 ```
 
 ### WebRTC Phone SSL Mode
-##### `PHONE({ ... })`
 
 > You can enable SSL signalling mode for the local client device
 by setting the `ssl : true` paramater at init.
@@ -233,7 +230,6 @@ var phone = PHONE({
 ```
 
 ### WebRTC Cipher AES 256 Crypto Mode
-##### `PHONE({ ... })`
 
 > You can enable AES256 Encryption (essentially password mode)
 on your phone for additional security.
@@ -247,10 +243,10 @@ var phone = PHONE({
 ```
 
 ### WebRTC Phone Audio Only Mode
-##### `PHONE({ ... })`
 
 > You can disable video codec and stream only Audio by setting
 the following param in your init code.
+Set `video : false` in the media section.
 
 ```javascript
 var phone = PHONE({
@@ -259,76 +255,97 @@ var phone = PHONE({
 })
 ```
 
-### WebRTC Phone Video and Audio Mode
-##### `THETHING`
-
-> THEDETAILS.
-
-```javascript
-THEJS
-```
-
 ### WebRTC Phone Mobile Calling on Android
-##### `THETHING`
 
-> THEDETAILS.
+WebRTC calling on Android is web-ready compatible and works
+out-of-the-box today without modifications or addtional code.
+Also WebRTC Calling is supported for Android and iOS Native too.
 
-```javascript
-THEJS
-```
 
 ### WebRTC Phone Ready
-##### `THETHING`
+##### `phone.ready(function(){ ... })`
 
-> THEDETAILS.
+> Making calls is easy but you can only do it when the phone is
+ready to issue the signals properly and the local interfaces
+have been configured such as audio/video media.
 
 ```javascript
-THEJS
+phone.ready(function(){
+    // Ready to make Calls
+    var session = phone.dial("my-friend's-number");
+});
 ```
 
 ### WebRTC Phone Receiving Calls
-##### `THETHING`
+##### `phone.receive(function(session){ ... })`
 
-> THEDETAILS.
+> It's really ease to setup your phone to receive calls using
+the `phone.receive()` method.
+This method expects a callback function and will pass the
+WebRTC Session object as the only paramater.
 
 ```javascript
-THEJS
+phone.receive(function(session){
+    session.connected(function(session){ /* call connected */ });
+    session.ended(function(session){     /* call ended     */ });
+});
 ```
 
 ### WebRTC Phone Dialing Numbers
-##### `THETHING`
+##### `phone.dial(number)`
 
-> THEDETAILS.
+> You can easily make WebRTC calls by executing the `dail()` method.
+The number can be any string value such as `"415-555-5555"`.
 
 ```javascript
-THEJS
+var session = phone.dial(number);
+
+session.connected(function(session){ /* call connected */ });
+session.ended(function(session){     /* call ended     */ });
 ```
 
 ### WebRTC Phone Multi-party Dialing
-##### `THETHING`
+##### `phone.dial(number)`
 
-> THEDETAILS.
+> The PubNub WebRTC Phone Dialer and Receiver supports
+unlimited party in/out calling.
 
 ```javascript
-THEJS
+var sessions = [];
+sessions.push(phone.dial('friend-one'));
+sessions.push(phone.dial('friend-two'));
+sessions.push(phone.dial('friend-three'));
+sessions.push(phone.dial('friend-four'));
+sessions.push(phone.dial('friend-five'));
+
+sessions.forEach(function(friend){
+    session.connected(function(session){ /* call connected */ });
+    session.ended(function(session){     /* call ended     */ });
+});
 ```
 
 ### WebRTC Phone Broadcasting Mode
-##### `THETHING`
+##### `phone.receive(function(session){ ... })`
 
-> THEDETAILS.
-
-```javascript
-THEJS
-```
+> You can receive unlimited inbound calls and become a broadcast
+beacon stream.
+You are limited by your bandwidth upload capacity.
 
 ### WebRTC Phone Hangup
-##### `THETHING`
+##### `phone.hangup()`
 
-> THEDETAILS.
+> There are two ways to hangup WebRTC calls.
+You can use the phone-level method `phone.hangup()`
+which will hangup all calls at once.
+Or you can use the session-level method `session.hangup()`
+which will only hangup that call session.
 
 ```javascript
-THEJS
+// hangup all calls
+phone.hangup();
+
+// hangup single session
+session.hangup();
 ```
 
 ### WebRTC Phone Network Events
