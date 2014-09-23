@@ -220,7 +220,7 @@ var phone = PHONE({ number : '1234567890' });
 ### WebRTC Phone SSL Mode
 
 > You can enable SSL signalling mode for the local client device
-by setting the `ssl : true` paramater at init.
+by setting the `ssl : true` parameter at init.
 
 ```javascript
 var phone = PHONE({
@@ -258,7 +258,7 @@ var phone = PHONE({
 ### WebRTC Phone Mobile Calling on Android
 
 WebRTC calling on Android is web-ready compatible and works
-out-of-the-box today without modifications or addtional code.
+out-of-the-box today without modifications or additional code.
 Also WebRTC Calling is supported for Android and iOS Native too.
 
 
@@ -282,7 +282,7 @@ phone.ready(function(){
 > It's really ease to setup your phone to receive calls using
 the `phone.receive()` method.
 This method expects a callback function and will pass the
-WebRTC Session object as the only paramater.
+WebRTC Session object as the only parameter.
 
 ```javascript
 phone.receive(function(session){
@@ -294,7 +294,7 @@ phone.receive(function(session){
 ### WebRTC Phone Dialing Numbers
 ##### `phone.dial(number)`
 
-> You can easily make WebRTC calls by executing the `dail()` method.
+> You can easily make WebRTC calls by executing the `dial()` method.
 The number can be any string value such as `"415-555-5555"`.
 
 ```javascript
@@ -349,41 +349,49 @@ session.hangup();
 ```
 
 ### WebRTC Phone Network Events
-##### `THETHING`
+##### `PHONE.disconnect(function(){ ... })`
 
-> THEDETAILS.
+> You need to keep track of the connectivity state of your local
+network connection. You can do that using these helper methods.
 
 ```javascript
-THEJS
+PHONE.connect(function(){    console.log('network LIVE.') })
+PHONE.disconnect(function(){ console.log('network GONE.') })
+PHONE.reconnect(function(){  console.log('network BACK!') })
 ```
 
 ### WebRTC Phone Unable to Initialize
-##### `THETHING`
+##### `phone.unable(function(details){ ... })`
 
-> THEDETAILS.
+> Some devices or in certain situations the phone may not initialize.
+We give you a simple callback for when the phone startup fails.
 
 ```javascript
-THEJS
+phone.unable(function(details){
+    console.log("Phone is unable to initialize.");
+    console.log("Try reloading, or give up.");
+});
 ```
 
 ### WebRTC Phone Debugging
-##### `THETHING`
+##### `phone.debug(function(details){ ... })`
 
-> THEDETAILS.
+> You might want to see under the covers of WebRTC Calling by
+enabling debugging mode on the WebRTC SDK.
 
 ```javascript
-THEJS
+phone.debug(function(details){
+     console.log(details);
+});
 ```
 
 ### WebRTC Phone Auto Hangup and Goodbye on Unload
-##### `THETHING`
 
-> THEDETAILS.
-
-```javascript
-THEJS
-```
-
+The WebRTC Calling SDK will attempt an automatic `goodbye` upon graceful
+disconnection attempts.
+This allows the 2nd party on the other end of the phone line to
+receive a call `ended` signal.
+This happens automatically.
 
 ### The WebRTC Session Object
 
