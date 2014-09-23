@@ -312,6 +312,7 @@ unlimited party in/out calling.
 
 ```javascript
 var sessions = [];
+
 sessions.push(phone.dial('friend-one'));
 sessions.push(phone.dial('friend-two'));
 sessions.push(phone.dial('friend-three'));
@@ -319,8 +320,8 @@ sessions.push(phone.dial('friend-four'));
 sessions.push(phone.dial('friend-five'));
 
 sessions.forEach(function(friend){
-    session.connected(function(session){ /* call connected */ });
-    session.ended(function(session){     /* call ended     */ });
+    friend.connected(function(session){ /* call connected */ });
+    friend.ended(function(session){     /* call ended     */ });
 });
 ```
 
@@ -491,11 +492,7 @@ session.connected(function(session){
 var sesionPeerConnection = session.pc;
 ```
 
-
-
-# TODOs
-
-## SDK Upgrade TODOs
+## SDK Possible Upgrade Future Patches
 
     - Wire-pulled Disconnect Detect via DataChannels Pings
     - 5 Second Timeout to Retry with 30 Second of Retries
@@ -504,16 +501,14 @@ var sesionPeerConnection = session.pc;
     - Presence
     - Call History
     - User Lists
-    - 
-    - 
 
-## Implementation Reference TODOs
+## Implementation Reference Upgrades
 
-    - Pre-Allow Transmit - Before "allow" fire a pubnub message
-    - Chat
-    - Multi-Party Video
-    - Full Screen
-    - Controlable iFrame
+    - Pre-Allow Transmit - Before "allow" fire a PubNub message
+    - Chat on Screen
+    - Multi-Party Video in GUI
+    - Full Screen Mode
+    - Controlling an iFrame
 
 ### What is Happens Inside the Simple WebRTC SDK
 
