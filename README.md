@@ -68,6 +68,8 @@ Make your first html file named `dial.html` and copy/paste the following:
     // ~Warning~ You must get your own API Keys for non-demo purposes.
     // ~Warning~ This document will later describe where to get your API Keys.
 
+    // Get your PubNub API Keys: http://www.pubnub.com/get-started/
+
     var phone = PHONE({
         number        : '1234',
         publish_key   : 'pub-c-561a7378-fa06-4c50-a331-5c0056d0163c',
@@ -115,6 +117,8 @@ Make a Second Page called `receive.html` and copy/paste the following.
     // ~Warning~ For simplicity this example uses demo API Keys.
     // ~Warning~ You must get your own API Keys for non-demo purposes.
     // ~Warning~ This document will later describe where to get your API Keys.
+
+    // Get your PubNub API Keys: http://www.pubnub.com/get-started/
 
     var phone = PHONE({
         number        : '4321',
