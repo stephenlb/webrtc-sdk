@@ -192,21 +192,181 @@ The WebRTC Simple SDK API Reference will provide to you all the options
 available to you as the developer.
 
 ### WebRTC Phone Initialization
+##### `PHONE({ ... })`
+
+> Initialize the phone object which can send/receive multiple
+WebRTC call sessions without limit.
+Be careful as your bandwidth is the true limiter.
+
+```javascript
+var phone = PHONE({
+    number        : '1234567890',
+    publish_key   : 'pub-c-561a7378-fa06-4c50-a331-5c0056d0163c',
+    subscribe_key : 'sub-c-17b7db8a-3915-11e4-9868-02ee2ddab7fe',
+    media         : { audio : true, video : true },
+    ssl           : true
+})
+```
+
 ### WebRTC Phone Number
+##### `PHONE({ ... })`
+
+> Your phone number is your true ring-in point of truth.
+You can set your phone number at init time from the 
+`PHONE({...})` factory.
+
+```javascript
+var phone = PHONE({ number : '1234567890' });
+```
+
 ### WebRTC Phone SSL Mode
+##### `PHONE({ ... })`
+
+> You can enable SSL signalling mode for the local client device
+by setting the `ssl : true` paramater at init.
+
+```javascript
+var phone = PHONE({
+    ssl : true
+    ...
+})
+```
+
+### WebRTC Cipher AES 256 Crypto Mode
+##### `PHONE({ ... })`
+
+> You can enable AES256 Encryption (essentially password mode)
+on your phone for additional security.
+You're friends have to know your password to call you.
+
+```javascript
+var phone = PHONE({
+    cipher_key : 'SUPER-SECRET-PASSWORD-HERE'
+    ...
+})
+```
+
 ### WebRTC Phone Audio Only Mode
+##### `PHONE({ ... })`
+
+> You can disable video codec and stream only Audio by setting
+the following param in your init code.
+
+```javascript
+var phone = PHONE({
+    media : { audio : true, video : false }
+    ...
+})
+```
+
 ### WebRTC Phone Video and Audio Mode
+##### `THETHING`
+
+> THEDETAILS.
+
+```javascript
+THEJS
+```
+
 ### WebRTC Phone Mobile Calling on Android
+##### `THETHING`
+
+> THEDETAILS.
+
+```javascript
+THEJS
+```
+
 ### WebRTC Phone Ready
+##### `THETHING`
+
+> THEDETAILS.
+
+```javascript
+THEJS
+```
+
 ### WebRTC Phone Receiving Calls
+##### `THETHING`
+
+> THEDETAILS.
+
+```javascript
+THEJS
+```
+
 ### WebRTC Phone Dialing Numbers
+##### `THETHING`
+
+> THEDETAILS.
+
+```javascript
+THEJS
+```
+
 ### WebRTC Phone Multi-party Dialing
+##### `THETHING`
+
+> THEDETAILS.
+
+```javascript
+THEJS
+```
+
 ### WebRTC Phone Broadcasting Mode
+##### `THETHING`
+
+> THEDETAILS.
+
+```javascript
+THEJS
+```
+
 ### WebRTC Phone Hangup
+##### `THETHING`
+
+> THEDETAILS.
+
+```javascript
+THEJS
+```
+
 ### WebRTC Phone Network Events
+##### `THETHING`
+
+> THEDETAILS.
+
+```javascript
+THEJS
+```
+
 ### WebRTC Phone Unable to Initialize
+##### `THETHING`
+
+> THEDETAILS.
+
+```javascript
+THEJS
+```
+
 ### WebRTC Phone Debugging
+##### `THETHING`
+
+> THEDETAILS.
+
+```javascript
+THEJS
+```
+
 ### WebRTC Phone Auto Hangup and Goodbye on Unload
+##### `THETHING`
+
+> THEDETAILS.
+
+```javascript
+THEJS
+```
+
 
 ### The WebRTC Session Object
 
