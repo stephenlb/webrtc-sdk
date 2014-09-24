@@ -37,14 +37,14 @@ List of supported WebRTC Calling Clients including Android and Chrome.
 
 ### The Basic Concepts of WebRTC Calling
 
-Making a WebRTC phone call.
+##### Making a WebRTC phone Call
 
 ```javascript
 // Dial Number
 var session = phone.dial('123-456');
 ```
 
-Receiving a WebRTC phone call.
+##### Receiving a WebRTC phone Call
 
 ```javascript
 phone.receive(function(session){
@@ -52,7 +52,7 @@ phone.receive(function(session){
 });
 ```
 
-Adding Video
+##### Adding Video Live Stream
 
 ```javascript
 phone.receive(function(session){
