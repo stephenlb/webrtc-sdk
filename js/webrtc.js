@@ -11,6 +11,8 @@ var PHONE = window.PHONE = function(config) {
     var subkey        = config.subscribe_key || 'demo';
     var sessionid     = PUBNUB.uuid();
     var mystream      = null;
+    var mypic         = null;
+    var myconnection  = false;
     var mediaconf     = config.media || { audio : true, video : true };
     var conversations = {};
 
@@ -105,7 +107,12 @@ var PHONE = window.PHONE = function(config) {
             var talk = {
                 number  : number,
                 status  : '',
+                image   : document.createElement('img'),
+                imgset  : false,
+                imgsent : 0,
                 pc      : new PeerConnection(rtcconfig),
+                closed  : false,
+                thumb   : function(){},
                 connect : function(){},
                 end     : function(){}
             };
@@ -118,15 +125,29 @@ var PHONE = window.PHONE = function(config) {
             // Disconnect and Hangup
             talk.hangup = function(signal) {
                 if (talk.closed) return;
+
                 talk.closed = true;
+                talk.imgset = false;
+                clearInterval(talk.snapi);
 
                 if (signal !== false) transmit( number, { hangup : true } );
+
                 talk.end(talk);
                 talk.pc.close();
                 close_conversation(number);
             };
 
+            // Sending Stanpshots
+            talk.snap = function() {
+                if (talk.imgsent++ > 5 || talk.closed)
+                    return clearInterval(talk.snapi);
+                if (mypic) transmit( number, { thumbnail : mypic } );
+            };
+            talk.snapi = setInterval( talk.snap, 1500 );
+            talk.snap();
+
             // Nice Accessor to Update Disconnect & Establis CBs
+            talk.thumbnail = function(cb) {talk.thumb   = cb; return talk};
             talk.ended     = function(cb) {talk.end     = cb; return talk};
             talk.connected = function(cb) {talk.connect = cb; return talk};
 
@@ -175,6 +196,7 @@ var PHONE = window.PHONE = function(config) {
 
         // Send SDP Offer (Call)
         pc.createOffer( function(offer) {
+            transmit( number, { hangup : true } );
             transmit( number, offer, 2 );
             pc.setLocalDescription( offer, debugcb, debugcb );
         }, debugcb );
@@ -220,6 +242,34 @@ var PHONE = window.PHONE = function(config) {
     } );
 
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    // Grab Local Video Snapshot
+    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    function snapshots(stream) {
+        var video   = document.createElement('video');
+        var canvas  = document.createElement('canvas');
+        var context = canvas.getContext("2d");
+        var snap    = { width: 240, height: 180 };
+
+        // Video Settings
+        video.width  = snap.width;
+        video.height = snap.height;
+        video.src    = URL.createObjectURL(stream);
+        video.play();
+
+        // Canvas Settings
+        canvas.width  = snap.width;
+        canvas.height = snap.height;
+
+        // Save Local Pic
+        setInterval(function(){
+            try {
+                context.drawImage( video, 0, 0, snap.width, snap.height );
+                mypic = canvas.toDataURL( 'image/jpeg', 0.25 );
+            } catch(e) {}
+        }, 1000 );
+    }
+
+    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // Visually Display New Stream
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     function onaddstream(obj) {
@@ -253,14 +303,17 @@ var PHONE = window.PHONE = function(config) {
             message    : receive,
             disconnect : disconnectcb,
             reconnect  : reconnectcb,
-            connect    : onsubscribe
+            connect    : function() { onready(true) }
         });
     }
 
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // When Ready to Receive Calls
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-    function onsubscribe() {
+    function onready(subscribed) {
+        if (subscribed) myconnection = true;
+        if (!(mystream && myconnection)) return;
+
         connectcb();
         readycb();
     }
@@ -272,6 +325,8 @@ var PHONE = window.PHONE = function(config) {
         navigator.getUserMedia( mediaconf, function(stream) {
             if (!stream) return unablecb(stream);
             mystream = stream;
+            snapshots(stream);
+            onready();
             subscribe();
         }, function(info) {
             debugcb(info);
@@ -302,17 +357,21 @@ var PHONE = window.PHONE = function(config) {
     // SDP Offers & ICE Candidates Receivable Processing
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     function receive(message) {
-        // Ignore Received Events From Local Device
-        // if (message.id === sessionid) return;
+        // Debug Callback of Data to Watch
         debugcb(message);
 
         // Get Call Reference
         var talk = get_conversation(message.number);
 
+        // Ignore if Closed
+        if (talk.closed) return;
+
+        // Thumbnail Preview Image
+        if (message.packet.thumbnail) return create_thumbnail(message);
+
         // If Hangup Request
         if (message.packet.hangup) {
-            talk.hangup(false);
-            return close_conversation(message.number);
+            return talk.hangup(false);
         }
 
         // If Peer Calling Inbound (Incoming)
@@ -328,6 +387,18 @@ var PHONE = window.PHONE = function(config) {
         // Update Peer Connection with SDP Offer or ICE Routes
         if (message.packet.sdp) add_sdp_offer(message);
         else                    add_ice_route(message);
+    }
+
+    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    // Create Remote Friend Thumbnail
+    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    function create_thumbnail(message) {
+        var talk       = get_conversation(message.number);
+        talk.image.src = message.packet.thumbnail;
+
+        // Call only once
+        if (!talk.imgset) talk.thumb(talk);
+        talk.imgset = true;
     }
 
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -350,6 +421,9 @@ var PHONE = window.PHONE = function(config) {
         // Add SDP Offer/Answer
         pc.setRemoteDescription(
             new SessionDescription(message.packet), function() {
+                // Set Connected Status
+                update_conversation( talk, 'connected' );
+
                 // Call Online and Ready
                 if (pc.remoteDescription.type != 'offer') return;
 

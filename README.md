@@ -487,6 +487,22 @@ session.connected(function(session){
 });
 ```
 
+### WebRTC Session Image Element
+##### `session.image`
+
+> The Session Image Element is Accessable and Ready
+inside the `thumbnail`, `connected` and `ended` callbacks.
+The Session Image ref is an HTML Image Element `<img>`.
+
+```javascript
+session.thumbnail(function(session){
+    var body  = document.getElementsByTagName('body')[0];
+    var image = session.image;
+
+    body.appendChild(image);
+});
+```
+
 ### WebRTC Session RTCPeerConnection Reference
 ##### `session.pc`
 
@@ -498,6 +514,7 @@ var sesionPeerConnection = session.pc;
 
 ## SDK Possible Upgrade Future Patches
 
+    - Race - During Ring/Receive Handshake, a Hangup will create Race
     - Wire-pulled Disconnect Detect via DataChannels Pings
     - 5 Second Timeout to Retry with 30 Second of Retries
     - Auto-reconnect re-SDP/ICE Recovery

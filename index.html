@@ -42,6 +42,7 @@
                     <span class="glyphicon glyphicon-flash"></span>
                 </div></div>
                 <div id="pubnub-relative">
+                    <div id="video-thumbnail"></div>
                     <div id="pubnub-logo">
                         <div id="pubnub-logo-img"></div>
                     </div>
@@ -127,6 +128,7 @@ function urlstring(params) {
 // Calling & Answering Service
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 var video_out = PUBNUB.$('video-display');
+var img_out   = PUBNUB.$('video-thumbnail');
 var phone     = PHONE({
     number        : my_number.number, // listen on this line
     publish_key   : 'pub-c-561a7378-fa06-4c50-a331-5c0056d0163c',
@@ -138,10 +140,8 @@ var phone     = PHONE({
 // Video Session Connected
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 function connected(session) {
-    var video = session.video;
-
     video_out.innerHTML = '';
-    video_out.appendChild(video);
+    video_out.appendChild(session.video);
 
     PUBNUB.$('number').value = ''+session.number;
     sounds.play('sound/hi');
@@ -153,6 +153,7 @@ function connected(session) {
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 function ended(session) {
     set_icon('facetime-video');
+    img_out.innerHTML = '';
     sounds.play('sound/goodbye');
     console.log("Bye!");
 }
@@ -174,6 +175,9 @@ function dial(number) {
 
     // No Dupelicate Dialing
     if (!session) return;
+
+    // Call Thumbnail
+    session.thumbnail(thumbnail);
 
     // Call Connected
     session.connected(connected);
@@ -213,9 +217,18 @@ phone.ready(function(){
 });
 
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+// Received Call Thumbnail
+// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+function thumbnail(session) {
+    img_out.innerHTML = '';
+    img_out.appendChild(session.image);
+}
+
+// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 // Received Incoming Call
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 phone.receive(function(session){
+    session.thumbnail(thumbnail);
     session.connected(connected);
     session.ended(ended);
 });

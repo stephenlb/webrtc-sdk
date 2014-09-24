@@ -69,3 +69,13 @@
     border-radius: 6px;
     height: 300px;
 }
+#video-thumbnail {
+    position: absolute;
+    top: -120px;
+    right: 10px;
+}
+#video-thumbnail img {
+    width: 120px;
+    height: 90px;
+    border-radius: 6px;
+}
