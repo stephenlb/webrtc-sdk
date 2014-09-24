@@ -1,5 +1,19 @@
 # WebRTC Simple Calling API + Mobile
 
+## TODO Documentation
+
+ - message recieve
+ - phone.send
+ - session.send
+
+ - phone.ready
+
+ - snapshots
+ - phone.snap
+ - session.snap
+
+ - remove sessoin examples on phone.dial
+
 At PubNub we believe in simplicity of our SDK usability.
 We've taken a simplified approach to WebRTC Peer Connections by creating
 and easy-to-use SDK for developers.
@@ -35,6 +49,17 @@ Receiving a WebRTC phone call.
 ```javascript
 phone.receive(function(session){
     // On Call Receiving
+});
+```
+
+Adding Video
+
+```javascript
+phone.receive(function(session){
+    session.connected(function(session){
+        // Append Live Video Feed
+        $('#display-div').append(session.video);
+    });
 });
 ```
 
@@ -83,14 +108,6 @@ Make your first html file named `dial.html` and copy/paste the following:
         // Dial a Number and get the Call Session
         var session = phone.dial('4321');
 
-        // Call Connected
-        session.connected(function(session){
-
-            // Display Your Friend's Live Video
-            PUBNUB.$('video-out').appendChild(session.video);
-
-        });
-
     });
 
 })();</script>
@@ -127,15 +144,12 @@ Make a Second Page called `receive.html` and copy/paste the following.
         ssl           : true
     });
 
-    // When someone calls you
+    // When Call Comes In or is to be Connected
     phone.receive(function(session){
 
-        // Session Connected
+        // Display Your Friend's Live Video
         session.connected(function(session){
-
-            // Display Your Friend's Live Video
             PUBNUB.$('video-out').appendChild(session.video);
-
         });
 
     });

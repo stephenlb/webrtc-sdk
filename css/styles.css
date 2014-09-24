@@ -20,12 +20,48 @@
     position: relative;
 }
 
+/* =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= */
+/* PubNub Chat */
+/* =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= */
+#pubnub-chat-section {
+    margin: 0px;
+}
+#pubnub-chat-input {
+    width: 100%;
+    margin: 0px 0px 20px 0px;
+    outline: 0;
+    border: 0px;
+    border-bottom: 2px solid #eee;
+    font-size: 20px;
+    font-weight: 100;
+    font-family: "Helvetica Neue";
+}
+/* chat box output */
+#pubnub-chat-output {
+    text-align: left;
+    overflow: scroll;
+    overflow-x: hidden;
+    margin: 20px 0px 20px 0px;
+    height: 200px;
+    font-size: 14px;
+    font-weight: 200;
+    font-family: "Helvetica Neue";
+    outline: 0;
+    border-color: inherit;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+}
+#pubnub-chat-output div {
+    margin: 8px 10px;
+    border-bottom: 1px solid #f8f8f8;
+}
+
 
 /* =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= */
 /* Phone Number Display */
 /* =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= */
 #my-number-section {
-    margin: 100px 0px;
+    margin: 10px 0px 40px 0px;
 }
 #my-number-title {
     font-size: 20px;
@@ -35,8 +71,15 @@
 #my-number {
     font-family: "Helvetica Neue";
     font-size: 110px;
-    line-height: 110px;
+    line-height: 180px;
     font-weight: 100;
+}
+#my-number-permalink {
+    border-radius: 10px;
+    padding: 8px;
+    display: inline-block;
+    background-color: #e6e4e4;
+    text-shadow: 0px 0px 1px rgba(0,0,0,0.4);
 }
 #my-number-permalink,
 #my-number-permalink a {
@@ -44,10 +87,11 @@
     font-size: 16px;
     line-height: 20px;
     font-weight: 400;
-    color: #777;
+    color: #fff;
 }
 #my-number-permalink a {
     color: #428bca;
+    text-shadow: 0px 0px 1px rgba(255,255,0,0.9);
 }
 
 /* =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= */

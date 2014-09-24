@@ -30,6 +30,10 @@
                     <a id="my-number-link" href="...">http://...</a>
                 </div>
             </div>
+            <div id="pubnub-chat-section" class="text-center">
+                <input id="pubnub-chat-input" placeholder="chat here">
+                <div id="pubnub-chat-output"><div></div></div>
+            </div>
         </div>
 
         <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
@@ -129,7 +133,7 @@ function urlstring(params) {
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 var video_out = PUBNUB.$('video-display');
 var img_out   = PUBNUB.$('video-thumbnail');
-var phone     = PHONE({
+var phone     = window.phone = PHONE({
     number        : my_number.number, // listen on this line
     publish_key   : 'pub-c-561a7378-fa06-4c50-a331-5c0056d0163c',
     subscribe_key : 'sub-c-17b7db8a-3915-11e4-9868-02ee2ddab7fe',
@@ -173,17 +177,8 @@ function dial(number) {
     // Dial Number
     var session = phone.dial(number);
 
-    // No Dupelicate Dialing
+    // No Dupelicate Dialing Allowed
     if (!session) return;
-
-    // Call Thumbnail
-    session.thumbnail(thumbnail);
-
-    // Call Connected
-    session.connected(connected);
-
-    // Call Ended
-    session.ended(ended);
 
     // Show Connecting Status
     set_icon('send');
@@ -225,13 +220,49 @@ function thumbnail(session) {
 }
 
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-// Received Incoming Call
+// Receiver for Calls
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 phone.receive(function(session){
+    session.message(message);
     session.thumbnail(thumbnail);
     session.connected(connected);
     session.ended(ended);
 });
+
+// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+// Chat
+// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+var chat_in  = PUBNUB.$('pubnub-chat-input');
+var chat_out = PUBNUB.$('pubnub-chat-output');
+
+PUBNUB.bind( 'keyup', chat_in, function(e) {
+    if ((e.keyCode || e.charCode) !== 13)     return true;
+    if (!chat_in.value.replace( /\s+/g, '' )) return true;
+
+    phone.send({ text : chat_in.value });
+    add_chat( my_number.number + " (Me)", chat_in.value );
+    chat_in.value = '';
+} )
+
+function add_chat( number, text ) {
+    if (!text.replace( /\s+/g, '' )) return true;
+
+    var newchat       = document.createElement('div');
+    newchat.innerHTML = PUBNUB.supplant(
+        '<strong>{number}: </strong> {message}', {
+        message : safetxt(text),
+        number  : safetxt(number)
+    } );
+    chat_out.insertBefore( newchat, chat_out.firstChild );
+}
+
+function message( session, message ) {
+    add_chat( session.number, message.text );
+}
+
+function safetxt(text) {
+    return (''+text).replace( /[<>]/g, '' );
+}
 
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 // Problem Occured During Init

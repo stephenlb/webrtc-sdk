@@ -103,7 +103,7 @@ var PHONE = window.PHONE = function(config) {
     // Add/Get Conversation - Creates a new PC or Returns Existing PC
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     function get_conversation(number) {
-        var talk = conversations[number] || (function(){
+        var talk = conversations[number] || (function(number){
             var talk = {
                 number  : number,
                 status  : '',
@@ -112,7 +112,8 @@ var PHONE = window.PHONE = function(config) {
                 imgsent : 0,
                 pc      : new PeerConnection(rtcconfig),
                 closed  : false,
-                thumb   : function(){},
+                usermsg : function(){},
+                thumb   : null,
                 connect : function(){},
                 end     : function(){}
             };
@@ -137,19 +138,27 @@ var PHONE = window.PHONE = function(config) {
                 close_conversation(number);
             };
 
+            // Sending Messages
+            talk.send = function(message) {
+                transmit( number, { usermsg : message } );
+            };
+
             // Sending Stanpshots
             talk.snap = function() {
-                if (talk.imgsent++ > 5 || talk.closed)
-                    return clearInterval(talk.snapi);
+                if (talk.closed) return clearInterval(talk.snapi);
                 if (mypic) transmit( number, { thumbnail : mypic } );
             };
-            talk.snapi = setInterval( talk.snap, 1500 );
+            talk.snapi = setInterval( function() {
+                if (talk.imgsent++ > 5) return clearInterval(talk.snapi);
+                talk.snap();
+            }, 1500 );
             talk.snap();
 
             // Nice Accessor to Update Disconnect & Establis CBs
             talk.thumbnail = function(cb) {talk.thumb   = cb; return talk};
             talk.ended     = function(cb) {talk.end     = cb; return talk};
             talk.connected = function(cb) {talk.connect = cb; return talk};
+            talk.message   = function(cb) {talk.usermsg = cb; return talk};
 
             // Add Local Media Streams Audio Video Mic Camera
             talk.pc.addStream(mystream);
@@ -160,7 +169,7 @@ var PHONE = window.PHONE = function(config) {
             // Return Brand New Talk Reference
             conversations[number] = talk;
             return talk;
-        })();
+        })(number);
 
         // Return Existing or New Reference to Caller
         return talk;
@@ -203,6 +212,26 @@ var PHONE = window.PHONE = function(config) {
 
         // Return Session Reference
         return talk;
+    };
+
+    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    // Send Image Snap - Send Image Snap to All Calls or a Specific Call
+    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    PHONE.snap = function( message, number ) {
+        if (number) return get_conversation(number).snap(message);
+        PUBNUB.each( conversations, function( number, talk ) {
+            talk.snap();
+        } );
+    };
+
+    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    // Send Message - Send Message to All Calls or a Specific Call
+    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    PHONE.send = function( message, number ) {
+        if (number) return get_conversation(number).send(message);
+        PUBNUB.each( conversations, function( number, talk ) {
+            talk.send(message);
+        } );
     };
 
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -366,20 +395,18 @@ var PHONE = window.PHONE = function(config) {
         // Ignore if Closed
         if (talk.closed) return;
 
+        // User Message
+        if (message.packet.usermsg)
+            return talk.usermsg( talk, message.packet.usermsg );
+
         // Thumbnail Preview Image
         if (message.packet.thumbnail) return create_thumbnail(message);
 
         // If Hangup Request
-        if (message.packet.hangup) {
-            return talk.hangup(false);
-        }
+        if (message.packet.hangup) return talk.hangup(false);
 
         // If Peer Calling Inbound (Incoming)
-        if (
-            message.packet.sdp             &&
-            message.packet.type == 'offer' &&
-            !talk.received
-        ) {
+        if ( message.packet.sdp && !talk.received ) {
             talk.received = true;
             receivercb(talk);
         }
@@ -397,6 +424,7 @@ var PHONE = window.PHONE = function(config) {
         talk.image.src = message.packet.thumbnail;
 
         // Call only once
+        if (!talk.thumb) return;
         if (!talk.imgset) talk.thumb(talk);
         talk.imgset = true;
     }
