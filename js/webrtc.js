@@ -8,10 +8,10 @@ var PHONE = window.PHONE = function(config) {
     var PHONE         = function(){};
     var pubnub        = PUBNUB(config);
     var pubkey        = config.publish_key   || 'demo';
+    var snapper       = function(){ return ' ' }
     var subkey        = config.subscribe_key || 'demo';
     var sessionid     = PUBNUB.uuid();
     var mystream      = null;
-    var mypic         = null;
     var myconnection  = false;
     var mediaconf     = config.media || { audio : true, video : true };
     var conversations = {};
@@ -145,8 +145,10 @@ var PHONE = window.PHONE = function(config) {
 
             // Sending Stanpshots
             talk.snap = function() {
-                if (talk.closed) return clearInterval(talk.snapi);
-                if (mypic) transmit( number, { thumbnail : mypic } );
+                var pic = snapper();
+                if (talk.closed) clearInterval(talk.snapi);
+                transmit( number, { thumbnail : pic } );
+                return pic;
             };
             talk.snapi = setInterval( function() {
                 if (talk.imgsent++ > 5) return clearInterval(talk.snapi);
@@ -256,12 +258,14 @@ var PHONE = window.PHONE = function(config) {
             var packet   = { hangup:true };
             var message  = { packet:packet, id:sessionid, number:mynumber };
             var client   = new XMLHttpRequest();
-            var url      =  'http://pubsub.pubnub.com/publish/'
-                            + pubkey + '/'
-                            + subkey + '/0/'
-                            + number + '/0/'
-                            + JSON.stringify(message);
+            var url      = 'http://pubsub.pubnub.com/publish/'
+                           + pubkey + '/'
+                           + subkey + '/0/'
+                           + number + '/0/'
+                           + JSON.stringify(message);
 
+            setTimeout( function() { client.abort() }, 1000 );
+            try { client.timeout = 1000 } catch(e) {}
             client.open( 'GET', url, false );
             client.send();
             talk.hangup();
@@ -273,7 +277,7 @@ var PHONE = window.PHONE = function(config) {
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // Grab Local Video Snapshot
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-    function snapshots(stream) {
+    function snapshots_setup(stream) {
         var video   = document.createElement('video');
         var canvas  = document.createElement('canvas');
         var context = canvas.getContext("2d");
@@ -289,13 +293,13 @@ var PHONE = window.PHONE = function(config) {
         canvas.width  = snap.width;
         canvas.height = snap.height;
 
-        // Save Local Pic
-        setInterval(function(){
+        // Capture Local Pic
+        snapper = function() {
             try {
                 context.drawImage( video, 0, 0, snap.width, snap.height );
-                mypic = canvas.toDataURL( 'image/jpeg', 0.25 );
             } catch(e) {}
-        }, 1000 );
+            return canvas.toDataURL( 'image/jpeg', 0.30 );
+        };
     }
 
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -354,7 +358,7 @@ var PHONE = window.PHONE = function(config) {
         navigator.getUserMedia( mediaconf, function(stream) {
             if (!stream) return unablecb(stream);
             mystream = stream;
-            snapshots(stream);
+            snapshots_setup(stream);
             onready();
             subscribe();
         }, function(info) {

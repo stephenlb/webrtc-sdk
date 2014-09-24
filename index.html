@@ -61,11 +61,15 @@
                 </div>
                 <input id="number" class="form-control" placeholder="">
                 </div></div>
-            </div><div class="col-xs-4">
+            </div><div class="col-xs-2">
                 <button id="dial" class="col-xs-12 btn btn-primary">
                     <span class="glyphicon glyphicon-earphone"></span>
                 </button>
-            </div><div class="col-xs-4">
+            </div><div class="col-xs-2">
+                <button id="snap" class="col-xs-12 btn btn-success">
+                    <span class="glyphicon glyphicon-camera"></span>
+                </button>
+            </div><div class="col-xs-2">
                 <button id="hangup" class="col-xs-12 btn btn-danger">
                     <span class="glyphicon glyphicon-ban-circle"></span>
                 </button>
@@ -199,15 +203,20 @@ phone.ready(function(){
     }
 
     // Make a Phone Call
-    PUBNUB.bind( 'click', PUBNUB.$('dial'), function(){
+    PUBNUB.bind( 'mousedown,touchstart', PUBNUB.$('dial'), function(){
         var number = PUBNUB.$('number').value;
         if (!number) return;
         dial(number);
     } );
 
     // Hanup Call
-    PUBNUB.bind( 'click', PUBNUB.$('hangup'), function() {
+    PUBNUB.bind( 'mousedown,touchstart', PUBNUB.$('hangup'), function() {
         phone.hangup();
+    } );
+
+    // Take Picture
+    PUBNUB.bind( 'mousedown,touchstart', PUBNUB.$('snap'), function() {
+        phone.snap();
     } );
 });
 
@@ -235,7 +244,10 @@ phone.receive(function(session){
 var chat_in  = PUBNUB.$('pubnub-chat-input');
 var chat_out = PUBNUB.$('pubnub-chat-output');
 
-PUBNUB.bind( 'keyup', chat_in, function(e) {
+// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+// Send Chat MSG and update UI for Sending Messages
+// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+PUBNUB.bind( 'keydown', chat_in, function(e) {
     if ((e.keyCode || e.charCode) !== 13)     return true;
     if (!chat_in.value.replace( /\s+/g, '' )) return true;
 
@@ -244,6 +256,9 @@ PUBNUB.bind( 'keyup', chat_in, function(e) {
     chat_in.value = '';
 } )
 
+// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+// Update Local GUI
+// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 function add_chat( number, text ) {
     if (!text.replace( /\s+/g, '' )) return true;
 
@@ -256,10 +271,16 @@ function add_chat( number, text ) {
     chat_out.insertBefore( newchat, chat_out.firstChild );
 }
 
+// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+// WebRTC Message Callback
+// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 function message( session, message ) {
     add_chat( session.number, message.text );
 }
 
+// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+// XSS Prevent
+// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 function safetxt(text) {
     return (''+text).replace( /[<>]/g, '' );
 }

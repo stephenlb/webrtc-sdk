@@ -7,6 +7,8 @@
  - session.send
 
  - phone.ready
+ - make better easy starter (2 parter into 1 parter)
+ - fix snapshot
 
  - snapshots
  - phone.snap
