@@ -12,6 +12,7 @@ var PHONE = window.PHONE = function(config) {
     var subkey        = config.subscribe_key || 'demo';
     var sessionid     = PUBNUB.uuid();
     var mystream      = null;
+    var myvideo       = document.createElement('video');
     var myconnection  = false;
     var mediaconf     = config.media || { audio : true, video : true };
     var conversations = {};
@@ -81,6 +82,7 @@ var PHONE = window.PHONE = function(config) {
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // PHONE Events
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    var messagecb    = function(){};
     var readycb      = function(){};
     var unablecb     = function(){};
     var debugcb      = function(){};
@@ -90,6 +92,7 @@ var PHONE = window.PHONE = function(config) {
     var callstatuscb = function(){};
     var receivercb   = function(){};
 
+    PHONE.message    = function(cb) { messagecb    = cb };
     PHONE.ready      = function(cb) { readycb      = cb };
     PHONE.unable     = function(cb) { unablecb     = cb };
     PHONE.callstatus = function(cb) { callstatuscb = cb };
@@ -278,7 +281,7 @@ var PHONE = window.PHONE = function(config) {
     // Grab Local Video Snapshot
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     function snapshots_setup(stream) {
-        var video   = document.createElement('video');
+        var video   = myvideo;
         var canvas  = document.createElement('canvas');
         var context = canvas.getContext("2d");
         var snap    = { width: 240, height: 180 };
@@ -300,6 +303,8 @@ var PHONE = window.PHONE = function(config) {
             } catch(e) {}
             return canvas.toDataURL( 'image/jpeg', 0.30 );
         };
+
+        PHONE.video = video;
     }
 
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -400,8 +405,10 @@ var PHONE = window.PHONE = function(config) {
         if (talk.closed) return;
 
         // User Message
-        if (message.packet.usermsg)
+        if (message.packet.usermsg) {
+            messagecb( talk, message.packet.usermsg );
             return talk.usermsg( talk, message.packet.usermsg );
+        }
 
         // Thumbnail Preview Image
         if (message.packet.thumbnail) return create_thumbnail(message);

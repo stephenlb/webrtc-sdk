@@ -212,6 +212,7 @@ phone.ready(function(){
     // Hanup Call
     PUBNUB.bind( 'mousedown,touchstart', PUBNUB.$('hangup'), function() {
         phone.hangup();
+        set_icon('facetime-video');
     } );
 
     // Take Picture

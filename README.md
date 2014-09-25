@@ -1,21 +1,5 @@
 # WebRTC Simple Calling API + Mobile
 
-## TODO Documentation
-
- - message recieve
- - phone.send
- - session.send
-
- - phone.ready
- - make better easy starter (2 parter into 1 parter)
- - fix snapshot
-
- - snapshots
- - phone.snap
- - session.snap
-
- - remove sessoin examples on phone.dial
-
 At PubNub we believe in simplicity of our SDK usability.
 We've taken a simplified approach to WebRTC Peer Connections by creating
 and easy-to-use SDK for developers.
@@ -73,7 +57,7 @@ This Simple Example Comes in **Two WebRTC Calling Sections**.
  1. *Part One* will talk about how you can **Make a WebRTC Call**.
  2. *Part Two* will teach you about **Receiving a WebRTC Call**.
 
-#### Making a WebRTC Call - *Part One*
+#### Making a WebRTC Calling & Receiving - *Part One and Two*
 
 Make your first html file named `dial.html` and copy/paste the following:
 
@@ -87,16 +71,9 @@ Make your first html file named `dial.html` and copy/paste the following:
 <script src="https://cdn.pubnub.com/pubnub.min.js"></script>
 <script src="http://stephenlb.github.io/webrtc-sdk/js/webrtc.js"></script>
 <script>(function(){
-
-    // Initialize the Phone
-    // The phone number can by any string value
-
-    // ~Warning~ For simplicity this example uses demo API Keys.
     // ~Warning~ You must get your own API Keys for non-demo purposes.
-    // ~Warning~ This document will later describe where to get your API Keys.
-
-    // Get your PubNub API Keys: http://www.pubnub.com/get-started/
-
+    // ~Warning~ Get your PubNub API Keys: http://www.pubnub.com/get-started/
+    // The phone *number* can by any string value
     var phone = PHONE({
         number        : '1234',
         publish_key   : 'pub-c-561a7378-fa06-4c50-a331-5c0056d0163c',
@@ -110,40 +87,6 @@ Make your first html file named `dial.html` and copy/paste the following:
         // Dial a Number and get the Call Session
         var session = phone.dial('4321');
 
-    });
-
-})();</script>
-```
-
-#### Receiving a WebRTC Call - *Part Two*
-
-Make a Second Page called `receive.html` and copy/paste the following.
-
-```html
-<!-- receive.html -->
-
-<!-- Video Output Zone -->
-<div id="video-out"> Waiting for Call </div>
-
-<!-- Libs and Scripts -->
-<script src="https://cdn.pubnub.com/pubnub.min.js"></script>
-<script src="http://stephenlb.github.io/webrtc-sdk/js/webrtc.js"></script>
-<script>(function(){
-
-    // Initialize the Phone
-    // The phone number can by any string value
-
-    // ~Warning~ For simplicity this example uses demo API Keys.
-    // ~Warning~ You must get your own API Keys for non-demo purposes.
-    // ~Warning~ This document will later describe where to get your API Keys.
-
-    // Get your PubNub API Keys: http://www.pubnub.com/get-started/
-
-    var phone = PHONE({
-        number        : '4321',
-        publish_key   : 'pub-c-561a7378-fa06-4c50-a331-5c0056d0163c',
-        subscribe_key : 'sub-c-17b7db8a-3915-11e4-9868-02ee2ddab7fe',
-        ssl           : true
     });
 
     // When Call Comes In or is to be Connected
@@ -237,6 +180,17 @@ You can set your phone number at init time from the
 var phone = PHONE({ number : '1234567890' });
 ```
 
+### WebRTC Local Camera Video Element
+
+We provide you easy access to your local camera with
+a pre-initialized video element that is easy to access.
+Simply append the element to your DOM and the feed will
+stream automatically.
+
+```javascript
+$('#display-div').append(phone.video);
+```
+
 ### WebRTC Phone SSL Mode
 
 > You can enable SSL signalling mode for the local client device
@@ -281,6 +235,87 @@ WebRTC calling on Android is web-ready compatible and works
 out-of-the-box today without modifications or additional code.
 Also WebRTC Calling is supported for Android and iOS Native too.
 
+## WebRTC Photo Sharing *Bonus STUN-less Ready*
+
+You can easily snap a photo from the video stream and
+send it to your friends in an instnat.
+You can think of this as an **Instagram WebRTC** style.
+Also Photo Sharing works through Corprate Enterprise Firewalls.
+
+### WebRTC Camera Photo Sharing Broadcast
+##### `phone.snap()`
+
+> Broadcast your camera photo to all connected sessions.
+Also get the IMG data as base64 supported format
+for local display if desired.
+
+```javascript
+phone.ready(function(){
+    // Auto Send Camera's Photo to all connected Sessions.
+    var pic = phone.snap();
+});
+```
+
+### WebRTC Session Camera Photo Share
+##### `session.snap()`
+
+> Send your camera's latest frame as raw IMG to
+a specific call session.
+
+```javascript
+phone.ready(function(){
+    var session = phone.dial('4321');
+    var pic     = session.snap();
+});
+```
+
+## WebRTC JSON Messaging *Bonus STUN-less Ready*
+
+Adding extra realtime capabilities between connected parties
+is essential for creating collaberative and chat features.
+You can do that with PubNub's WebRTC SDK easily without
+firewall restrictions from corporate policies.
+
+### Message Broadcasting to All Sessions
+##### `phone.send(...)`
+
+> Send a JSON message to all connected sessions.
+
+```javascript
+phone.send({ text : 'HI!' });
+```
+
+### Receive a JSON message from Any Session
+##### `phone.message(function(message){ ... })`
+
+> Get all messages sent from any session.
+
+```javascript
+phone.message(function( session, message ) {
+    show_chat( session.number, message.text );
+} );
+```
+
+### Send a JSON Message to One Session
+##### `session.send(...)`
+
+> You can send a direct JSON message to one session only.
+
+```javascript
+session.send({ text : 'Hi there!' });
+```
+
+### Receive a JSON message from One Session
+##### `session.message(function(){ ... })`
+
+> You can set callbacks to capture JSON messages
+from a specific call session.
+
+```javascript
+session.message(function( session, message ) {
+    show_chat( session.number, message.text );
+} );
+```
 
 ### WebRTC Phone Ready
 ##### `phone.ready(function(){ ... })`
