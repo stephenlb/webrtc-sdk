@@ -9,6 +9,29 @@ with compatibility for iOS native Objective-C based WebRTC SDK.
 This simple developer WebRTC SDK is powered by
 [PubNub Data Stream Network](http://www.pubnub.com/).
 
+### Supported WebRTC Features
+
+WebRTC SDK offers many rich features and capabilities to enhance the
+WebRTC experience.  Here is a list of the options available.
+
+ 1. Photo Snap Camera Transmit             *(STUN-less Firewall Ready)*
+ 1. WebRTC Dialing                         *(STUN-less Firewall Ready)*
+ 1. WebRTC Call Receiving                  *(STUN-less Firewall Ready)*
+ 1. JSON App Messaging (chat/signals/etc.) *(STUN-less Firewall Ready)*
+ 1. Multi-party Calling
+ 1. Audio only Calls Optional
+ 1. Broadcasting Mode
+ 1. Instant Connect Dialing Optional
+ 1. Security SSL, AES256, ACL Access Control Management
+ 1. Password Protection via Cipher
+ 1. Event History and Call Records
+ 1. Photo History and Recording Static Snapshots of Calls (only stills)
+ 1. Connectivity Detection and Auto-Recovery
+ 1. Pre-configured Video Element for Streaming Video/Audio
+ 1. Pre-configured Local Camera Video Element for Streaming Video/Audio
+ 1. Network Connectivity Hooks (online/offline)
+ 1. SDK Level Debug Output
+
 ### Supported WebRTC Calling API Mobile Devices and Browser
 
 List of supported WebRTC Calling Clients including Android and Chrome.
