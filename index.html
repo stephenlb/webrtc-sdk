@@ -42,9 +42,14 @@
         <div class="col-sm-6">
             <!-- DISPLAY -->
             <div class="row"><div class="col-xs-12 text-center">
-                <div id="video-border"><div id="video-display">
-                    <span class="glyphicon glyphicon-flash"></span>
-                </div></div>
+                <div id="video-border">
+                    <div class="pubnub-relative">
+                        <div id="video-self">...834y8uask</div>
+                    </div>
+                    <div id="video-display">
+                        <span class="glyphicon glyphicon-flash"></span>
+                    </div>
+                </div>
                 <div id="pubnub-relative">
                     <div id="video-thumbnail"></div>
                     <div id="pubnub-logo">
@@ -137,6 +142,7 @@ function urlstring(params) {
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 var video_out = PUBNUB.$('video-display');
 var img_out   = PUBNUB.$('video-thumbnail');
+var img_self  = PUBNUB.$('video-self');
 var phone     = window.phone = PHONE({
     number        : my_number.number, // listen on this line
     publish_key   : 'pub-c-561a7378-fa06-4c50-a331-5c0056d0163c',
@@ -217,7 +223,10 @@ phone.ready(function(){
 
     // Take Picture
     PUBNUB.bind( 'mousedown,touchstart', PUBNUB.$('snap'), function() {
-        phone.snap();
+        var photo = phone.snap();
+        img_self.innerHTML = ' ';
+        img_self.appendChild(photo.image);
+        setTimeout( function() { img_self.innerHTML = ' ' }, 750 );
     } );
 });
 

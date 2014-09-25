@@ -275,7 +275,8 @@ for local display if desired.
 ```javascript
 phone.ready(function(){
     // Auto Send Camera's Photo to all connected Sessions.
-    var pic = phone.snap();
+    var photo = phone.snap();
+    $('#photo-div').append(photo.image);
 });
 ```
 
@@ -288,7 +289,8 @@ a specific call session.
 ```javascript
 phone.ready(function(){
     var session = phone.dial('4321');
-    var pic     = session.snap();
+    var photo   = session.snap();
+    $('#photo-div').append(photo.image);
 });
 ```
 

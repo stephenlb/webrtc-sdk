@@ -16,7 +16,8 @@
     background-repeat: no-repeat;
     opacity: 0.7;
 }
-#pubnub-relative {
+#pubnub-relative,
+.pubnub-relative {
     position: relative;
 }
 
@@ -109,7 +110,18 @@
     font-size: 150px;
     line-height: 340px;
 }
-#video-display video {
+#video-self {
+    position: absolute;
+    height: 340px;
+    width: 100%;
+    top: 0px;
+    left: 0px;
+    text-align: center;
+    font-size: 0px;
+    line-height: 0px;
+}
+#video-display video,
+#video-self img {
     border-radius: 6px;
     height: 300px;
 }

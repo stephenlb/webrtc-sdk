@@ -151,7 +151,9 @@ var PHONE = window.PHONE = function(config) {
                 var pic = snapper();
                 if (talk.closed) clearInterval(talk.snapi);
                 transmit( number, { thumbnail : pic } );
-                return pic;
+                var img = document.createElement('img');
+                img.src = pic;
+                return { data : pic, image : img };
             };
             talk.snapi = setInterval( function() {
                 if (talk.imgsent++ > 5) return clearInterval(talk.snapi);
@@ -224,9 +226,11 @@ var PHONE = window.PHONE = function(config) {
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     PHONE.snap = function( message, number ) {
         if (number) return get_conversation(number).snap(message);
+        var pic = {};
         PUBNUB.each( conversations, function( number, talk ) {
-            talk.snap();
+            pic = talk.snap();
         } );
+        return pic;
     };
 
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -267,8 +271,7 @@ var PHONE = window.PHONE = function(config) {
                            + number + '/0/'
                            + JSON.stringify(message);
 
-            setTimeout( function() { client.abort() }, 1000 );
-            try { client.timeout = 1000 } catch(e) {}
+            setTimeout( function() { client.abort(); client = null; }, 1000 );
             client.open( 'GET', url, false );
             client.send();
             talk.hangup();
