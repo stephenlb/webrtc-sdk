@@ -290,6 +290,7 @@ var PHONE = window.PHONE = function(config) {
         video.width  = snap.width;
         video.height = snap.height;
         video.src    = URL.createObjectURL(stream);
+        video.volume = 0.0;
         video.play();
 
         // Canvas Settings
