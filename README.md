@@ -108,7 +108,7 @@ Make your first html file named `dial.html` and copy/paste the following:
     phone.ready(function(){
 
         // Dial a Number and get the Call Session
-        var session = phone.dial('4321');
+        var session = phone.dial('1234');
 
     });
 
