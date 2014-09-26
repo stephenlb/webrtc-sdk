@@ -1,4 +1,6 @@
-# WebRTC for Beginners in 3 Steps
+# 3 Steps to Pro WebRTC for Beginners
+
+WebRTC today is deep and invovled with many subtleties which are easy to miss.  We built a WebRTC SDK which solves these challenges and will allow you to become a Pro **WebRTC app developer**.  In three easy steps you'll find yourself with the key basics for building business ready WebRTC applications.
 
  - webrtc is hard
  - but it shouldn't be
