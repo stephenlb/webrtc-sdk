@@ -683,3 +683,9 @@ most Calling Situations.
 })();</script>
 ```
 
+### WebRTC Troubleshooting
+
+You may need to force clear your cache on your device, close the app completley, then restart it.
+This is uncommon.
+You can also enable debugging at the code-level by hooking onto the `phone.unable(fn)` and `phone.debug(fn)`.
+
