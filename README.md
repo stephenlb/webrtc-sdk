@@ -231,6 +231,9 @@ var phone = PHONE({
 > You can enable AES256 Encryption (essentially password mode)
 on your phone for additional security.
 You're friends have to know your password to call you.
+AES256 option allows you to password protect your phone and 
+only give access to people you know.  
+You have to give your friend your password before they can call you.
 
 ```javascript
 var phone = PHONE({
