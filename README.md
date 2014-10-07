@@ -376,6 +376,26 @@ phone.receive(function(session){
 });
 ```
 
+### WebRTC Phone Call History via PubNub
+##### `pubnub.history(...)`
+
+> You can get the call history of a phone number by issuing
+a PubNub History call on the phne number.
+
+```javascript
+var number = '1234';
+PUBNUB({
+    publish_key   : 'pub-c-561a7378-fa06-4c50-a331-5c0056d0163c',
+    subscribe_key : 'sub-c-17b7db8a-3915-11e4-9868-02ee2ddab7fe',
+    ssl           : true
+}).history({
+    channel  : number,
+    callback : function(call_history) {
+        console.log(call_history);
+    }
+});
+```
+
 ### WebRTC Phone Dialing Numbers
 ##### `phone.dial(number)`
 
