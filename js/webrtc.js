@@ -200,6 +200,18 @@ var PHONE = window.PHONE = function(config) {
     }
 
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    // Get Call History
+    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    PHONE.history = function(settings) {
+        pubnub.history({
+            channel  : settings[number],
+            callback : function(call_history) {
+                settings['history'](call_history[0]);
+            }
+        })
+    }
+
+    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // Make Call - Create new PeerConnection
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     PHONE.dial = function(number) {
@@ -271,7 +283,6 @@ var PHONE = window.PHONE = function(config) {
                            + number + '/0/'
                            + JSON.stringify(message);
 
-            setTimeout( function() { client.abort(); client = null; }, 1000 );
             client.open( 'GET', url, false );
             client.send();
             talk.hangup();
