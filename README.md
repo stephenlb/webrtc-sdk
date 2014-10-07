@@ -376,6 +376,38 @@ phone.receive(function(session){
 });
 ```
 
+### Get Your Phone Number
+##### `var num = phone.number()`
+
+> Sometimes you need to access the phone number
+that was set during initialization time.
+You can do that by calling `phone.number()` method
+which returns the setup number.
+
+```javascript
+var num = phone.number();
+```
+
+### Get Caller Phone Number
+##### `var num = session.number`
+
+> To access current caller number, check the session
+object number property `session.number`.
+
+```javascript
+var num = session.number;
+```
+
+### Get Call Start Time
+##### `var start = session.started`
+
+> The Session object stores the call start time which
+you can use to display call timer on the screen.
+
+```javascript
+var start = session.started;
+```
+
 ### WebRTC Phone Call History via PubNub
 ##### `phone.history(...)`
 

@@ -111,6 +111,7 @@ var PHONE = window.PHONE = function(config) {
                 number  : number,
                 status  : '',
                 image   : document.createElement('img'),
+                started : +new Date,
                 imgset  : false,
                 imgsent : 0,
                 pc      : new PeerConnection(rtcconfig),
@@ -200,6 +201,13 @@ var PHONE = window.PHONE = function(config) {
     }
 
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    // Get Number
+    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    PHONE.number = function() {
+        return config.number;
+    };
+
+    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // Get Call History
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     PHONE.history = function(settings) {
@@ -209,7 +217,7 @@ var PHONE = window.PHONE = function(config) {
                 settings['history'](call_history[0]);
             }
         })
-    }
+    };
 
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // Make Call - Create new PeerConnection
