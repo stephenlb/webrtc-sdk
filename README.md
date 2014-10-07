@@ -640,9 +640,9 @@ session.thumbnail(function(session){
 var sesionPeerConnection = session.pc;
 ```
 
-### WebRTC Adding Custom STUN Servers
+### WebRTC Adding Custom STUN and TURN Servers
 
-> You may desire to add your own custom stun servers by using
+> You may desire to add your own custom stun or turn servers by using
 the `servers` parameter on initialization.
 For example http://xirsys.com/ offers paid-stun solution.
 
