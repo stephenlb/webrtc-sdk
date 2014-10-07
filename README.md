@@ -108,6 +108,8 @@ Make your first html file named `dial.html` and copy/paste the following:
     phone.ready(function(){
 
         // Dial a Number and get the Call Session
+        // For simplicity the phone number is the same for both caller/receiver.
+        // you should use different phone numbers for each user.
         var session = phone.dial('1234');
 
     });
