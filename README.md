@@ -640,6 +640,22 @@ session.thumbnail(function(session){
 var sesionPeerConnection = session.pc;
 ```
 
+### WebRTC Adding Custom STUN Servers
+
+> You may desire to add your own custom stun servers by using
+the `servers` parameter on initialization.
+For example http://xirsys.com/ offers paid-stun solution.
+
+```javascript
+var phone = PHONE({
+    servers : [
+        {"username":"free","url":"turn:127.0.0.1?transport=udp","credential":"free"},
+        {"username":"free","url":"turn:127.0.0.1?transport=tcp","credential":"free"}
+    ]
+    // ...
+})
+```
+
 ## SDK Possible Upgrade Future Patches
 
     - Race - During Ring/Receive Handshake, a Hangup will create Race
