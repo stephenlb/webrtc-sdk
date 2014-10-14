@@ -81,6 +81,8 @@ phone.receive(function(session){
 
 > View the [Live WebRTC Calling App Demo](http://stephenlb.github.io/webrtc-sdk/)
 
+[![WebRTC Live Calling App](http://stephenlb.github.io/webrtc-sdk/blogs/webrtc-demo.gif)](http://stephenlb.github.io/webrtc-sdk/)
+
 We've created a simple dialer and reciever app that works on Android and WebRTC Supported browsers.
 This app demonstrates some of the **WebRTC SDK capabilities** including some of the following WebRTC Features:
 
