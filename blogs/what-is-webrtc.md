@@ -144,10 +144,9 @@ With the wide-spread support and availability of WebRTC on the web and full mobi
 there's good reason to get started with WebRTC as your voice/video streaming solution
 for users who will be communicating in realtime.
 
-> [ZIP Download WebRTC SDK](https://github.com/stephenlb/webrtc-sdk/archive/gh-pages.zip)
+## WebRTC Resources and SDK Links
 
-> [GitHub Repository for WebRTC SDK](https://github.com/stephenlb/webrtc-sdk/) 
-
-> [GitHub WebRTC Documentation](https://github.com/stephenlb/webrtc-sdk/blob/gh-pages/README.md) 
-
-> [What is WebRTC Video Introduction](https://vimeo.com/108532169)
+ 1. [ZIP Download WebRTC SDK](https://github.com/stephenlb/webrtc-sdk/archive/gh-pages.zip)
+ 1. [GitHub Repository for WebRTC SDK](https://github.com/stephenlb/webrtc-sdk/) 
+ 1. [GitHub WebRTC Documentation](https://github.com/stephenlb/webrtc-sdk/blob/gh-pages/README.md) 
+ 1. [What is WebRTC Video Introduction](https://vimeo.com/108532169)
