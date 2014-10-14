@@ -5,7 +5,7 @@ Are you planning on building Skype on web and mobile iOS/Android?
 WebRTC makes it easy for you to create new types of 
 **communications apps** which require Audio or Video streaming.
 Even better WebRTC allows you to connect two users Peer-to-Peer.
-This style of connectivity is phenomenal for **businesses saving** 
+This style of connectivity is phenomenal for *business saving* 
 on the tranditional middle-man server bandwidth costs.
 The full WebRTC package includes P2P, Data Streaming, Video and Audio Codecs 
 for transmission of live conversations between one or more peers.
@@ -34,6 +34,11 @@ Our simple free developer WebRTC SDK is powered by
 [Call Event Logging Storage and Playback](http://www.pubnub.com/how-it-works/storage-and-playback/) and
 [Call Access Control Management](http://www.pubnub.com/how-it-works/access-manager/).
 
+## WebRTC SDK for Calling
+
+The basics of WebRTC Voice and Video calling has been simplified for your mobile app development ease.
+We've created simple calling mechanisms which match that of a standard **telephony calling systems**.
+
 ### The Basic Concepts of WebRTC Calling
 
 ##### Making a WebRTC phone Call
@@ -48,6 +53,17 @@ var session = phone.dial('123-456');
 ```javascript
 phone.receive(function(session){
     // On Call Receiving
+});
+```
+
+##### Adding Video Live Stream
+
+```javascript
+phone.receive(function(session){
+    session.connected(function(session){
+        // Append Live Video Feed
+        $('#display-div').append(session.video);
+    });
 });
 ```
 
