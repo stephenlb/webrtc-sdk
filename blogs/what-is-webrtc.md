@@ -57,12 +57,12 @@ phone.receive(function(session){
 });
 ```
 
-##### Adding Video Live Stream
+##### Adding Voice and Video Live Stream
 
 ```javascript
 phone.receive(function(session){
     session.connected(function(session){
-        // Append Live Video Feed
+        // Append Live Video and Voice Feed
         $('#display-div').append(session.video);
     });
 });
