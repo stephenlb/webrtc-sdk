@@ -15,7 +15,7 @@ to generate network topology route ICE candidates (Interactive Connectivity Esta
 VIDEO VIDEO !!!
 
 
-# Is WebRTC Simple? (SDK)
+# Is WebRTC Easy to Use when Developing Mobile and Web Apps?
 
 We built an SDK for you.
 At PubNub we believe simplicity is essential for our SDK usability.
