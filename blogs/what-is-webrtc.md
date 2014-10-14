@@ -17,7 +17,8 @@ VIDEO VIDEO !!!
 
 # Is WebRTC Easy to Use when Developing Mobile and Web Apps?
 
-We built an SDK for you.
+Yes.
+Also we built a **[WebRTC SDK](https://github.com/stephenlb/webrtc-sdk/)** for you to make it even easier.
 At PubNub we believe simplicity is essential for our SDK usability.
 We've taken a simplified approach to WebRTC Peer Connections by creating
 and easy-to-use SDK for developers.
