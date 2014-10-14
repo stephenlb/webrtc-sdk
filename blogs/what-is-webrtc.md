@@ -99,6 +99,23 @@ This app demonstrates some of the **WebRTC SDK capabilities** including some of 
  1. SDK Level Debug Output
 
 
-# What can you Build with WebRTC?
+### What Can you build with a WebRTC Simple Calling API?
+
+There are a plethera of important and useful applications which may
+be built using the PubNub WebRTC Calling SDK.
+I have cataloged a list of ideas for **WebRTC Use Cases**:
+
+ 1. Amazon Mayday Help Button
+ 2. Salesforce SOS Help Button
+ 3. WebRTC Skype Replica
+ 4. Traditional Phone Replacement
+ 5. Chatroulette
+ 6. VoIP Replacement
+ 7. Customer Support Calls
+ 8. In-bound Sales Calls
+ 9. Easy Remote Meetings
+ 10. Call Assistant or Specialists
+ 11. Big Screen Public Announcemnt
+ 12. Live Presentations
 
 
