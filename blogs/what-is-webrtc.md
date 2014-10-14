@@ -34,10 +34,11 @@ Our simple free developer WebRTC SDK is powered by
 [Call Event Logging Storage and Playback](http://www.pubnub.com/how-it-works/storage-and-playback/) and
 [Call Access Control Management](http://www.pubnub.com/how-it-works/access-manager/).
 
-## WebRTC SDK for Calling
+## WebRTC SDK for Voice and Video Calling
 
 The basics of WebRTC Voice and Video calling has been simplified for your mobile app development ease.
-We've created simple calling mechanisms which match that of a standard **telephony calling systems**.
+We've created simple calling methods which match that of a standard **telephony calling systems**.
+Use the `phone.dial()` method for starting a call and `phone.receive()` method to receive the call.
 
 ### The Basic Concepts of WebRTC Calling
 
