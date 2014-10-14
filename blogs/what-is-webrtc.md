@@ -81,6 +81,13 @@ phone.receive(function(session){
 
 > View the [Live WebRTC Calling App Demo](http://stephenlb.github.io/webrtc-sdk/)
 
+A WebRTC SDK implementation reference has been built for you to help surface
+some of the SDK feature use cases.
+You may be interested in the insta-frame snapshot feature which allows
+you to transmit and capture the raw
+image video feed output into an `<img>` DOM element.
+Or you may want to know how WebRTC Dialing has been simplified for you.
+
 [![WebRTC Live Calling App](http://stephenlb.github.io/webrtc-sdk/blogs/webrtc-demo.gif)](http://stephenlb.github.io/webrtc-sdk/)
 
 We've created a simple dialer and reciever app that works on Android and WebRTC Supported browsers.
