@@ -132,11 +132,14 @@ I have cataloged a list of ideas for **WebRTC Use Cases**:
  4. Traditional Phone Replacement
  5. Chatroulette
  6. VoIP Replacement
- 7. Customer Support Calls
+ 7. Facetime
  8. In-bound Sales Calls
  9. Easy Remote Meetings
  10. Call Assistant or Specialists
  11. Big Screen Public Announcemnt
  12. Live Presentations
 
-
+There are many applications for WebRTC with more to be discovered soon.
+With the wide-spread support and availability of WebRTC on the web and full mobile support
+there's good reason to get started with WebRTC as your voice/video streaming solution
+for users who will be communicating in realtime.
