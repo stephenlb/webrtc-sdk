@@ -146,8 +146,8 @@ for users who will be communicating in realtime.
 
 ## WebRTC Resources and SDK Links
 
- 1. [ZIP Download WebRTC SDK](https://github.com/stephenlb/webrtc-sdk/archive/gh-pages.zip)
- 1. [GitHub Repository for WebRTC SDK](https://github.com/stephenlb/webrtc-sdk/) 
- 1. [GitHub WebRTC Documentation](https://github.com/stephenlb/webrtc-sdk/blob/gh-pages/README.md) 
- 1. [What is WebRTC Video Introduction](https://vimeo.com/108532169)
- 1. [WebRTC Live Calling App Demo](http://stephenlb.github.io/webrtc-sdk/)
+ 1. Download: [ZIP Download WebRTC SDK](https://github.com/stephenlb/webrtc-sdk/archive/gh-pages.zip)
+ 1. GitHub: [GitHub Repository for WebRTC SDK](https://github.com/stephenlb/webrtc-sdk/) 
+ 1. Documentation: [GitHub WebRTC Documentation](https://github.com/stephenlb/webrtc-sdk/blob/gh-pages/README.md) 
+ 1. Video: [What is WebRTC Video Introduction](https://vimeo.com/108532169)
+ 1. Demo: [WebRTC Live Calling App Demo](http://stephenlb.github.io/webrtc-sdk/)
