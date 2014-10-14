@@ -8,7 +8,7 @@ WebRTC makes it easy for you to create new types of
 **communications apps** which require Audio or Video streaming.
 Even better WebRTC allows you to connect two users Peer-to-Peer.
 This style of connectivity is phenomenal for *business saving* 
-on the tranditional middle-man server bandwidth costs.
+on the traditional middle-man server bandwidth costs.
 The full WebRTC package includes P2P, Data Streaming, Video and Audio Codecs 
 for transmission of live conversations between one or more peers.
 WebRTC also includes the **mechanisms for P2P (Peer-to-Peer)** connectivity via common STUN
