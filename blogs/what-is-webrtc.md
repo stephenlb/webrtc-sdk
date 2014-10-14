@@ -79,6 +79,14 @@ phone.receive(function(session){
 });
 ```
 
+Those are some of the basics.
+But you'll want to use a lot more features that are documented on the 
+[GitHub WebRTC Documentation](https://github.com/stephenlb/webrtc-sdk/blob/gh-pages/README.md) 
+readme file.
+Some extra features include **Multi-party Calling** and a 
+simple `phone.hangup()` disconnect session method when 
+you're done with your conversation.
+
 # WebRTC Live Demo
 
 > View the [Live WebRTC Calling App Demo](http://stephenlb.github.io/webrtc-sdk/)
