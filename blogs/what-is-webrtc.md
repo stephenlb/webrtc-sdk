@@ -19,7 +19,7 @@ VIDEO VIDEO !!!
 
 # Is WebRTC Easy to Use for Developing Mobile and Web Apps?
 
-Yes.
+Yes **WebRTC is easy to use** and great for Mobile and Web App development.
 But it is even easier to use for mobile and web apps if you use our WebRTC SDK.
 We built a **[WebRTC SDK](https://github.com/stephenlb/webrtc-sdk/)** for you to make it super easy.
 At PubNub we believe simplicity is essential for our SDK usability.
