@@ -17,10 +17,11 @@ to generate network topology route ICE candidates (Interactive Connectivity Esta
 VIDEO VIDEO !!!
 
 
-# Is WebRTC Easy to Use when Developing Mobile and Web Apps?
+# Is WebRTC Easy to Use for Developing Mobile and Web Apps?
 
 Yes.
-Also we built a **[WebRTC SDK](https://github.com/stephenlb/webrtc-sdk/)** for you to make it even easier.
+But it is even easier to use for mobile and web apps if you use our WebRTC SDK.
+We built a **[WebRTC SDK](https://github.com/stephenlb/webrtc-sdk/)** for you to make it super easy.
 At PubNub we believe simplicity is essential for our SDK usability.
 We've taken a simplified approach to WebRTC Peer Connections by creating
 and easy-to-use SDK for developers.
