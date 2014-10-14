@@ -1,7 +1,5 @@
 # What is WebRTC?
 
-# Summery
-
 WebRTC is a big bundle of open source technology.
 Are you planning on building Skype on web and mobile iOS/Android?
 WebRTC makes it easy for you to create new types of 
@@ -17,7 +15,7 @@ to generate network topology route ICE candidates (Interactive Connectivity Esta
 VIDEO VIDEO !!!
 
 
-# Is WebRTC Easy to Use for Developing Mobile and Web Apps?
+## Is **WebRTC Easy** to use for Developing Mobile and Web Apps?
 
 Yes **WebRTC is easy to use** and great for Mobile and Web App development.
 But it is even easier to use for mobile and web apps if you use our WebRTC SDK.
@@ -35,6 +33,23 @@ Our simple free developer WebRTC SDK is powered by
 [Phone API for Push Notifications](http://www.pubnub.com/how-it-works/mobile-push/), 
 [Call Event Logging Storage and Playback](http://www.pubnub.com/how-it-works/storage-and-playback/) and
 [Call Access Control Management](http://www.pubnub.com/how-it-works/access-manager/).
+
+### The Basic Concepts of WebRTC Calling
+
+##### Making a WebRTC phone Call
+
+```javascript
+// Dial Number
+var session = phone.dial('123-456');
+```
+
+##### Receiving a WebRTC phone Call
+
+```javascript
+phone.receive(function(session){
+    // On Call Receiving
+});
+```
 
 # Demo and Details
 
