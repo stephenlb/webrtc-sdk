@@ -3,7 +3,7 @@
 # Summery
 
 WebRTC is a big bundle of open source technology.
-Are you planning on building Skype on web and mobile?
+Are you planning on building Skype on web and mobile iOS/Android?
 WebRTC makes it easy for you to create new types of communications apps which require Audio or Video streaming.
 Even better WebRTC allows you to connect two users Peer-to-Peer.
 This style of connectivity is phenomenal for businesses saving on the tranditional middle-man server bandwidth costs.
@@ -16,6 +16,21 @@ VIDEO VIDEO !!!
 
 
 # Is WebRTC Simple? (SDK)
+
+We built an SDK for you.
+At PubNub we believe simplicity is essential for our SDK usability.
+We've taken a simplified approach to WebRTC Peer Connections by creating
+and easy-to-use SDK for developers.
+Simplicity should be included in all platforms and devices.
+That's why we support **Android** WebRTC mobile calling
+with compatibility for iOS native Objective-C based WebRTC SDK.
+Our simple free developer WebRTC SDK is powered by
+[PubNub Data Stream Network](http://www.pubnub.com/) for 
+[High-replication Signalling via Data Streams](), 
+[Call Presence Connectivity Detection](), 
+[Phone API for Push Notifications](), 
+[Call Event Logging Storage and Playback and]() 
+[Call Access Control Management](http://www.pubnub.com/how-it-works/access-manager/).
 
 # Demo and Details
 
