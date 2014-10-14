@@ -77,9 +77,27 @@ phone.receive(function(session){
 });
 ```
 
-# Demo and Details
+# WebRTC Live Demo
 
-GIF GIF!!!
+> View the [Live WebRTC Calling App Demo](http://stephenlb.github.io/webrtc-sdk/)
+
+We've created a simple dialer and reciever app that works on Android and WebRTC Supported browsers.
+This app demonstrates some of the **WebRTC SDK capabilities** including some of the following WebRTC Features:
+
+ 1. Photo Snap Camera Transmit             *(STUN-less Firewall Ready)*
+ 1. WebRTC Dialing                         *(STUN-less Firewall Ready)*
+ 1. WebRTC Call Receiving                  *(STUN-less Firewall Ready)*
+ 1. JSON App Messaging (chat/signals/etc.) *(STUN-less Firewall Ready)*
+ 1. Broadcasting Mode
+ 1. Instant Connect Dialing
+ 1. Security SSL, AES256, ACL Access Control Management
+ 1. Password Protection via Cipher
+ 1. Connectivity Detection and Auto-Recovery
+ 1. Pre-configured Video Element for Streaming Video/Audio
+ 1. Pre-configured Local Camera Video Element for Streaming Video/Audio
+ 1. Network Connectivity Hooks (online/offline)
+ 1. SDK Level Debug Output
+
 
 # What can you Build with WebRTC?
 
