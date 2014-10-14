@@ -3,7 +3,7 @@
 ![What is WebRTC](http://stephenlb.github.io/webrtc-sdk/blogs/webrtc-overview.png)
 
 WebRTC is a big bundle of open source technology.
-Are you planning on building Skype on web and mobile iOS/Android?
+Are you planning on building Skype-like apps on web and mobile iOS/Android?
 WebRTC makes it easy for you to create new types of 
 **communications apps** which require Audio or Video streaming.
 Even better WebRTC allows you to connect two users Peer-to-Peer.
