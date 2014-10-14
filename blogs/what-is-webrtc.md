@@ -1,6 +1,6 @@
 # What is WebRTC?
 
-![WebRTC SDK](http://stephenlb.github.io/webrtc-sdk/blogs/webrtc-overview.png)
+![What is WebRTC](http://stephenlb.github.io/webrtc-sdk/blogs/webrtc-overview.png)
 
 WebRTC is a big bundle of open source technology.
 Are you planning on building Skype on web and mobile iOS/Android?
