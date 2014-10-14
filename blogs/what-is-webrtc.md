@@ -143,6 +143,8 @@ There are many applications for WebRTC with more to be discovered soon.
 With the wide-spread support and availability of WebRTC on the web and full mobile support
 there's good reason to get started with WebRTC as your voice/video streaming solution
 for users who will be communicating in realtime.
+From **WebRTC Screen Sharing** to **WebRTC Facetime** the applications to build for user connectivity
+seem to be in the boundless realm.
 
 ## WebRTC Resources and SDK Links
 
