@@ -1,9 +1,9 @@
 # WebRTC Simple Calling API + Mobile
 
-At PubNub we believe in simplicity of our SDK usability.
+At PubNub we believe simplicity is essential for our SDK usability.
 We've taken a simplified approach to WebRTC Peer Connections by creating
 and easy-to-use SDK for developers.
-These ideas should span all platforms and devices too and
+The ideas of simplicity should span all platforms and devices too and
 that's why we also support **Android** WebRTC mobile calling
 with compatibility for iOS native Objective-C based WebRTC SDK.
 This simple developer WebRTC SDK is powered by
