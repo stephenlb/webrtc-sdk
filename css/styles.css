@@ -145,19 +145,24 @@
 
 @media (max-width: 768px) {
     #video-border {
-        margin: 0;
+        margin: 0 0 10px 0;
+        padding: 0;
+    }
+    #my-number-section {
+        margin: 10px 0px;
     }
     #my-number {
-        font-size: 36px;
+        font-size: 32px;
         line-height: 44px;
         font-weight: normal;
     }
     #my-number::before {
         content: "Your number is: ";
         font-weight: 100;
+        color: #878787;
     }
     #pubnub-chat-input {
-        margin: 0;
+        margin: 0 0 8px 0;
     }
     #pubnub-chat-output {
         margin: 0;
@@ -169,6 +174,24 @@
         font-weight: 200;
         margin: 2px;
         border-bottom: none;
+    }
+    #video-display {
+        height: 240px;
+        line-height: 240px;
+    }
+    #video-self {
+        height: 240px;
+    }
+    #pubnub-logo {
+        top: -50px;
+        width: 100%;
+    }
+    .col-xs-7, .col-xs-5 {
+        padding-right: 0;
+    }
+    #video-thumbnail {
+        top: -105px;
+        right: 5px;
     }
 }
 
