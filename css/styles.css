@@ -70,7 +70,6 @@
     font-weight: 400;
 }
 #my-number {
-    font-family: "Helvetica Neue";
     font-size: 110px;
     line-height: 180px;
     font-weight: 100;
@@ -135,3 +134,41 @@
     height: 90px;
     border-radius: 6px;
 }
+
+.dial-buttons .btn {
+    width: 30%;
+}
+
+/* =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= */
+/* Small Screens */
+/* =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= */
+
+@media (max-width: 768px) {
+    #video-border {
+        margin: 0;
+    }
+    #my-number {
+        font-size: 36px;
+        line-height: 44px;
+        font-weight: normal;
+    }
+    #my-number::before {
+        content: "Your number is: ";
+        font-weight: 100;
+    }
+    #pubnub-chat-input {
+        margin: 0;
+    }
+    #pubnub-chat-output {
+        margin: 0;
+        font-size: 16px;
+        height: auto;
+        max-height: 200px;
+    }
+    #pubnub-chat-output div {
+        font-weight: 200;
+        margin: 2px;
+        border-bottom: none;
+    }
+}
+
