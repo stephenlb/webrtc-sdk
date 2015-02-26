@@ -85,9 +85,7 @@ var PHONE = window.PHONE = function(config) {
     function add_servers(servers) {
         if (servers.constructor === Array)
             [].unshift.apply(rtcconfig.iceServers, servers);
-        else
-            rtcconfig.iceServers.unshift(servers);
-        }
+        else rtcconfig.iceServers.unshift(servers);
     }
 
     if ('servers' in config) add_servers(config.servers);
