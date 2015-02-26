@@ -85,7 +85,6 @@
         </div>
     </div>
 </div>
-<span id="pubnubs" get="1"></span>
 
 <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- -->
 <!-- WebRTC Peer Connections -->
@@ -148,7 +147,6 @@ function urlstring(params) {
 var video_out = PUBNUB.$('video-display');
 var img_out   = PUBNUB.$('video-thumbnail');
 var img_self  = PUBNUB.$('video-self');
-var ice_servers   = [];
 
 var phone     = window.phone = PHONE({
     number        : my_number.number, // listen on this line
