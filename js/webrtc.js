@@ -82,7 +82,15 @@ var PHONE = window.PHONE = function(config) {
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // Custom STUN Options
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-    if ('servers' in config) rtcconfig.iceServers.unshift(config.servers);
+    function add_servers(servers) {
+        if (servers.constructor === Array)
+            [].unshift.apply(rtcconfig.iceServers, servers);
+        else
+            rtcconfig.iceServers.unshift(servers);
+        }
+    }
+
+    if ('servers' in config) add_servers(config.servers);
 
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // PHONE Events
@@ -227,7 +235,8 @@ var PHONE = window.PHONE = function(config) {
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // Make Call - Create new PeerConnection
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-    PHONE.dial = function(number) {
+    PHONE.dial = function(number, servers) {
+        if (!!servers) add_servers(servers);
         var talk = get_conversation(number);
         var pc   = talk.pc;
 
