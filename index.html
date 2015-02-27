@@ -265,6 +265,7 @@ phone.ready(function(){
 function thumbnail(session) {
     img_out.innerHTML = '';
     img_out.appendChild(session.image);
+    img_out.appendChild(phone.snap().image);
 }
 
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
