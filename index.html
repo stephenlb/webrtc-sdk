@@ -90,7 +90,12 @@
 <!-- WebRTC Peer Connections -->
 <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- -->
 <script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
-<script src="https://cdn.pubnub.com/pubnub.min.js"></script>
+<!-- IMPORTANT: THIS IS AN UNMINIFIED DEVELOPMENT PUBNUB LIBRARY 
+    replace this with the latest versioned, minified CDN lib link before 
+    you deploy your app to a production enviornment.
+    https://github.com/pubnub/javascript#cdn-links
+-->
+<script src="https://cdn.pubnub.com/pubnub-dev.js"></script>
 <script src="js/webrtc.js"></script>
 <script src="js/sound.js"></script>
 <script>(function(){
