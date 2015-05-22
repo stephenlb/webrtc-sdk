@@ -520,7 +520,7 @@ viewer.receive(function(broadcaster){
         document.body.appendChild(broadcaster.video);
     });
 });
-
+```
 
 ### WebRTC Phone Hangup
 ##### `phone.hangup()`
