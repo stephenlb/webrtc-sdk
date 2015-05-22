@@ -486,8 +486,8 @@ var broadcaster = PHONE({
 // Wait for New Viewers to Join
 // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 broadcaster.receive(function(new_viewer){
-    new_viewer.connected(connected); // new viewer joined
-    new_viewer.ended(ended);  // viewer left
+    new_viewer.connected(function(viewer){ /* ... */ }); // new viewer joined
+    new_viewer.ended(function(viewer){ /* ... */ });  // viewer left
     //new_viewer.hangup();  // if you want to block the viewer
 });
 ```
@@ -519,6 +519,7 @@ viewer.receive(function(broadcaster){
     broadcaster.connected(function(broadcaster){
         document.body.appendChild(broadcaster.video);
     });
+    broadcaster.ended(function(broadcaster){ /* broadcast ended */ });
 });
 ```
 
