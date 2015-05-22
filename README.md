@@ -457,7 +457,7 @@ sessions.forEach(function(friend){
 });
 ```
 
-### WebRTC Phone Broadcasting Mode
+### WebRTC Video and Audio Broadcasting Mode
 ##### `phone.receive(function(session){ ... })`
 
 > You can receive unlimited inbound calls and become a broadcast
