@@ -509,7 +509,7 @@ var viewer = PHONE({
 // Join a Broadcast as a Viewer
 // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 viewer.ready(function(){
-    var broadcaster = phone.dial( "BROADCASTER", get_xirsys_servers() );
+    var broadcaster = phone.dial("BROADCASTER");
 });
 
 // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
