@@ -284,6 +284,12 @@ var PHONE = window.PHONE = function(config) {
             talk.hangup();
         } );
     };
+    
+    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    // Expose local stream and pubnub object
+    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    PHONE.mystream     = mystream;
+    PHONE.pubnub       = pubnub;
 
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // Auto-hangup on Leave
@@ -352,6 +358,7 @@ var PHONE = window.PHONE = function(config) {
         var talk   = get_conversation(number);
 
         vid.setAttribute( 'autoplay', 'autoplay' );
+        vid.setAttribute( 'data-number', number );
         vid.src = URL.createObjectURL(stream);
 
         talk.video = vid;
@@ -398,6 +405,7 @@ var PHONE = window.PHONE = function(config) {
         navigator.getUserMedia( mediaconf, function(stream) {
             if (!stream) return unablecb(stream);
             mystream = stream;
+            phone.mystream = stream;
             snapshots_setup(stream);
             onready();
             subscribe();
@@ -435,7 +443,6 @@ var PHONE = window.PHONE = function(config) {
 
         // Get Call Reference
         var talk = get_conversation(message.number);
-
         // Ignore if Closed
         if (talk.closed) return;
 
