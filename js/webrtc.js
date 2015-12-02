@@ -43,7 +43,7 @@ var PHONE = window.PHONE = function(config) {
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // Local Microphone and Camera Media (one per device)
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-    navigator.getUserMedia = 
+    navigator.getUserMedia =
         navigator.getUserMedia       ||
         navigator.webkitGetUserMedia ||
         navigator.mozGetUserMedia    ||
@@ -178,6 +178,7 @@ var PHONE = window.PHONE = function(config) {
             talk.ended     = function(cb) {talk.end     = cb; return talk};
             talk.connected = function(cb) {talk.connect = cb; return talk};
             talk.message   = function(cb) {talk.usermsg = cb; return talk};
+            talk.media     = function(cb) {talk.mediachanged = cb; return talk};
 
             // Add Local Media Streams Audio Video Mic Camera
             talk.pc.addStream(mystream);
@@ -251,6 +252,21 @@ var PHONE = window.PHONE = function(config) {
 
         // Return Session Reference
         return talk;
+    };
+
+    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    // Update Media - Mute/Unmute, Stop Video
+    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    PHONE.updateMedia = function(media) {
+        mediaconf = media || {audio: true, video: true};
+        update_tracks(mystream, mediaconf.audio, mediaconf.video);
+        PUBNUB.each( conversations, function( number, talk ) {
+            transmit(number, {
+                media: true,
+                video: mediaconf.video,
+                audio: mediaconf.audio
+            })
+        } );
     };
 
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -346,15 +362,12 @@ var PHONE = window.PHONE = function(config) {
     // Visually Display New Stream
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     function onaddstream(obj) {
-        var vid    = document.createElement('video');
         var stream = obj.stream;
         var number = (obj.srcElement || obj.target).number;
         var talk   = get_conversation(number);
 
-        vid.setAttribute( 'autoplay', 'autoplay' );
-        vid.src = URL.createObjectURL(stream);
-
-        talk.video = vid;
+        talk.video = create_video(stream);
+        talk.stream = stream;
         talk.connect(talk);
     }
 
@@ -451,6 +464,11 @@ var PHONE = window.PHONE = function(config) {
         // If Hangup Request
         if (message.packet.hangup) return talk.hangup(false);
 
+        // Update Media
+        if (message.packet.media && talk.stream) {
+            return update_media(talk, message);
+        }
+
         // If Peer Calling Inbound (Incoming)
         if ( message.packet.sdp && !talk.received ) {
             talk.received = true;
@@ -531,9 +549,42 @@ var PHONE = window.PHONE = function(config) {
     }
 
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    // Update the stream media and call the session callback
+    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    function update_media(talk, message) {
+        update_tracks(talk.stream, message.packet.audio, message.packet.video);
+        talk.mediachanged(talk)
+    }
+
+    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    // Update the stream video and audio tracks
+    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    function update_tracks(stream, audio, video) {
+        var audioTracks = stream.getAudioTracks();
+        var videoTracks = stream.getVideoTracks();
+
+        // if MediaStream has reference to microphone
+        if (audioTracks[0]) {
+            audioTracks[0].enabled = audio;
+        }
+
+        // if MediaStream has reference to webcam
+        if (videoTracks[0]) {
+            videoTracks[0].enabled = video;
+        }
+    }
+
+    function create_video(stream) {
+        var video = document.createElement('video');
+        video.src = URL.createObjectURL(stream);
+        video.setAttribute( 'autoplay', 'autoplay' );
+        return video;
+    }
+
+    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // Main - Request Camera and Mic
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-    getusermedia()
+    getusermedia();
 
     return PHONE;
 };
