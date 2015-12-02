@@ -302,7 +302,7 @@ phone.ready(function(){
 ## WebRTC JSON Messaging *Bonus STUN-less Ready*
 
 Adding extra realtime capabilities between connected parties
-is essential for creating collaberative and chat features.
+is essential for creating collaborative and chat features.
 You can do that with PubNub's WebRTC SDK easily without
 firewall restrictions from corporate policies.
 
