@@ -13,7 +13,7 @@ var PHONE = window.PHONE = function(config) {
     var sessionid     = PUBNUB.uuid();
     var mystream      = null;
     var myvideo       = document.createElement('video');
-    var myconnection  = false;
+    var pub_subscribed= false;
     var mediaconf     = config.media || { audio : true, video : true };
     var conversations = {};
 
@@ -119,18 +119,19 @@ var PHONE = window.PHONE = function(config) {
     function get_conversation(number) {
         var talk = conversations[number] || (function(number){
             var talk = {
-                number  : number,
-                status  : '',
-                image   : document.createElement('img'),
-                started : +new Date,
-                imgset  : false,
-                imgsent : 0,
-                pc      : new PeerConnection(rtcconfig),
-                closed  : false,
-                usermsg : function(){},
-                thumb   : null,
-                connect : function(){},
-                end     : function(){}
+                number      : number,
+                status      : '',
+                image       : document.createElement('img'),
+                started     : +new Date,
+                imgset      : false,
+                imgsent     : 0,
+                pc          : new PeerConnection(rtcconfig),
+                closed      : false,
+                usermsg     : function(){},
+                thumb       : null,
+                connect     : function(){},
+                end         : function(){},
+                mediachanged: function(){}
             };
 
             // Setup Event Methods
@@ -285,9 +286,9 @@ var PHONE = window.PHONE = function(config) {
     // Send Message - Send Message to All Calls or a Specific Call
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     PHONE.send = function( message, number ) {
-        if (number) return get_conversation(number).send(message);
-        PUBNUB.each( conversations, function( number, talk ) {
-            talk.send(message);
+        if (number) return transmit(number, { usermsg : message } );
+        PUBNUB.each( Object.keys(conversations), function( number ) {
+            transmit(number, { usermsg : message } );
         } );
     };
 
@@ -392,13 +393,19 @@ var PHONE = window.PHONE = function(config) {
             connect    : function() { onready(true) }
         });
     }
+    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    // Subscribed to signaling channel, we can start sending messages!
+    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    function onsubscribe() {
+        pub_subscribed = true;
+        getusermedia();
+    }
 
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // When Ready to Receive Calls
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-    function onready(subscribed) {
-        if (subscribed) myconnection = true;
-        if (!(mystream && myconnection)) return;
+    function onready() {
+        if (!(mystream && pub_subscribed)) return;
 
         connectcb();
         readycb();
@@ -413,7 +420,6 @@ var PHONE = window.PHONE = function(config) {
             mystream = stream;
             snapshots_setup(stream);
             onready();
-            subscribe();
         }, function(info) {
             debugcb(info);
             return unablecb(info);
@@ -580,11 +586,10 @@ var PHONE = window.PHONE = function(config) {
         video.setAttribute( 'autoplay', 'autoplay' );
         return video;
     }
-
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-    // Main - Request Camera and Mic
+    // Main - Subscribe to pubnub channel
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-    getusermedia();
+    subscribe();
 
     return PHONE;
 };
