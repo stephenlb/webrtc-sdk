@@ -266,7 +266,7 @@ Also WebRTC Calling is supported for Android and iOS Native too.
 ## WebRTC Photo Sharing *Bonus STUN-less Ready*
 
 You can easily snap a photo from the video stream and
-send it to your friends in an instnat.
+send it to your friends in an instant.
 You can think of this as an **Instagram WebRTC** style.
 Also Photo Sharing works through Corprate Enterprise Firewalls.
 
