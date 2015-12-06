@@ -7,7 +7,7 @@ The ideas of simplicity should span all platforms and devices too and
 that's why we also support **Android** WebRTC mobile calling
 with compatibility for iOS native Objective-C based WebRTC SDK.
 This simple developer WebRTC SDK is powered by
-[PubNub Data Stream Network](http://www.pubnub.com/).
+[PubNub Data Stream Network](https://www.pubnub.com/).
 
 ### Supported WebRTC Features
 
@@ -92,10 +92,10 @@ Make your first html file named `dial.html` and copy/paste the following:
 
 <!-- Libs and Scripts -->
 <script src="https://cdn.pubnub.com/pubnub.min.js"></script>
-<script src="http://stephenlb.github.io/webrtc-sdk/js/webrtc.js"></script>
+<script src="https://stephenlb.github.io/webrtc-sdk/js/webrtc.js"></script>
 <script>(function(){
     // ~Warning~ You must get your own API Keys for non-demo purposes.
-    // ~Warning~ Get your PubNub API Keys: http://www.pubnub.com/get-started/
+    // ~Warning~ Get your PubNub API Keys: https://www.pubnub.com/get-started/
     // The phone *number* can by any string value
     var phone = PHONE({
         number        : '1234',
@@ -135,9 +135,9 @@ We have a live running WebRTC Demo which uses our WebRTC SDK.
 This demo includes a soft-touch UI for an easy calling experience.
 
 > try the **live WebRTC Dialing**:
-[WebRTC Simple Calling API + Mobile](http://stephenlb.github.io/webrtc-sdk/)
+[WebRTC Simple Calling API + Mobile](https://stephenlb.github.io/webrtc-sdk/)
 
-[![WebRTC Simple Calling API + Mobile](http://pubnub.s3.amazonaws.com/assets/webrtc-simple-sdk-calling-api-peer-connect.png)](http://stephenlb.github.io/webrtc-sdk/)
+[![WebRTC Simple Calling API + Mobile](http://pubnub.s3.amazonaws.com/assets/webrtc-simple-sdk-calling-api-peer-connect.png)](https://stephenlb.github.io/webrtc-sdk/)
 
 You can click the link above to try our live WebRTC Demo
 which is powered by our easy to use SDK.
@@ -752,7 +752,7 @@ most Calling Situations.
 #### Signaling Example Code Follows
 
 ```html
-<script src="http://cdn.pubnub.com/pubnub-3.6.3.min.js"></script>
+<script src="https://cdn.pubnub.com/pubnub-3.6.3.min.js"></script>
 <script>(function(){
     
     // INIT P2P Packet Exchanger
