@@ -758,7 +758,8 @@ most Calling Situations.
     // INIT P2P Packet Exchanger
     var pubnub = PUBNUB({
         publish_key   : 'demo',
-        subscribe_key : 'demo'
+        subscribe_key : 'demo',
+        ssl           : true
     })
     
     // You need to specify the exchange channel for the peers to
