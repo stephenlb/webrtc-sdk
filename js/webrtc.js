@@ -13,7 +13,7 @@ var PHONE = window.PHONE = function(config) {
     var sessionid     = PUBNUB.uuid();
     var mystream      = null;
     var myvideo       = document.createElement('video');
-    var pub_subscribed= false;
+    var myconnection  = false;
     var mediaconf     = config.media || { audio : true, video : true };
     var conversations = {};
 
@@ -43,7 +43,7 @@ var PHONE = window.PHONE = function(config) {
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // Local Microphone and Camera Media (one per device)
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-    navigator.getUserMedia =
+    navigator.getUserMedia = 
         navigator.getUserMedia       ||
         navigator.webkitGetUserMedia ||
         navigator.mozGetUserMedia    ||
@@ -119,19 +119,18 @@ var PHONE = window.PHONE = function(config) {
     function get_conversation(number) {
         var talk = conversations[number] || (function(number){
             var talk = {
-                number      : number,
-                status      : '',
-                image       : document.createElement('img'),
-                started     : +new Date,
-                imgset      : false,
-                imgsent     : 0,
-                pc          : new PeerConnection(rtcconfig),
-                closed      : false,
-                usermsg     : function(){},
-                thumb       : null,
-                connect     : function(){},
-                end         : function(){},
-                mediachanged: function(){}
+                number  : number,
+                status  : '',
+                image   : document.createElement('img'),
+                started : +new Date,
+                imgset  : false,
+                imgsent : 0,
+                pc      : new PeerConnection(rtcconfig),
+                closed  : false,
+                usermsg : function(){},
+                thumb   : null,
+                connect : function(){},
+                end     : function(){}
             };
 
             // Setup Event Methods
@@ -179,7 +178,6 @@ var PHONE = window.PHONE = function(config) {
             talk.ended     = function(cb) {talk.end     = cb; return talk};
             talk.connected = function(cb) {talk.connect = cb; return talk};
             talk.message   = function(cb) {talk.usermsg = cb; return talk};
-            talk.media     = function(cb) {talk.mediachanged = cb; return talk};
 
             // Add Local Media Streams Audio Video Mic Camera
             talk.pc.addStream(mystream);
@@ -256,21 +254,6 @@ var PHONE = window.PHONE = function(config) {
     };
 
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-    // Update Media - Mute/Unmute, Stop Video
-    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-    PHONE.updateMedia = function(media) {
-        mediaconf = media || {audio: true, video: true};
-        update_tracks(mystream, mediaconf.audio, mediaconf.video);
-        PUBNUB.each( conversations, function( number, talk ) {
-            transmit(number, {
-                media: true,
-                video: mediaconf.video,
-                audio: mediaconf.audio
-            })
-        } );
-    };
-
-    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // Send Image Snap - Send Image Snap to All Calls or a Specific Call
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     PHONE.snap = function( message, number ) {
@@ -286,9 +269,9 @@ var PHONE = window.PHONE = function(config) {
     // Send Message - Send Message to All Calls or a Specific Call
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     PHONE.send = function( message, number ) {
-        if (number) return transmit(number, { usermsg : message } );
-        PUBNUB.each( Object.keys(conversations), function( number ) {
-            transmit(number, { usermsg : message } );
+        if (number) return get_conversation(number).send(message);
+        PUBNUB.each( conversations, function( number, talk ) {
+            talk.send(message);
         } );
     };
 
@@ -363,12 +346,15 @@ var PHONE = window.PHONE = function(config) {
     // Visually Display New Stream
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     function onaddstream(obj) {
+        var vid    = document.createElement('video');
         var stream = obj.stream;
         var number = (obj.srcElement || obj.target).number;
         var talk   = get_conversation(number);
 
-        talk.video = create_video(stream);
-        talk.stream = stream;
+        vid.setAttribute( 'autoplay', 'autoplay' );
+        vid.src = URL.createObjectURL(stream);
+
+        talk.video = vid;
         talk.connect(talk);
     }
 
@@ -393,19 +379,13 @@ var PHONE = window.PHONE = function(config) {
             connect    : function() { onready(true) }
         });
     }
-    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-    // Subscribed to signaling channel, we can start sending messages!
-    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-    function onsubscribe() {
-        pub_subscribed = true;
-        getusermedia();
-    }
 
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // When Ready to Receive Calls
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-    function onready() {
-        if (!(mystream && pub_subscribed)) return;
+    function onready(subscribed) {
+        if (subscribed) myconnection = true;
+        if (!(mystream && myconnection)) return;
 
         connectcb();
         readycb();
@@ -420,6 +400,7 @@ var PHONE = window.PHONE = function(config) {
             mystream = stream;
             snapshots_setup(stream);
             onready();
+            subscribe();
         }, function(info) {
             debugcb(info);
             return unablecb(info);
@@ -469,11 +450,6 @@ var PHONE = window.PHONE = function(config) {
 
         // If Hangup Request
         if (message.packet.hangup) return talk.hangup(false);
-
-        // Update Media
-        if (message.packet.media && talk.stream) {
-            return update_media(talk, message);
-        }
 
         // If Peer Calling Inbound (Incoming)
         if ( message.packet.sdp && !talk.received ) {
@@ -555,41 +531,9 @@ var PHONE = window.PHONE = function(config) {
     }
 
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-    // Update the stream media and call the session callback
+    // Main - Request Camera and Mic
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-    function update_media(talk, message) {
-        update_tracks(talk.stream, message.packet.audio, message.packet.video);
-        talk.mediachanged(talk)
-    }
-
-    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-    // Update the stream video and audio tracks
-    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-    function update_tracks(stream, audio, video) {
-        var audioTracks = stream.getAudioTracks();
-        var videoTracks = stream.getVideoTracks();
-
-        // if MediaStream has reference to microphone
-        if (audioTracks[0]) {
-            audioTracks[0].enabled = audio;
-        }
-
-        // if MediaStream has reference to webcam
-        if (videoTracks[0]) {
-            videoTracks[0].enabled = video;
-        }
-    }
-
-    function create_video(stream) {
-        var video = document.createElement('video');
-        video.src = URL.createObjectURL(stream);
-        video.setAttribute( 'autoplay', 'autoplay' );
-        return video;
-    }
-    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-    // Main - Subscribe to pubnub channel
-    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-    subscribe();
+    getusermedia()
 
     return PHONE;
 };
