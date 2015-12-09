@@ -34,8 +34,7 @@ WebRTC experience.  Here is a list of the options available.
 
 ### Testing Locally
 
-You need an HTTPS (TLS) File Server.  
-To start a local secure file server:
+You need an HTTPS (TLS) File Server. To start a local secure file server:
 
 ```shell
 pyton <(curl https://gist.githubusercontent.com/stephenlb/2e19d98039469b9d0134/raw/5afefc79647e0786097ca3406dbf93c5de919aed/https.py)
