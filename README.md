@@ -32,6 +32,18 @@ WebRTC experience.  Here is a list of the options available.
  1. Network Connectivity Hooks (online/offline)
  1. SDK Level Debug Output
 
+### Testing Locally
+
+You need an HTTPS (TLS) File Server.  
+To start a local secure file server:
+
+```shell
+pyton <(curl https://gist.githubusercontent.com/stephenlb/2e19d98039469b9d0134/raw/5afefc79647e0786097ca3406dbf93c5de919aed/https.py)
+```
+
+> This is a Simple Python HTTPS Secure Server
+> https://gist.github.com/stephenlb/2e19d98039469b9d0134
+
 ### Supported WebRTC Calling API Mobile Devices and Browser
 
 List of supported WebRTC Calling Clients including Android and Chrome.
