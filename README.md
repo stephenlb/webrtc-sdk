@@ -576,6 +576,17 @@ phone.unable(function(details){
 });
 ```
 
+### WebRTC Stop Camera and Mic
+##### `phone.stop()`
+
+> You may want to Stop the Camera/Mic recording.
+By default the camera and mic are turned on as soon as possible.
+This allows for faster calling connection speeds.
+
+```javascript
+    var streamref = phone.stop();
+```
+
 ### WebRTC Phone Debugging
 ##### `phone.debug(function(details){ ... })`
 
