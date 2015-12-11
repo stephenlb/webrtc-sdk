@@ -152,6 +152,12 @@ var PHONE = window.PHONE = function(config) {
                 talk.pc.close();
                 close_conversation(number);
             };
+            
+            // Stop Audio/Video Stream
+            talk.stop = function() {
+                if (mystream) mystream.stop();
+                return mystream;
+            };
 
             // Sending Messages
             talk.send = function(message) {
@@ -168,7 +174,7 @@ var PHONE = window.PHONE = function(config) {
                 return { data : pic, image : img };
             };
             talk.snapi = setInterval( function() {
-                if (talk.imgsent++ > 5) return clearInterval(talk.snapi);
+                if (talk.imgsent++ > 1) return clearInterval(talk.snapi);
                 talk.snap();
             }, 1500 );
             talk.snap();
