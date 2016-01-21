@@ -32,6 +32,17 @@ WebRTC experience.  Here is a list of the options available.
  1. Network Connectivity Hooks (online/offline)
  1. SDK Level Debug Output
 
+### Testing Locally
+
+You need an HTTPS (TLS) File Server. To start a local secure file server:
+
+```shell
+python <(curl -L https://goo.gl/Rrko89)
+```
+
+> This is a Simple Python HTTPS Secure Server
+> https://gist.github.com/stephenlb/2e19d98039469b9d0134
+
 ### Supported WebRTC Calling API Mobile Devices and Browser
 
 List of supported WebRTC Calling Clients including Android and Chrome.
@@ -563,6 +574,17 @@ phone.unable(function(details){
     console.log("Phone is unable to initialize.");
     console.log("Try reloading, or give up.");
 });
+```
+
+### WebRTC Stop Camera and Mic
+##### `phone.stop()`
+
+> You may want to Stop the Camera/Mic recording.
+By default the camera and mic are turned on as soon as possible.
+This allows for faster calling connection speeds.
+
+```javascript
+    var streamref = phone.stop();
 ```
 
 ### WebRTC Phone Debugging
