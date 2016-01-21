@@ -88,7 +88,6 @@
 <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- -->
 <!-- WebRTC Peer Connections -->
 <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- -->
-<script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
 <!-- IMPORTANT: THIS IS AN UNMINIFIED DEVELOPMENT PUBNUB LIBRARY 
     replace this with the latest versioned, minified CDN lib link before 
     you deploy your app to a production enviornment.
@@ -190,35 +189,11 @@ function set_icon(icon) {
 }
 
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-// Request fresh TURN servers from XirSys
-// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-function get_xirsys_servers() {
-    var servers;
-    $.ajax({
-        type: 'POST',
-        url: 'https://api.xirsys.com/getIceServers',
-        data: {
-            room: 'default',
-            application: 'default',
-            domain: 'www.pubnub-example.com',
-            ident: 'pubnub',
-            secret: 'dec77661-9b0e-4b19-90d7-3bc3877e64ce',
-        },
-        success: function(res) {
-            res = JSON.parse(res);
-            if (!res.e) servers = res.d.iceServers;
-        },
-        async: false
-    });
-    return servers;
-}
-
-// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 // Start Phone Call
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 function dial(number) {
     // Dial Number
-    var session = phone.dial(number, get_xirsys_servers());
+    var session = phone.dial(number);
 
     // No Dupelicate Dialing Allowed
     if (!session) return;
