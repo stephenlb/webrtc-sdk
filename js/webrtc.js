@@ -303,7 +303,7 @@ var PHONE = window.PHONE = function(config) {
             var packet   = { hangup:true };
             var message  = { packet:packet, id:sessionid, number:mynumber };
             var client   = new XMLHttpRequest();
-            var url      = 'http://pubsub.pubnub.com/publish/'
+            var url      = 'https://pubsub.pubnub.com/publish/'
                            + pubkey + '/'
                            + subkey + '/0/'
                            + number + '/0/'
