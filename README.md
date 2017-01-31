@@ -43,6 +43,8 @@ python <(curl -L https://goo.gl/Rrko89)
 > This is a Simple Python HTTPS Secure Server
 > https://gist.github.com/stephenlb/2e19d98039469b9d0134
 
+We posted an answer on [StackOverflow WebRTC running on localhost HTTPS](http://stackoverflow.com/questions/41935178/cannot-get-pubnub-webrtc-tutorial-to-work/41969170#41969170).  This will get you started testing on your laptop.
+
 ### Supported WebRTC Calling API Mobile Devices and Browser
 
 List of supported WebRTC Calling Clients including Android and Chrome.
