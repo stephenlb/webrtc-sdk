@@ -38,39 +38,39 @@ video { width: 100px }
     });
 
     // Show Number
-    document.getElementById('number').innerHTML = 'Number: ' + number;
+    phone.$('number').innerHTML = 'Number: ' + number;
 
     // Start Camera
-    PUBNUB.bind(
+    phone.bind(
         'mousedown,touchstart'
-    ,   document.getElementById('startcam')
+    ,   phone.$('startcam')
     ,   event => phone.camera.start()
     );
 
     // Stop Camera
-    PUBNUB.bind(
+    phone.bind(
         'mousedown,touchstart'
-    ,   document.getElementById('stopcam')
+    ,   phone.$('stopcam')
     ,   event => phone.camera.stop()
     );
 
     // Start Call
-    PUBNUB.bind(
+    phone.bind(
         'mousedown,touchstart'
-    ,   document.getElementById('startcall')
-    ,   event => session = phone.dial(document.getElementById('dial').value)
+    ,   phone.$('startcall')
+    ,   event => session = phone.dial(phone.$('dial').value)
     );
 
     // Stop Call
-    PUBNUB.bind(
+    phone.bind(
         'mousedown,touchstart'
-    ,   document.getElementById('stopcall')
+    ,   phone.$('stopcall')
     ,   event => phone.hangup()
     );
 
     // Local Camera Display
     phone.camera.ready( video => {
-        document.getElementById('video-out').appendChild(video);
+        phone.$('video-out').appendChild(video);
     });
 
     // As soon as the phone is ready we can make calls
@@ -83,7 +83,7 @@ video { width: 100px }
 
         // Display Your Friend's Live Video
         session.connected(function(session){
-            document.getElementById('video-out').appendChild(session.video);
+            phone.$('video-out').appendChild(session.video);
         });
 
     });

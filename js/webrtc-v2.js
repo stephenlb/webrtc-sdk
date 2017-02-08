@@ -11,7 +11,7 @@ const PHONE = window.PHONE = config => {
     const pubkey        = config.publish_key   || 'demo';
     const subkey        = config.subscribe_key || 'demo';
     const autocam       = config.autocam !== false;
-    const sessionid     = PUBNUB.uuid();
+    const sessionid     = uuid();
     let   snapper       = ()=>' ';
     let   mystream      = null;
     let   myconnection  = false;
@@ -222,6 +222,47 @@ const PHONE = window.PHONE = config => {
     }
 
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    // UUID
+    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    PHONE.uuid = uuid;
+
+    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    // DOM Element By ID
+    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    PHONE.$ = el => document.getElementById(el);
+
+    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    // DOM Bind
+    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    PHONE.bind = ( type, el, fun ) => {
+        type.split(',').forEach( etype => {
+            const rapfun = e => {
+                if (!e) e = window.event;
+                if (!fun(e)) {
+                    e.cancelBubble = true;
+                    e.preventDefault  && e.preventDefault();
+                    e.stopPropagation && e.stopPropagation();
+                }
+            };
+
+            if ( el.addEventListener ) el.addEventListener(
+                etype, rapfun, false
+            );
+            else if ( el.attachEvent ) el.attachEvent( 'on' + etype, rapfun );
+            else  el[ 'on' + etype ] = rapfun;
+        } );
+    };
+
+    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    // DOM UNBind
+    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    PHONE.unbind = ( type, el, fun ) => {
+        if ( el.removeEventListener ) el.removeEventListener( type, false );
+        else if ( el.detachEvent ) el.detachEvent( 'on' + type, false );
+        else  el[ 'on' + type ] = null;
+    }
+
+    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // Get Number
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     PHONE.number = () => {
@@ -269,9 +310,7 @@ const PHONE = window.PHONE = config => {
     PHONE.snap = function( message, number ) {
         if (number) return get_conversation(number).snap(message);
         let pic = {};
-        PUBNUB.each( conversations, ( number, talk ) => {
-            pic = talk.snap();
-        } );
+        for (let number in conversations) pic = conversations[number].snap();
         return pic;
     };
 
@@ -280,9 +319,7 @@ const PHONE = window.PHONE = config => {
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     PHONE.send = ( message, number ) => {
         if (number) return get_conversation(number).send(message);
-        PUBNUB.each( conversations, ( number, talk ) => {
-            talk.send(message);
-        } );
+        for (let number in conversations) conversations[number].send(message);
     };
 
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -290,19 +327,18 @@ const PHONE = window.PHONE = config => {
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     PHONE.hangup = number => {
         if (number) return get_conversation(number).hangup();
-        PUBNUB.each( conversations, ( number, talk ) => {
-            talk.hangup();
-        } );
+        for (let number in conversations) conversations[number].hangup();
     };
 
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // Auto-hangup on Leave
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-    PUBNUB.bind( 'unload,beforeunload', window, () => {
+    PHONE.bind( 'unload,beforeunload', window, () => {
         if (PHONE.goodbye) return true;
         PHONE.goodbye = true;
 
-        PUBNUB.each( conversations, ( number, talk ) => {
+        for (let number in conversations) {
+            let talk     = conversations[number];
             let mynumber = config.number;
             let packet   = { hangup:true };
             let message  = { packet:packet, id:sessionid, number:mynumber };
@@ -316,7 +352,7 @@ const PHONE = window.PHONE = config => {
             client.open( 'GET', url, false );
             client.send();
             talk.hangup();
-        } );
+        }
 
         return true;
     } );
@@ -335,7 +371,9 @@ const PHONE = window.PHONE = config => {
         video.height = snap.height;
         video.src    = URL.createObjectURL(stream);
         video.volume = 0.0;
-        video.play();
+
+        // Start Video Stream
+        try { video.play() } catch (e) {}
 
         // Canvas Settings
         canvas.width  = snap.width;
@@ -577,6 +615,164 @@ const PHONE = window.PHONE = config => {
 
     // Return Phone API
     return PHONE;
+};
+
+// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+// UUID
+// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+function uuid(callback) {
+    let u = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,
+    function(c) {
+        let r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+        return v.toString(16);
+    });
+    if (callback) callback(u);
+    return u;
+}
+
+// =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+// Request URL
+// =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+const requester = setup => {
+
+    let xhr      = new XMLHttpRequest()
+    ,   finished = false
+    ,   timeout  = setup.timeout || 5000
+    ,   success  = setup.success || function(){}
+    ,   fail     = setup.fail    || function(){};
+
+    // Cancel a Pending Request
+    function abort() {
+        if (finished) return;
+        xhr.abort && xhr.abort();
+        finish();
+    }
+
+    // Mark Request as Completed
+    function finish() {
+        finished = true;
+    }
+
+    // When a Request has a Payload
+    xhr.onload = () => {
+        if (finished) return;
+        finish();
+        let result;
+
+        try      { result = JSON.parse(xhr.response) }
+        catch(e) { fail(xhr) }
+
+        if (result) success(result);
+        else        fail(xhr);
+        result = null;
+    };
+
+    // When a Request has Failed
+    xhr.onabort = xhr.ontimeout = xhr.onerror = () => {
+        if (finished) return;
+        finish();
+        fail(xhr);
+    };
+
+    // Timeout and Aboart for Slow Requests
+    xhr.timer = setTimeout( () => {
+        if (finished) return;
+        abort();
+        fail(xhr);
+    }, timeout );
+
+    // Return Requester Object
+    return setup => {
+        let url     = setup.url     || 'https://ps.pubnub.com/time/0'
+        ,   headers = setup.headers || {}
+        ,   method  = setup.method  || 'GET'
+        ,   payload = setup.payload || null
+        ,   params  = setup.params  || setup.data || {}
+        ,   data    = [];
+
+        // URL Parameters
+        for (let param in params)
+            data.push([ param, params[param] ].join('='));
+
+        // Start Request
+        finished = false;
+        xhr.timeout = timeout;
+        xhr.open(
+            method,
+            url + (data.length ? ('?' + data.join('&')) : ''),
+            true
+        );
+
+        // Headers
+        for (let header in headers)
+            xhr.setRequestHeader( header, headers[header] );
+
+        // Send Request
+        xhr.send(payload);
+
+        return {
+            xhr   : xhr,
+            abort : abort
+        } 
+    };
+};
+
+// =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+// Subscribe
+// =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+const subscribe = setup => {
+    let pubkey    = setup.pubkey    || 'demo'
+    ,   subkey    = setup.subkey    || 'demo'
+    ,   channel   = setup.channel   || 'a'
+    ,   timeout   = setup.timeout   || 300000
+    ,   timetoken = setup.timetoken || '0'
+    ,   message   = setup.message   || (()=>{})
+    ,   windy     = setup.windowing || 10
+    ,   windowing = 10
+    ,   stop      = false
+    ,   url       = ''
+    ,   origin    = 'ps'+(Math.random()+'').split('.')[1]+'.pubnub.com';
+
+    // Requester Object
+    let request = requester({
+        timeout : timeout,
+        success : next,
+        fail    : () => next()
+    });
+
+    // Subscribe Loop
+    function next(payload) { 
+        if (stop) return;
+        if (payload) {
+            timetoken = payload.t.t;
+            message(payload);
+        }
+
+        url = [
+            'https://',       origin, 
+            '/v2/subscribe/', subkey,
+            '/',              channel,
+            '/0/',            timetoken
+        ].join('');
+
+        setTimeout( () => {
+            windowing = windy;
+            request({ url : url });
+        }, windowing );
+    }
+
+    // Cancel Subscription
+    function unsubscribe() {
+        stop = true;
+    }
+
+    // Start Subscribe Loop
+    next();
+
+    // Allow Cancelling Subscriptions
+    return {
+        unsubscribe : unsubscribe
+    };
 };
 
 })();
