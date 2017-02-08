@@ -22,7 +22,7 @@ const PHONE = window.PHONE = config => {
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // RTC Peer Connection Session (one per call)
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-    var PeerConnection =
+    const PeerConnection =
         window.RTCPeerConnection    ||
         window.mozRTCPeerConnection ||
         window.webkitRTCPeerConnection;
@@ -30,14 +30,14 @@ const PHONE = window.PHONE = config => {
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // ICE (many route options per call)
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-    var IceCandidate =
+    const IceCandidate =
         window.mozRTCIceCandidate ||
         window.RTCIceCandidate;
 
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // Media Session Description (offer and answer per call)
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-    var SessionDescription =
+    const SessionDescription =
         window.RTCSessionDescription    ||
         window.mozRTCSessionDescription ||
         window.webkitRTCSessionDescription;
@@ -54,31 +54,31 @@ const PHONE = window.PHONE = config => {
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // STUN Server List Configuration (public STUN list)
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-    var rtcconfig = { iceServers : [{ "url" :
+    const rtcconfig = { iceServers : [{ "url" :
         navigator.mozGetUserMedia    ? "stun:stun.services.mozilla.com" :
         navigator.webkitGetUserMedia ? "stun:stun.l.google.com:19302"   :
                                        "stun:23.21.150.121"
-    },
-        {url: "stun:stun.l.google.com:19302"},
-        {url: "stun:stun1.l.google.com:19302"},
-        {url: "stun:stun2.l.google.com:19302"},
-        {url: "stun:stun3.l.google.com:19302"},
-        {url: "stun:stun4.l.google.com:19302"},
-        {url: "stun:23.21.150.121"},
-        {url: "stun:stun01.sipphone.com"},
-        {url: "stun:stun.ekiga.net"},
-        {url: "stun:stun.fwdnet.net"},
-        {url: "stun:stun.ideasip.com"},
-        {url: "stun:stun.iptel.org"},
-        {url: "stun:stun.rixtelecom.se"},
-        {url: "stun:stun.schlund.de"},
-        {url: "stun:stunserver.org"},
-        {url: "stun:stun.softjoys.com"},
-        {url: "stun:stun.voiparound.com"},
-        {url: "stun:stun.voipbuster.com"},
-        {url: "stun:stun.voipstunt.com"},
-        {url: "stun:stun.voxgratia.org"},
-        {url: "stun:stun.xten.com"}
+    }
+    ,   {url: "stun:stun.l.google.com:19302"}
+    ,   {url: "stun:stun1.l.google.com:19302"}
+    ,   {url: "stun:stun2.l.google.com:19302"}
+    ,   {url: "stun:stun3.l.google.com:19302"}
+    ,   {url: "stun:stun4.l.google.com:19302"}
+    ,   {url: "stun:23.21.150.121"}
+    ,   {url: "stun:stun01.sipphone.com"}
+    ,   {url: "stun:stun.ekiga.net"}
+    ,   {url: "stun:stun.fwdnet.net"}
+    ,   {url: "stun:stun.ideasip.com"}
+    ,   {url: "stun:stun.iptel.org"}
+    ,   {url: "stun:stun.rixtelecom.se"}
+    ,   {url: "stun:stun.schlund.de"}
+    ,   {url: "stun:stunserver.org"}
+    ,   {url: "stun:stun.softjoys.com"}
+    ,   {url: "stun:stun.voiparound.com"}
+    ,   {url: "stun:stun.voipbuster.com"}
+    ,   {url: "stun:stun.voipstunt.com"}
+    ,   {url: "stun:stun.voxgratia.org"}
+    ,   {url: "stun:stun.xten.com"}
     ] };
 
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -95,16 +95,16 @@ const PHONE = window.PHONE = config => {
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // PHONE Events
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-    var messagecb    = ()=>{};
-    var readycb      = ()=>{};
-    var cameracb     = ()=>{};
-    var unablecb     = ()=>{};
-    var debugcb      = ()=>{};
-    var connectcb    = ()=>{};
-    var disconnectcb = ()=>{};
-    var reconnectcb  = ()=>{};
-    var callstatuscb = ()=>{};
-    var receivercb   = ()=>{};
+    let messagecb    = ()=>{};
+    let readycb      = ()=>{};
+    let cameracb     = ()=>{};
+    let unablecb     = ()=>{};
+    let debugcb      = ()=>{};
+    let connectcb    = ()=>{};
+    let disconnectcb = ()=>{};
+    let reconnectcb  = ()=>{};
+    let callstatuscb = ()=>{};
+    let receivercb   = ()=>{};
 
     PHONE.camera     = cb => cameracb     = cb;
     PHONE.message    = cb => messagecb    = cb;
@@ -121,20 +121,20 @@ const PHONE = window.PHONE = config => {
     // Add/Get Conversation - Creates a new PC or Returns Existing PC
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     function get_conversation(number) {
-        var talk = conversations[number] || (number => {
-            var talk = {
-                number  : number,
-                status  : '',
-                image   : document.createElement('img'),
-                started : +new Date,
-                imgset  : false,
-                imgsent : 0,
-                pc      : new PeerConnection(rtcconfig),
-                closed  : false,
-                usermsg : ()=>{},
-                thumb   : null,
-                connect : ()=>{},
-                end     : ()=>{}
+        let talk = conversations[number] || (number => {
+            let talk = {
+                number  : number
+            ,   status  : ''
+            ,   image   : document.createElement('img')
+            ,   started : +new Date
+            ,   imgset  : false
+            ,   imgsent : 0
+            ,   pc      : new PeerConnection(rtcconfig)
+            ,   closed  : false
+            ,   usermsg : ()=>{}
+            ,   thumb   : null
+            ,   connect : ()=>{}
+            ,   end     : ()=>{}
             };
 
             // Setup Event Methods
@@ -170,10 +170,10 @@ const PHONE = window.PHONE = config => {
 
             // Sending Stanpshots
             talk.snap = () => {
-                var pic = snapper();
+                let pic = snapper();
                 if (talk.closed) clearInterval(talk.snapi);
                 transmit( number, { thumbnail : pic } );
-                var img = document.createElement('img');
+                let img = document.createElement('img');
                 img.src = pic;
                 return { data : pic, image : img };
             };
@@ -245,8 +245,8 @@ const PHONE = window.PHONE = config => {
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     PHONE.dial = function( number, servers ) {
         if (!!servers) add_servers(servers);
-        var talk = get_conversation(number);
-        var pc   = talk.pc;
+        let talk = get_conversation(number);
+        let pc   = talk.pc;
 
         // Prevent Repeat Calls
         if (talk.dialed) return false;
@@ -268,7 +268,7 @@ const PHONE = window.PHONE = config => {
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     PHONE.snap = function( message, number ) {
         if (number) return get_conversation(number).snap(message);
-        var pic = {};
+        let pic = {};
         PUBNUB.each( conversations, ( number, talk ) => {
             pic = talk.snap();
         } );
@@ -303,11 +303,11 @@ const PHONE = window.PHONE = config => {
         PHONE.goodbye = true;
 
         PUBNUB.each( conversations, ( number, talk ) => {
-            var mynumber = config.number;
-            var packet   = { hangup:true };
-            var message  = { packet:packet, id:sessionid, number:mynumber };
-            var client   = new XMLHttpRequest();
-            var url      = 'https://pubsub.pubnub.com/publish/'
+            let mynumber = config.number;
+            let packet   = { hangup:true };
+            let message  = { packet:packet, id:sessionid, number:mynumber };
+            let client   = new XMLHttpRequest();
+            let url      = 'https://pubsub.pubnub.com/publish/'
                            + pubkey + '/'
                            + subkey + '/0/'
                            + number + '/0/'
@@ -325,10 +325,10 @@ const PHONE = window.PHONE = config => {
     // Grab Local Video Snapshot
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     function snapshots_setup(stream) {
-        var video   = myvideo;
-        var canvas  = document.createElement('canvas');
-        var context = canvas.getContext("2d");
-        var snap    = { width: 240, height: 180 };
+        let video   = myvideo;
+        let canvas  = document.createElement('canvas');
+        let context = canvas.getContext("2d");
+        let snap    = { width: 240, height: 180 };
 
         // Video Settings
         video.width  = snap.width;
@@ -340,6 +340,10 @@ const PHONE = window.PHONE = config => {
         // Canvas Settings
         canvas.width  = snap.width;
         canvas.height = snap.height;
+
+        // Clear DOM Attributes
+        video.removeAttribute('width');
+        video.removeAttribute('height');
 
         // Capture Local Pic
         snapper = () => {
@@ -356,10 +360,10 @@ const PHONE = window.PHONE = config => {
     // Visually Display New Stream
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     function onaddstream(obj) {
-        var vid    = document.createElement('video');
-        var stream = obj.stream;
-        var number = (obj.srcElement || obj.target).number;
-        var talk   = get_conversation(number);
+        let vid    = document.createElement('video');
+        let stream = obj.stream;
+        let number = (obj.srcElement || obj.target).number;
+        let talk   = get_conversation(number);
 
         vid.setAttribute( 'autoplay', 'autoplay' );
         vid.src = URL.createObjectURL(stream);
@@ -438,8 +442,8 @@ const PHONE = window.PHONE = config => {
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     function transmit( phone, packet, times, time ) {
         if (!packet) return;
-        var number  = config.number;
-        var message = { packet : packet, id : sessionid, number : number };
+        let number  = config.number;
+        let message = { packet : packet, id : sessionid, number : number };
         debugcb(message);
         pubnub.publish({ channel : phone, message : message });
 
@@ -460,7 +464,7 @@ const PHONE = window.PHONE = config => {
         debugcb(message);
 
         // Get Call Reference
-        var talk = get_conversation(message.number);
+        let talk = get_conversation(message.number);
 
         // Ignore if Closed
         if (talk.closed) return;
@@ -492,7 +496,7 @@ const PHONE = window.PHONE = config => {
     // Create Remote Friend Thumbnail
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     function create_thumbnail(message) {
-        var talk       = get_conversation(message.number);
+        let talk       = get_conversation(message.number);
         talk.image.src = message.packet.thumbnail;
 
         // Call only once
@@ -506,9 +510,9 @@ const PHONE = window.PHONE = config => {
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     function add_sdp_offer(message) {
         // Get Call Reference
-        var talk = get_conversation(message.number);
-        var pc   = talk.pc;
-        var type = message.packet.type == 'offer' ? 'offer' : 'answer';
+        let talk = get_conversation(message.number);
+        let pc   = talk.pc;
+        let type = message.packet.type == 'offer' ? 'offer' : 'answer';
 
         // Deduplicate SDP Offerings/Answers
         if (type in talk) return;
@@ -545,14 +549,14 @@ const PHONE = window.PHONE = config => {
         if (!message.packet.candidate) return;
 
         // Get Call Reference
-        var talk = get_conversation(message.number);
-        var pc   = talk.pc;
+        let talk = get_conversation(message.number);
+        let pc   = talk.pc;
 
         // Add ICE Candidate Routes
         pc.addIceCandidate(
-            new IceCandidate(message.packet),
-            debugcb,
-            debugcb
+            new IceCandidate(message.packet)
+        ,   debugcb
+        ,   debugcb
         );
     }
 
@@ -571,6 +575,7 @@ const PHONE = window.PHONE = config => {
     // Start Dailer Socket
     startsubscribe();
 
+    // Return Phone API
     return PHONE;
 };
 

@@ -114,7 +114,7 @@ Make your first html file named `dial.html` and copy/paste the following:
 
 <!-- Libs and Scripts -->
 <script src="https://cdn.pubnub.com/pubnub.min.js"></script>
-<script src="https://stephenlb.github.io/webrtc-sdk/webrtc.js"></script>
+<script src="https://stephenlb.github.io/webrtc-sdk/js/webrtc-v2.js"></script>
 <script>(function(){
     // ~Warning~ You must get your own API Keys for non-demo purposes.
     // ~Warning~ Get your PubNub API Keys: https://www.pubnub.com/get-started/
@@ -337,7 +337,7 @@ By default the WebRTC SDK starts user's camera.  You can optionally prevent this
 
 <!-- Libs and Scripts -->
 <script src="https://cdn.pubnub.com/pubnub.min.js"></script>
-<script src="https://stephenlb.github.io/webrtc-sdk/js/webrtc.js"></script>
+<script src="https://stephenlb.github.io/webrtc-sdk/js/webrtc-v2.js"></script>
 <script>(function(){
 
     // ~Warning~ You must get your own API Keys for non-demo purposes.
