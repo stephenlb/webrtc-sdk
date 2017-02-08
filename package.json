@@ -1,0 +1,37 @@
+{
+  "name": "webrtc-sdk",
+  "version": "1.2.0",
+  "description": "JavaScript WebRTC Calling SDK.",
+  "main": "js/webrtc.js",
+  "scripts": {
+    "test": ""
+  },
+  "dependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/stephenlb/webrtc-sdk.git#master"
+  },
+  "keywords": [
+    "webrtc",
+    "webrtc-call",
+    "webrtc-demo",
+    "webrtc-dialing",
+    "webrtc-phone",
+    "webrtc-video",
+    "webrtc-sdk",
+    "webrtc-receiver",
+    "webrtc",
+    "webrtc",
+    "webrtc",
+    "webrtc",
+    "webrtc",
+    "webrtc",
+    "webrtc"
+  ],
+  "author": "Stephen Blum",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/stephenlb/webrtc-sdk/issues"
+  },
+  "homepage": "http://stephenlb.github.io/webrtc-sdk"
+}
