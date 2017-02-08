@@ -1,23 +1,22 @@
-(()=>{
+(function(){
 
-'use strict';
 
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 // WebRTC Simple Calling API + Mobile
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-const PHONE = window.PHONE = config => {
-    const PHONE         = ()=>{};
-    const pubnub        = PUBNUB(config);
-    const pubkey        = config.publish_key   || 'demo';
-    const subkey        = config.subscribe_key || 'demo';
-    const autocam       = config.autocam !== false;
-    const sessionid     = PUBNUB.uuid();
-    let   snapper       = ()=>' ';
-    let   mystream      = null;
-    let   myconnection  = false;
-    const myvideo       = document.createElement('video');
-    const mediaconf     = config.media || { audio : true, video : true };
-    const conversations = {};
+var PHONE = window.PHONE = function(config) {
+    var PHONE         = function(){};
+    var pubnub        = PUBNUB(config);
+    var pubkey        = config.publish_key   || 'demo';
+    var snapper       = function(){ return ' ' }
+    var subkey        = config.subscribe_key || 'demo';
+    var autocam       = config.autocam !== false;
+    var sessionid     = PUBNUB.uuid();
+    var mystream      = null;
+    var myvideo       = document.createElement('video');
+    var myconnection  = false;
+    var mediaconf     = config.media || { audio : true, video : true };
+    var conversations = {};
 
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // RTC Peer Connection Session (one per call)
@@ -95,33 +94,31 @@ const PHONE = window.PHONE = config => {
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // PHONE Events
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-    var messagecb    = ()=>{};
-    var readycb      = ()=>{};
-    var cameracb     = ()=>{};
-    var unablecb     = ()=>{};
-    var debugcb      = ()=>{};
-    var connectcb    = ()=>{};
-    var disconnectcb = ()=>{};
-    var reconnectcb  = ()=>{};
-    var callstatuscb = ()=>{};
-    var receivercb   = ()=>{};
+    var messagecb    = function(){};
+    var readycb      = function(){};
+    var unablecb     = function(){};
+    var debugcb      = function(){};
+    var connectcb    = function(){};
+    var disconnectcb = function(){};
+    var reconnectcb  = function(){};
+    var callstatuscb = function(){};
+    var receivercb   = function(){};
 
-    PHONE.camera     = cb => cameracb     = cb;
-    PHONE.message    = cb => messagecb    = cb;
-    PHONE.ready      = cb => readycb      = cb;
-    PHONE.unable     = cb => unablecb     = cb;
-    PHONE.callstatus = cb => callstatuscb = cb;
-    PHONE.debug      = cb => debugcb      = cb;
-    PHONE.connect    = cb => connectcb    = cb;
-    PHONE.disconnect = cb => disconnectcb = cb;
-    PHONE.reconnect  = cb => reconnectcb  = cb;
-    PHONE.receive    = cb => receivercb   = cb;
+    PHONE.message    = function(cb) { messagecb    = cb };
+    PHONE.ready      = function(cb) { readycb      = cb };
+    PHONE.unable     = function(cb) { unablecb     = cb };
+    PHONE.callstatus = function(cb) { callstatuscb = cb };
+    PHONE.debug      = function(cb) { debugcb      = cb };
+    PHONE.connect    = function(cb) { connectcb    = cb };
+    PHONE.disconnect = function(cb) { disconnectcb = cb };
+    PHONE.reconnect  = function(cb) { reconnectcb  = cb };
+    PHONE.receive    = function(cb) { receivercb   = cb };
 
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // Add/Get Conversation - Creates a new PC or Returns Existing PC
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     function get_conversation(number) {
-        var talk = conversations[number] || (number => {
+        var talk = conversations[number] || (function(number){
             var talk = {
                 number  : number,
                 status  : '',
@@ -131,10 +128,10 @@ const PHONE = window.PHONE = config => {
                 imgsent : 0,
                 pc      : new PeerConnection(rtcconfig),
                 closed  : false,
-                usermsg : ()=>{},
+                usermsg : function(){},
                 thumb   : null,
-                connect : ()=>{},
-                end     : ()=>{}
+                connect : function(){},
+                end     : function(){}
             };
 
             // Setup Event Methods
@@ -143,7 +140,7 @@ const PHONE = window.PHONE = config => {
             talk.pc.number         = number;
 
             // Disconnect and Hangup
-            talk.hangup = signal => {
+            talk.hangup = function(signal) {
                 if (talk.closed) return;
 
                 talk.closed = true;
@@ -158,18 +155,18 @@ const PHONE = window.PHONE = config => {
             };
             
             // Stop Audio/Video Stream
-            talk.stop = () => {
-                if (mystream) stopcamera();
+            talk.stop = function() {
+                if (mystream) mystream.stop();
                 return mystream;
             };
 
             // Sending Messages
-            talk.send = message => {
+            talk.send = function(message) {
                 transmit( number, { usermsg : message } );
             };
 
             // Sending Stanpshots
-            talk.snap = () => {
+            talk.snap = function() {
                 var pic = snapper();
                 if (talk.closed) clearInterval(talk.snapi);
                 transmit( number, { thumbnail : pic } );
@@ -177,17 +174,17 @@ const PHONE = window.PHONE = config => {
                 img.src = pic;
                 return { data : pic, image : img };
             };
-            talk.snapi = setInterval( () => {
+            talk.snapi = setInterval( function() {
                 if (talk.imgsent++ > 1) return clearInterval(talk.snapi);
                 talk.snap();
             }, 1500 );
             talk.snap();
 
             // Nice Accessor to Update Disconnect & Establis CBs
-            talk.thumbnail = cb => {talk.thumb   = cb; return talk};
-            talk.ended     = cb => {talk.end     = cb; return talk};
-            talk.connected = cb => {talk.connect = cb; return talk};
-            talk.message   = cb => {talk.usermsg = cb; return talk};
+            talk.thumbnail = function(cb) {talk.thumb   = cb; return talk};
+            talk.ended     = function(cb) {talk.end     = cb; return talk};
+            talk.connected = function(cb) {talk.connect = cb; return talk};
+            talk.message   = function(cb) {talk.usermsg = cb; return talk};
 
             // Add Local Media Streams Audio Video Mic Camera
             if (mystream) talk.pc.addStream(mystream);
@@ -224,17 +221,17 @@ const PHONE = window.PHONE = config => {
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // Get Number
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-    PHONE.number = () => {
+    PHONE.number = function() {
         return config.number;
     };
 
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // Get Call History
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-    PHONE.history = settings => {
+    PHONE.history = function(settings) {
         pubnub.history({
             channel  : settings[number],
-            callback : call_history => {
+            callback : function(call_history) {
                 settings['history'](call_history[0]);
             }
         })
@@ -243,7 +240,7 @@ const PHONE = window.PHONE = config => {
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // Make Call - Create new PeerConnection
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-    PHONE.dial = function( number, servers ) {
+    PHONE.dial = function(number, servers) {
         if (!!servers) add_servers(servers);
         var talk = get_conversation(number);
         var pc   = talk.pc;
@@ -253,7 +250,7 @@ const PHONE = window.PHONE = config => {
         talk.dialed = true;
 
         // Send SDP Offer (Call)
-        pc.createOffer( offer => {
+        pc.createOffer( function(offer) {
             transmit( number, { hangup : true } );
             transmit( number, offer, 2 );
             pc.setLocalDescription( offer, debugcb, debugcb );
@@ -269,7 +266,7 @@ const PHONE = window.PHONE = config => {
     PHONE.snap = function( message, number ) {
         if (number) return get_conversation(number).snap(message);
         var pic = {};
-        PUBNUB.each( conversations, ( number, talk ) => {
+        PUBNUB.each( conversations, function( number, talk ) {
             pic = talk.snap();
         } );
         return pic;
@@ -278,9 +275,9 @@ const PHONE = window.PHONE = config => {
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // Send Message - Send Message to All Calls or a Specific Call
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-    PHONE.send = ( message, number ) => {
+    PHONE.send = function( message, number ) {
         if (number) return get_conversation(number).send(message);
-        PUBNUB.each( conversations, ( number, talk ) => {
+        PUBNUB.each( conversations, function( number, talk ) {
             talk.send(message);
         } );
     };
@@ -288,9 +285,9 @@ const PHONE = window.PHONE = config => {
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // End Call - Close All Calls or a Specific Call
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-    PHONE.hangup = number => {
+    PHONE.hangup = function(number) {
         if (number) return get_conversation(number).hangup();
-        PUBNUB.each( conversations, ( number, talk ) => {
+        PUBNUB.each( conversations, function( number, talk ) {
             talk.hangup();
         } );
     };
@@ -298,11 +295,11 @@ const PHONE = window.PHONE = config => {
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // Auto-hangup on Leave
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-    PUBNUB.bind( 'unload,beforeunload', window, () => {
+    PUBNUB.bind( 'unload,beforeunload', window, function() {
         if (PHONE.goodbye) return true;
         PHONE.goodbye = true;
 
-        PUBNUB.each( conversations, ( number, talk ) => {
+        PUBNUB.each( conversations, function( number, talk ) {
             var mynumber = config.number;
             var packet   = { hangup:true };
             var message  = { packet:packet, id:sessionid, number:mynumber };
@@ -342,7 +339,7 @@ const PHONE = window.PHONE = config => {
         canvas.height = snap.height;
 
         // Capture Local Pic
-        snapper = () => {
+        snapper = function() {
             try {
                 context.drawImage( video, 0, 0, snap.width, snap.height );
             } catch(e) {}
@@ -386,7 +383,7 @@ const PHONE = window.PHONE = config => {
             message    : receive,
             disconnect : disconnectcb,
             reconnect  : reconnectcb,
-            connect    : () => onready(true)
+            connect    : function() { onready(true) }
         });
     }
 
@@ -405,24 +402,15 @@ const PHONE = window.PHONE = config => {
     // Prepare Local Media Camera and Mic
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     function startcamera() {
-        navigator.getUserMedia( mediaconf, stream => {
+        navigator.getUserMedia( mediaconf, function(stream) {
             if (!stream) return unablecb(stream);
             mystream = stream;
             snapshots_setup(stream);
-            onready();
-            cameracb(myvideo);
-        }, info => {
+            if (autocam) startsubscribe();
+        }, function(info) {
             debugcb(info);
             return unablecb(info);
         } );
-    }
-
-    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-    // Stop Camera/Mic
-    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-    function stopcamera() {
-        if (!mystream) return;
-        for (let track of mystream.getTracks()) track.stop();
     }
     
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -447,7 +435,7 @@ const PHONE = window.PHONE = config => {
         if (!times) return;
         time = time || 1;
         if (time++ >= times) return;
-        setTimeout( () => {
+        setTimeout( function(){
             transmit( phone, packet, times, time );
         }, 150 );
     }
@@ -520,7 +508,7 @@ const PHONE = window.PHONE = config => {
 
         // Add SDP Offer/Answer
         pc.setRemoteDescription(
-            new SessionDescription(message.packet), () => {
+            new SessionDescription(message.packet), function() {
                 // Set Connected Status
                 update_conversation( talk, 'connected' );
 
@@ -528,7 +516,7 @@ const PHONE = window.PHONE = config => {
                 if (pc.remoteDescription.type != 'offer') return;
 
                 // Create Answer to Call
-                pc.createAnswer( answer => {
+                pc.createAnswer( function(answer) {
                     pc.setLocalDescription( answer, debugcb, debugcb );
                     transmit( message.number, answer, 2 );
                 }, debugcb );
@@ -557,21 +545,14 @@ const PHONE = window.PHONE = config => {
     }
 
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-    // Main - Setup Dialer Socket and Camera
+    // Main - Request Camera and Mic
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-    PHONE.startcamera  = startcamera;
-    PHONE.camera.start = startcamera;
-    PHONE.camera.stop  = stopcamera;
-    PHONE.camera.video = () => myvideo;
-    PHONE.camera.ready = PHONE.camera;
-
-    // Start Camera Automatically
+    PHONE.startcamera = startcamera;
     if (autocam) startcamera();
-
-    // Start Dailer Socket
-    startsubscribe();
+    else         startsubscribe();
 
     return PHONE;
 };
+
 
 })();
