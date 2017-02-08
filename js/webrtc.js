@@ -10,6 +10,7 @@ var PHONE = window.PHONE = function(config) {
     var pubkey        = config.publish_key   || 'demo';
     var snapper       = function(){ return ' ' }
     var subkey        = config.subscribe_key || 'demo';
+    var autocam       = config.autocam !== false;
     var sessionid     = PUBNUB.uuid();
     var mystream      = null;
     var myvideo       = document.createElement('video');
@@ -539,7 +540,8 @@ var PHONE = window.PHONE = function(config) {
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // Main - Request Camera and Mic
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-    getusermedia()
+    PHONE.getusermedia = getusermedia;
+    if (autocam) getusermedia();
 
     return PHONE;
 };
