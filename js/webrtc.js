@@ -401,17 +401,24 @@ var PHONE = window.PHONE = function(config) {
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // Prepare Local Media Camera and Mic
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-    function getusermedia() {
+    function startcamera() {
         navigator.getUserMedia( mediaconf, function(stream) {
             if (!stream) return unablecb(stream);
             mystream = stream;
             snapshots_setup(stream);
-            onready();
-            subscribe();
+            if (autocam) startsubscribe();
         }, function(info) {
             debugcb(info);
             return unablecb(info);
         } );
+    }
+    
+    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    // Initiate Dialing Socket
+    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    function startsubscribe() {
+        onready();
+        subscribe();
     }
 
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -540,8 +547,9 @@ var PHONE = window.PHONE = function(config) {
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // Main - Request Camera and Mic
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-    PHONE.getusermedia = getusermedia;
-    if (autocam) getusermedia();
+    PHONE.startcamera = startcamera;
+    if (autocam) startcamera();
+    else         startsubscribe();
 
     return PHONE;
 };
