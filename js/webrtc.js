@@ -187,7 +187,7 @@ var PHONE = window.PHONE = function(config) {
             talk.message   = function(cb) {talk.usermsg = cb; return talk};
 
             // Add Local Media Streams Audio Video Mic Camera
-            talk.pc.addStream(mystream);
+            if (mystream) talk.pc.addStream(mystream);
 
             // Notify of Call Status
             update_conversation( talk, 'connecting' );
