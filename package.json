@@ -2,7 +2,7 @@
   "name": "webrtc-sdk",
   "version": "1.2.0",
   "description": "JavaScript WebRTC Calling SDK.",
-  "main": "js/webrtc.js",
+  "main": "webrtc.js",
   "scripts": {
     "test": ""
   },
