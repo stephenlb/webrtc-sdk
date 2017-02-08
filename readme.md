@@ -37,10 +37,11 @@ WebRTC experience.  Here is a list of the options available.
 You need an HTTPS (TLS) File Server. To start a local secure file server:
 
 ```shell
-python <(curl -L https://goo.gl/Rrko89)
+python <(curl -L https://goo.gl/LiW3lp)
 ```
 
-Then open your browser and point it to your file in the directory you ran the python HTTPS server.
+Then open your browser and point it to your file in
+the directory you ran the python HTTPS server.
 
 ```shell
 open https://0.0.0.0:4443/your-file-here.html
@@ -49,7 +50,9 @@ open https://0.0.0.0:4443/your-file-here.html
 > This is a Simple Python HTTPS Secure Server
 > https://gist.github.com/stephenlb/2e19d98039469b9d0134
 
-We posted an answer on [StackOverflow WebRTC running on localhost HTTPS](http://stackoverflow.com/questions/41935178/cannot-get-pubnub-webrtc-tutorial-to-work/41969170#41969170).  This will get you started testing on your laptop.
+We posted an answer on
+[StackOverflow WebRTC HTTPS](http://stackoverflow.com/a/41969170/524733).
+This will get you started testing on your laptop.
 
 ### Supported WebRTC Calling API Mobile Devices and Browser
 
