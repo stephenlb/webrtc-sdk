@@ -40,6 +40,12 @@ You need an HTTPS (TLS) File Server. To start a local secure file server:
 python <(curl -L https://goo.gl/Rrko89)
 ```
 
+Then open your browser and point it to your file in the directory you ran the python HTTPS server.
+
+```shell
+open https://0.0.0.0:4443/your-file-here.html
+```
+
 > This is a Simple Python HTTPS Secure Server
 > https://gist.github.com/stephenlb/2e19d98039469b9d0134
 
