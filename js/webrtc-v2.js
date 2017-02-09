@@ -12,12 +12,12 @@ const PHONE = window.PHONE = config => {
     const subkey        = config.subscribe_key || 'demo';
     const autocam       = config.autocam !== false;
     const sessionid     = uuid();
-    let   snapper       = ()=>' ';
-    let   mystream      = null;
-    let   myconnection  = false;
     const myvideo       = document.createElement('video');
     const mediaconf     = config.media || { audio : true, video : true };
     const conversations = {};
+    let   snapper       = ()=>' ';
+    let   mystream      = null;
+    let   myconnection  = false;
 
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // RTC Peer Connection Session (one per call)
@@ -227,9 +227,10 @@ const PHONE = window.PHONE = config => {
     PHONE.uuid = uuid;
 
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-    // DOM Element By ID
+    // DOM Helper Functions
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-    PHONE.$ = el => document.getElementById(el);
+    PHONE.$  = el => document.getElementById(el);
+    PHONE.$$ = el => document.getElementsByTagName(el);
 
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // DOM Bind
@@ -425,7 +426,7 @@ const PHONE = window.PHONE = config => {
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     function dailer_subscribe() {
         pubnub.subscribe({
-            restore    : true
+            restore    : false
         ,   channel    : config.number
         ,   message    : receive
         ,   disconnect : disconnectcb

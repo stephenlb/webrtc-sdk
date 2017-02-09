@@ -113,9 +113,8 @@ Make your first html file named `dial.html` and copy/paste the following:
 <div id="video-out"> Making a Call </div>
 
 <!-- Libs and Scripts -->
-<script src="https://cdn.pubnub.com/pubnub.min.js"></script>
 <script src="https://stephenlb.github.io/webrtc-sdk/js/webrtc-v2.js"></script>
-<script>(function(){
+<script>(()=>{
     // ~Warning~ You must get your own API Keys for non-demo purposes.
     // ~Warning~ Get your PubNub API Keys: https://www.pubnub.com/get-started/
     // The phone *number* can by any string value
@@ -141,7 +140,7 @@ Make your first html file named `dial.html` and copy/paste the following:
 
         // Display Your Friend's Live Video
         session.connected(function(session){
-            PUBNUB.$('video-out').appendChild(session.video);
+            phone.$('video-out').appendChild(session.video);
         });
 
     });
@@ -336,9 +335,8 @@ By default the WebRTC SDK starts user's camera.  You can optionally prevent this
 <div id="video-out"></div>
 
 <!-- Libs and Scripts -->
-<script src="https://cdn.pubnub.com/pubnub.min.js"></script>
 <script src="https://stephenlb.github.io/webrtc-sdk/js/webrtc-v2.js"></script>
-<script>(function(){
+<script>(=>(){
 
     // ~Warning~ You must get your own API Keys for non-demo purposes.
     // ~Warning~ Get your PubNub API Keys: https://www.pubnub.com/get-started/
@@ -355,18 +353,18 @@ By default the WebRTC SDK starts user's camera.  You can optionally prevent this
     });
 
     // Show Number
-    document.getElementById('number').innerHTML = 'Number: ' + number;
+    phone('number').innerHTML = 'Number: ' + number;
 
     // Start Camera
-    PUBNUB.bind( 'mousedown,touchstart', PUBNUB.$('startcam'), function() {
+    phone.bind( 'mousedown,touchstart', phone.$('startcam'), function() {
         phone.startcamera();
         return false;
     } );
 
     // Start Call
-    PUBNUB.bind( 'mousedown,touchstart', PUBNUB.$('startcall'), function() {
+    phone.bind( 'mousedown,touchstart', phone.$('startcall'), function() {
         console.log('calling');
-        session = phone.dial(PUBNUB.$('dial').value);
+        session = phone.dial(phone.$('dial').value);
         return false;
     } );
 
@@ -385,7 +383,7 @@ By default the WebRTC SDK starts user's camera.  You can optionally prevent this
 
         // Display Your Friend's Live Video
         session.connected(function(session){
-            PUBNUB.$('video-out').appendChild(session.video);
+            phone.$('video-out').appendChild(session.video);
         });
 
     });
@@ -732,7 +730,7 @@ the **video** stream is ready to display.
 
 ```javascript
 session.connected(function(session){
-    var body = document.getElementsByTagName('body')[0];
+    var body = phone.$$('body')[0];
     body.appendChild(session.video);
 });
 ```
@@ -772,7 +770,7 @@ The Session Video ref is an HTML Video Element `<video>`.
 
 ```javascript
 session.connected(function(session){
-    var body  = document.getElementsByTagName('body')[0];
+    var body  = phone.$$('body')[0];
     var video = session.video;
 
     body.appendChild(video);
@@ -788,7 +786,7 @@ The Session Image ref is an HTML Image Element `<img>`.
 
 ```javascript
 session.thumbnail(function(session){
-    var body  = document.getElementsByTagName('body')[0];
+    var body  = phone.$$('body')[0];
     var image = session.image;
 
     body.appendChild(image);

@@ -1,0 +1,97 @@
+<!-- Styles -->
+<style> video { width: 100px } </style>
+
+<div>You should see <strong>4 video streams</strong>.</div>
+<!-- Video Output Zone -->
+<div id="video-out"></div>
+
+<!-- Libs and Scripts -->
+<script src="../js/webrtc-v2.js"></script>
+<script>(()=>{
+    'use strict';
+
+    function number() { return (''+Math.random()*100000).split('.')[0] }
+
+    // ~Warning~ You must get your own API Keys for non-demo purposes.
+    // ~Warning~ Get your PubNub API Keys: https://www.pubnub.com/get-started/
+    // The phone *number* can by any string value
+    const pubkey  = 'pub-c-561a7378-fa06-4c50-a331-5c0056d0163c';
+    const subkey  = 'sub-c-17b7db8a-3915-11e4-9868-02ee2ddab7fe';
+
+    // Phone One
+    let   phoneOneSession = null;
+    let   phoneOneReady   = false;
+    const numberOne       = number();
+    const phoneOne        = PHONE({
+        number        : numberOne
+    ,   publish_key   : pubkey
+    ,   subscribe_key : subkey 
+    });
+
+    // Phone Two
+    let   phoneTwoSession = null;
+    let   phoneTwoReady   = false;
+    const numberTwo       = number();
+    let   phoneTwo        = null;
+
+    // Local Camera Display
+    phoneOne.camera.ready( video => {
+        phoneOne.$('video-out').appendChild(video);
+    });
+
+    // Debugging Output
+    //phoneOne.debug( info => console.info(info) );
+    //phoneTwo.debug( info => console.info(info) );
+
+    function phoneOneCallPhoneTwo() {
+        if (!(phoneOneReady && phoneTwoReady)) return;
+        phoneOneSession = phoneOne.dial(numberTwo);
+    }
+
+    // As soon as the phone is ready we can make calls
+    phoneOne.ready(()=>{
+        phoneOneReady = true;
+
+        phoneTwo = PHONE({
+            number        : numberTwo
+        ,   publish_key   : pubkey
+        ,   subscribe_key : subkey
+        });
+
+        phoneTwo.camera.ready( video => {
+            phoneTwo.$('video-out').appendChild(video);
+        });
+
+        phoneTwo.ready(()=>{
+            phoneTwoReady = true;
+            phoneOneCallPhoneTwo();
+        });
+
+        // When Call Comes In or is to be Connected
+        phoneTwo.receive( session => {
+
+            // Display Your Friend's Live Video
+            session.connected( session => {
+                console.log('SessionTwo: CONNECTED');
+                phoneTwo.$('video-out').appendChild(session.video);
+            });
+
+            session.ended( session => console.log('SessionTwo: ENDED') );
+
+        });
+    });
+
+    // When Call Comes In or is to be Connected
+    phoneOne.receive( session => {
+
+        // Display Your Friend's Live Video
+        session.connected( session => {
+            console.log('SessionOne: CONNECTED');
+            phoneOne.$('video-out').appendChild(session.video);
+        });
+
+        session.ended( session => console.log('SessionOne: ENDED') );
+
+    });
+
+})();</script>
