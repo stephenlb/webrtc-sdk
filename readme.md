@@ -1,4 +1,6 @@
-# WebRTC Simple Calling API + Mobile
+# WebRTC V2 Simple Calling API + Mobile
+
+> WebRTC SDK Upgraded! ES6, new camera control and 100x less JS.
 
 At PubNub we believe simplicity is essential for our SDK usability.
 We've taken a simplified approach to WebRTC Peer Connections by creating
