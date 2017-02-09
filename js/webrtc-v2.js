@@ -286,6 +286,8 @@ const PHONE = window.PHONE = config => {
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     PHONE.dial = function( number, servers ) {
         if (!!servers) add_servers(servers);
+        if (!number) return debugcb("Missing Number to Dial.");
+
         let talk = get_conversation(number);
         let pc   = talk.pc;
 

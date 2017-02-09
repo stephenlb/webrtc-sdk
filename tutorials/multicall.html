@@ -17,7 +17,6 @@ video { width: 100px }
 <div id="video-out"></div>
 
 <!-- Libs and Scripts -->
-<script src="https://cdn.pubnub.com/pubnub.min.js"></script>
 <script src="../js/webrtc-v2.js"></script>
 <script>(()=>{
     'use strict';
@@ -26,16 +25,17 @@ video { width: 100px }
     // ~Warning~ Get your PubNub API Keys: https://www.pubnub.com/get-started/
     // The phone *number* can by any string value
 
-    let ready     = false;
-    let session   = null;
+    let   session = null;
     const number  = Math.ceil(Math.random()*10000);
     const phone   = PHONE({
         number        : number
     ,   autocam       : false
     ,   publish_key   : 'pub-c-561a7378-fa06-4c50-a331-5c0056d0163c'
     ,   subscribe_key : 'sub-c-17b7db8a-3915-11e4-9868-02ee2ddab7fe'
-    ,   ssl           : true
     });
+
+    // Debugging Output
+    phone.debug( info => console.info(info) );
 
     // Show Number
     phone.$('number').innerHTML = 'Number: ' + number;
@@ -54,20 +54,6 @@ video { width: 100px }
     ,   event => phone.camera.stop()
     );
 
-    // Start Call
-    phone.bind(
-        'mousedown,touchstart'
-    ,   phone.$('startcall')
-    ,   event => session = phone.dial(phone.$('dial').value)
-    );
-
-    // Stop Call
-    phone.bind(
-        'mousedown,touchstart'
-    ,   phone.$('stopcall')
-    ,   event => phone.hangup()
-    );
-
     // Local Camera Display
     phone.camera.ready( video => {
         phone.$('video-out').appendChild(video);
@@ -75,7 +61,21 @@ video { width: 100px }
 
     // As soon as the phone is ready we can make calls
     phone.ready(()=>{
-        ready = true;
+
+        // Start Call
+        phone.bind(
+            'mousedown,touchstart'
+        ,   phone.$('startcall')
+        ,   event => session = phone.dial(phone.$('dial').value)
+        );
+
+        // Stop Call
+        phone.bind(
+            'mousedown,touchstart'
+        ,   phone.$('stopcall')
+        ,   event => phone.hangup()
+        );
+
     });
 
     // When Call Comes In or is to be Connected
