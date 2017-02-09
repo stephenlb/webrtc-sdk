@@ -7,7 +7,7 @@
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 const PHONE = window.PHONE = config => {
     const PHONE         = ()=>{};
-    const pubnub        = PUBNUB(config);
+    const pubnub        = socket(config);
     const pubkey        = config.publish_key   || 'demo';
     const subkey        = config.subscribe_key || 'demo';
     const autocam       = config.autocam !== false;
@@ -421,14 +421,14 @@ const PHONE = window.PHONE = config => {
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // Listen For New Incoming Calls
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-    function subscribe() {
+    function dailer_subscribe() {
         pubnub.subscribe({
-            restore    : true,
-            channel    : config.number,
-            message    : receive,
-            disconnect : disconnectcb,
-            reconnect  : reconnectcb,
-            connect    : () => onready(true)
+            restore    : true
+        ,   channel    : config.number
+        ,   message    : receive
+        ,   disconnect : disconnectcb
+        ,   reconnect  : reconnectcb
+        ,   connect    : () => onready(true)
         });
     }
 
@@ -472,7 +472,7 @@ const PHONE = window.PHONE = config => {
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     function startsubscribe() {
         onready();
-        subscribe();
+        dailer_subscribe();
     }
 
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -630,149 +630,206 @@ function uuid(callback) {
     return u;
 }
 
-// =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-// Request URL
-// =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-const requester = setup => {
 
-    let xhr      = new XMLHttpRequest()
-    ,   finished = false
-    ,   timeout  = setup.timeout || 5000
-    ,   success  = setup.success || function(){}
-    ,   fail     = setup.fail    || function(){};
 
-    // Cancel a Pending Request
-    function abort() {
-        if (finished) return;
-        xhr.abort && xhr.abort();
-        finish();
+// =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+// PubNub Socket Lib
+// =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+function socket(setup) {
+    const pubkey = setup.publish_key   || setup.pubkey || 'demo'
+    ,     subkey = setup.subscribe_key || setup.subkey || 'demo';
+
+    // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+    // Publish
+    // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+    function publish(data) {
+        const publisher = requester({
+            timeout : 5000
+        ,   success : setup.status || (()=>{})
+        ,   fail    : setup.status || (()=>{})
+        });
+
+        let url = ['https://pubsub.pubnub.com/publish'
+                  , pubkey
+                  , subkey,       '0'
+                  , data.channel, '0'
+                  , encodeURIComponent(JSON.stringify(data.message))
+                  ].join('/');
+
+        publisher({ url : url });
     }
 
-    // Mark Request as Completed
-    function finish() {
-        finished = true;
-    }
+    // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+    // Subscribe
+    // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+    function subscribe(setup) {
+        let channel    = setup.channel       || 'a'
+        ,   message    = setup.message       || (()=>{})
+        ,   connect    = setup.connect       || (()=>{})
+        ,   disconnect = setup.disconnect    || (()=>{})
+        ,   reconnect  = setup.reconnect     || (()=>{})
+        ,   timetoken  = setup.timetoken     || '0'
+        ,   timeout    = setup.timeout       || 300000
+        ,   windy      = setup.windowing     || 10
+        ,   restore    = setup.restore 
+        ,   windowing  = 10
+        ,   connected  = true
+        ,   stop       = false
+        ,   url        = ''
+        ,   origin     = 'ps'+(Math.random()+'').split('.')[1]+'.pubnub.com';
 
-    // When a Request has a Payload
-    xhr.onload = () => {
-        if (finished) return;
-        finish();
-        let result;
+        // Requester Object
+        let request = requester({
+            timeout : timeout,
+            success : next,
+            fail    : () => next()
+        });
 
-        try      { result = JSON.parse(xhr.response) }
-        catch(e) { fail(xhr) }
+        // Subscribe Loop
+        function next(payload) { 
+            if (stop) return;
+            if (payload) {
+                if (+timetoken < 100000) connect();
+                if (!connected)          reconnect();
 
-        if (result) success(result);
-        else        fail(xhr);
-        result = null;
-    };
+                connected = true;
 
-    // When a Request has Failed
-    xhr.onabort = xhr.ontimeout = xhr.onerror = () => {
-        if (finished) return;
-        finish();
-        fail(xhr);
-    };
+                if (!restore) timetoken = payload.t.t;
+                else {
+                    timetoken = '1000';
+                    restore   = false;
+                }
 
-    // Timeout and Aboart for Slow Requests
-    xhr.timer = setTimeout( () => {
-        if (finished) return;
-        abort();
-        fail(xhr);
-    }, timeout );
+                payload.m.forEach( msg => message( msg.d, msg ) );
+            }
+            else {
+                if (connected) disconnect();
+                connected = false;
+            }
 
-    // Return Requester Object
-    return setup => {
-        let url     = setup.url     || 'https://ps.pubnub.com/time/0'
-        ,   headers = setup.headers || {}
-        ,   method  = setup.method  || 'GET'
-        ,   payload = setup.payload || null
-        ,   params  = setup.params  || setup.data || {}
-        ,   data    = [];
+            url = [
+                'https://',       origin, 
+                '/v2/subscribe/', subkey,
+                '/',              channel,
+                '/0/',            timetoken
+            ].join('');
 
-        // URL Parameters
-        for (let param in params)
-            data.push([ param, params[param] ].join('='));
-
-        // Start Request
-        finished = false;
-        xhr.timeout = timeout;
-        xhr.open(
-            method,
-            url + (data.length ? ('?' + data.join('&')) : ''),
-            true
-        );
-
-        // Headers
-        for (let header in headers)
-            xhr.setRequestHeader( header, headers[header] );
-
-        // Send Request
-        xhr.send(payload);
-
-        return {
-            xhr   : xhr,
-            abort : abort
-        } 
-    };
-};
-
-// =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-// Subscribe
-// =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-const subscribe = setup => {
-    let pubkey    = setup.pubkey    || 'demo'
-    ,   subkey    = setup.subkey    || 'demo'
-    ,   channel   = setup.channel   || 'a'
-    ,   timeout   = setup.timeout   || 300000
-    ,   timetoken = setup.timetoken || '0'
-    ,   message   = setup.message   || (()=>{})
-    ,   windy     = setup.windowing || 10
-    ,   windowing = 10
-    ,   stop      = false
-    ,   url       = ''
-    ,   origin    = 'ps'+(Math.random()+'').split('.')[1]+'.pubnub.com';
-
-    // Requester Object
-    let request = requester({
-        timeout : timeout,
-        success : next,
-        fail    : () => next()
-    });
-
-    // Subscribe Loop
-    function next(payload) { 
-        if (stop) return;
-        if (payload) {
-            timetoken = payload.t.t;
-            message(payload);
+            setTimeout( () => {
+                windowing = windy;
+                request({ url : url });
+            }, windowing );
         }
 
-        url = [
-            'https://',       origin, 
-            '/v2/subscribe/', subkey,
-            '/',              channel,
-            '/0/',            timetoken
-        ].join('');
+        // Cancel Subscription
+        function unsubscribe() { stop = true }
 
-        setTimeout( () => {
-            windowing = windy;
-            request({ url : url });
-        }, windowing );
+        // Start Subscribe Loop
+        next();
+
+        // Allow Cancelling Subscriptions
+        return { unsubscribe : unsubscribe };
     }
 
-    // Cancel Subscription
-    function unsubscribe() {
-        stop = true;
+    // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+    // History
+    // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+    function history(data) {
+        // TODO
     }
 
-    // Start Subscribe Loop
-    next();
+    // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+    // Request URL
+    // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+    function requester(setup) {
+        let xhr      = new XMLHttpRequest()
+        ,   finished = false
+        ,   timeout  = setup.timeout || 5000
+        ,   success  = setup.success || function(){}
+        ,   fail     = setup.fail    || function(){};
 
-    // Allow Cancelling Subscriptions
+        // Cancel a Pending Request
+        function abort() {
+            if (finished) return;
+            xhr.abort && xhr.abort();
+            finish();
+        }
+
+        // Mark Request as Completed
+        function finish() {
+            finished = true;
+        }
+
+        // When a Request has a Payload
+        xhr.onload = () => {
+            if (finished) return;
+            finish();
+            let result;
+
+            try      { result = JSON.parse(xhr.response) }
+            catch(e) { fail(xhr) }
+
+            if (result) success(result);
+            else        fail(xhr);
+            result = null;
+        };
+
+        // When a Request has Failed
+        xhr.onabort = xhr.ontimeout = xhr.onerror = () => {
+            if (finished) return;
+            finish();
+            fail(xhr);
+        };
+
+        // Timeout and Aboart for Slow Requests
+        xhr.timer = setTimeout( () => {
+            if (finished) return;
+            abort();
+            fail(xhr);
+        }, timeout );
+
+        // Return Requester Object
+        return setup => {
+            let url     = setup.url     || 'https://ps.pubnub.com/time/0'
+            ,   headers = setup.headers || {}
+            ,   method  = setup.method  || 'GET'
+            ,   payload = setup.payload || null
+            ,   params  = setup.params  || setup.data || {}
+            ,   data    = [];
+
+            // URL Parameters
+            for (let param in params)
+                data.push([ param, params[param] ].join('='));
+
+            // Start Request
+            finished = false;
+            xhr.timeout = timeout;
+            xhr.open(
+                method,
+                url + (data.length ? ('?' + data.join('&')) : ''),
+                true
+            );
+
+            // Headers
+            for (let header in headers)
+                xhr.setRequestHeader( header, headers[header] );
+
+            // Send Request
+            xhr.send(payload);
+
+            return {
+                xhr   : xhr,
+                abort : abort
+            } 
+        };
+    }
+
+    // Return Socket Lib Instance
     return {
-        unsubscribe : unsubscribe
+        publish   : publish
+    ,   subscribe : subscribe
+    ,   history   : history
     };
-};
+
+}
 
 })();
