@@ -83,15 +83,11 @@
 
     // When Call Comes In or is to be Connected
     phoneOne.receive( session => {
-
-        // Display Your Friend's Live Video
         session.connected( session => {
             console.log('SessionOne: CONNECTED');
             phoneOne.$('video-out').appendChild(session.video);
         });
-
         session.ended( session => console.log('SessionOne: ENDED') );
-
     });
 
 })();</script>
