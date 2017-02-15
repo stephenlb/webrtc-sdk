@@ -148,7 +148,6 @@ const PHONE = window.PHONE = config => {
 
                 talk.closed = true;
                 talk.imgset = false;
-                clearInterval(talk.snapi);
 
                 if (signal !== false) transmit( number, { hangup : true } );
 
@@ -171,16 +170,13 @@ const PHONE = window.PHONE = config => {
             // Sending Stanpshots
             talk.snap = () => {
                 let pic = snapper();
-                if (talk.closed) clearInterval(talk.snapi);
                 transmit( number, { thumbnail : pic } );
                 let img = document.createElement('img');
                 img.src = pic;
                 return { data : pic, image : img };
             };
-            talk.snapi = setInterval( () => {
-                if (talk.imgsent++ > 1) return clearInterval(talk.snapi);
-                talk.snap();
-            }, 1500 );
+
+            // Take One Snapshot
             talk.snap();
 
             // Nice Accessor to Update Disconnect & Establis CBs
@@ -364,7 +360,7 @@ const PHONE = window.PHONE = config => {
     // Grab Local Video Snapshot
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     function snapshots_setup(stream) {
-        let video   = myvideo;
+        let video   = document.createElement('video');
         let canvas  = document.createElement('canvas');
         let context = canvas.getContext("2d");
         let snap    = { width: 240, height: 180 };
@@ -382,10 +378,6 @@ const PHONE = window.PHONE = config => {
         canvas.width  = snap.width;
         canvas.height = snap.height;
 
-        // Clear DOM Attributes
-        video.removeAttribute('width');
-        video.removeAttribute('height');
-
         // Capture Local Pic
         snapper = () => {
             try {
@@ -393,8 +385,6 @@ const PHONE = window.PHONE = config => {
             } catch(e) {}
             return canvas.toDataURL( 'image/jpeg', 0.30 );
         };
-
-        PHONE.video = video;
     }
 
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-

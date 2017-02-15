@@ -96,7 +96,7 @@
 <script src="https://cdn.pubnub.com/pubnub.js"></script>
 
 <!-- WebRTC SDK -->
-<script src="js/webrtc.js"></script>
+<script src="js/webrtc-v2.js"></script>
 <script src="js/sound.js"></script>
 <script>(function(){
 
@@ -176,6 +176,8 @@ function connected(session) {
 // Video Session Ended
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 function ended(session) {
+    clearInterval(thumbnail.ival);
+    thumbnail.ival = 0;
     set_icon('facetime-video');
     img_out.innerHTML = '';
     sounds.play('sound/goodbye');
@@ -257,6 +259,9 @@ phone.receive(function(session){
     session.thumbnail(thumbnail);
     session.connected(connected);
     session.ended(ended);
+
+    if (!thumbnail.ival)
+        thumbnail.ival = setInterval( () => thumbnail(session), 100 );
 });
 
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
