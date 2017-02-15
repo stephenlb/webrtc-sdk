@@ -126,13 +126,15 @@
 }
 #video-thumbnail {
     position: absolute;
-    top: -180px;
+    top: -380px;
     right: 10px;
 }
 #video-thumbnail img {
-    width: 120px;
-    height: 90px;
-    border-radius: 6px;
+    width: 72px;
+    height: 54px;
+    border-radius: 60px;
+    border: 0;
+    opacity: 0.8;
 }
 
 .dial-buttons .btn {
@@ -190,7 +192,7 @@
         padding-right: 0;
     }
     #video-thumbnail {
-        top: -105px;
+        top: -245px;
         right: 5px;
     }
 }
