@@ -19,14 +19,7 @@
     "webrtc-phone",
     "webrtc-video",
     "webrtc-sdk",
-    "webrtc-receiver",
-    "webrtc",
-    "webrtc",
-    "webrtc",
-    "webrtc",
-    "webrtc",
-    "webrtc",
-    "webrtc"
+    "webrtc-receiver"
   ],
   "author": "Stephen Blum",
   "license": "MIT",
