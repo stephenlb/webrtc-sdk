@@ -1,7 +1,7 @@
 {
   "name": "webrtc-sdk",
   "main": "js/webrtc-v2.js",
-  "license": "https://github.com/stephenlb/webrtc-sdk/blob/master/LICENSE",
+  "license": "https://github.com/stephenlb/webrtc-sdk/blob/master/license",
   "keywords": [
     "webrtc",
     "webrtc-call",
