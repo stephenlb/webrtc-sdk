@@ -44,7 +44,7 @@
                 <div class="col-xs-12 text-center">
                     <div id="video-border">
                         <div class="pubnub-relative">
-                            <div id="video-self">...834y8uask</div>
+                            <div id="video-self"></div>
                         </div>
                         <div id="video-display">
                             <span class="glyphicon glyphicon-flash"></span>
@@ -236,6 +236,13 @@ phone.ready(function(){
     // Take Picture
     PUBNUB.bind( 'mousedown,touchstart', PUBNUB.$('snap'), function() {
         var photo = phone.snap();
+
+        if (!(photo && photo.image))
+            return console.error(
+                '%c Connect your video with a partner first.',
+                'font-size:30px;background:#f00;color:#fff'
+            );
+
         img_self.innerHTML = ' ';
         img_self.appendChild(photo.image);
         setTimeout( function() { img_self.innerHTML = ' ' }, 750 );
