@@ -1,0 +1,65 @@
+
+<!-- dial.html -->
+
+<style>
+#video-out {
+    position: relative;
+}
+#my-number {
+    position: fixed;
+    left: 10px;
+    color: #fff;
+    z-index: 100;
+}
+</style>
+
+<!-- Video Output Zone -->
+<input id="number" /><button onclick="call()">call</button>
+<div id="video-out">
+    <div id="my-number">Loading...</div>
+</div>
+
+<!-- Libs and Scripts -->
+<script src="https://cdn.pubnub.com/pubnub.js"></script>
+<!-- <script src="https://stephenlb.github.io/webrtc-sdk/js/webrtc-v2.js"></script> -->
+<script src="../js/webrtc-v2.js"></script>
+
+<script>
+    var session = null;
+    const number = (''+Math.random()*100000).split('.')[0];
+    console.log(number);
+    document.getElementById('my-number').innerHTML = number;
+    
+    var phone = PHONE({
+        number        : number,
+        publish_key   : 'pub-c-561a7378-fa06-4c50-a331-5c0056d0163c',
+        subscribe_key : 'sub-c-17b7db8a-3915-11e4-9868-02ee2ddab7fe',
+        media         : { audio : true, video : true },
+        ssl           : true
+    });
+
+    phone.ready(function(){
+        console.log('Phone is ready');
+    });
+
+    phone.camera.ready(function(video){
+        console.log('Camera is ready', video);
+        phone.$('video-out').append(video); //first attempt, all I get is an empty video tag
+    })
+
+    // When Call Comes In or is to be Connected
+    phone.receive(function(session){
+        console.log('Receiving call from Friend!');
+        session.connected(function(session){
+            // Display Your Friend's Live Video
+            console.log("Showing your friend's video stream");
+            phone.$('video-out').appendChild(session.video);
+        });
+    });
+
+    function call() {
+        var callee = document.getElementById('number').value;
+        console.log('calling ' + callee)
+        session = phone.dial(callee);
+    }
+</script>

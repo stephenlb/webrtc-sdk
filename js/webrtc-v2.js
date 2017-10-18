@@ -12,9 +12,9 @@ const PHONE = window.PHONE = config => {
     const subkey        = config.subscribe_key || 'demo';
     const autocam       = config.autocam !== false;
     const sessionid     = uuid();
-    const myvideo       = document.createElement('video');
     const mediaconf     = config.media || { audio : true, video : true };
     const conversations = {};
+    let   myvideo       = document.createElement('video');
     let   snapper       = ()=>' ';
     let   mystream      = null;
     let   myconnection  = false;
@@ -360,7 +360,7 @@ const PHONE = window.PHONE = config => {
     // Grab Local Video Snapshot
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     function snapshots_setup(stream) {
-        let video   = document.createElement('video');
+        let video   = myvideo = document.createElement('video');
         let canvas  = document.createElement('canvas');
         let context = canvas.getContext("2d");
         let snap    = { width: 240, height: 180 };
