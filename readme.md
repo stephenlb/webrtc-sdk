@@ -537,6 +537,22 @@ session.connected(function(session){ /* call connected */ });
 session.ended(function(session){     /* call ended     */ });
 ```
 
+### Set Camera Resolution
+
+You can change the resolution of your camera's media capture.
+This allows you to set lower resolutions for slower p2p connections.
+You can also set HD 4K resolutions if you have the camera to do so.
+
+```javascript
+// Phone
+const phone = PHONE({
+    number        : number
+,   media         : { video: { width:1280, height:720 } } // <---- set res
+,   publish_key   : pubkey
+,   subscribe_key : subkey 
+});
+```
+
 ### WebRTC Phone Multi-party Dialing
 ##### `phone.dial(number)`
 

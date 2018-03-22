@@ -1,6 +1,6 @@
 {
   "name": "webrtc-sdk",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "description": "JavaScript WebRTC Calling SDK.",
   "main": "js/webrtc-v2.js",
   "scripts": {

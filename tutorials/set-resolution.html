@@ -1,0 +1,54 @@
+<!-- Styles -->
+<style> video { width:640px; height:480px } </style>
+
+<!-- Video Output Zone -->
+<div id="video-out"></div>
+
+<!-- Libs and Scripts -->
+<script src="https://stephenlb.github.io/webrtc-sdk/js/webrtc-v2.js"></script>
+<script>(()=>{
+    'use strict';
+
+    // ~Warning~ You must get your own API Keys for non-demo purposes.
+    // ~Warning~ Get your PubNub API Keys: https://www.pubnub.com/get-started/
+    // The phone *number* can by any string value
+    const pubkey = 'pub-c-561a7378-fa06-4c50-a331-5c0056d0163c';
+    const subkey = 'sub-c-17b7db8a-3915-11e4-9868-02ee2ddab7fe';
+    const number = (''+Math.random()*100000).split('.')[0];
+
+    // Phone
+    const phone = PHONE({
+        number        : number
+    ,   media         : { video: { width:1280, height:720 } } // <--- Set Camera Resolution
+    ,   publish_key   : pubkey
+    ,   subscribe_key : subkey 
+    });
+
+    // Local Camera Display
+    phone.camera.ready( video => {
+        console.log('Camera Ready');
+        phone.$('video-out').appendChild(video);
+    });
+
+    // Debugging Output
+    //phone.debug( info => console.info(info) );
+
+    // As soon as the phone is ready we can make calls
+    phone.ready(()=>{
+        let session = phone.dial(number);
+    });
+
+    // When Call Comes In
+    phone.receive(function(session){
+
+        // Display Your Friend's Live Video
+        session.connected( session => {
+            console.log('Session: CONNECTED');
+            phone.$('video-out').appendChild(session.video);
+        });
+
+        session.ended( session => console.log('Session: ENDED') );
+
+    });
+
+})();</script>
