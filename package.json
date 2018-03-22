@@ -9,7 +9,7 @@
   "dependencies": {},
   "repository": {
     "type": "git",
-    "url": "https://github.com/stephenlb/webrtc-sdk.git#master"
+    "url": "https://github.com/stephenlb/webrtc-sdk.git"
   },
   "keywords": [
     "webrtc",
@@ -26,5 +26,5 @@
   "bugs": {
     "url": "https://github.com/stephenlb/webrtc-sdk/issues"
   },
-  "homepage": "http://stephenlb.github.io/webrtc-sdk"
+  "homepage": "http://stephenlb.github.io/webrtc-sdk#readme"
 }
