@@ -5,6 +5,12 @@
 // WebRTC Simple Calling API + Mobile
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 var PHONE = window.PHONE = function(config) {
+
+    var defaultmedia  = { media : {
+        audio : {},
+        video : { facingMode : "user" }
+    } };
+    var config        = merge( defaultmedia, config || {} );
     var PHONE         = function(){};
     var pubnub        = PUBNUB(config);
     var pubkey        = config.publish_key   || 'demo';
@@ -15,7 +21,7 @@ var PHONE = window.PHONE = function(config) {
     var mystream      = null;
     var myvideo       = document.createElement('video');
     var myconnection  = false;
-    var mediaconf     = config.media || { audio : true, video : true };
+    var mediaconf     = config.media;
     var conversations = {};
 
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -544,6 +550,32 @@ var PHONE = window.PHONE = function(config) {
             debugcb
         );
     }
+
+    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    // Merge Two Objects
+    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    function merge( target, add ) {
+	function isObject(obj) {
+	    if (typeof obj == "object") {
+		for (var key in obj) {
+		    if (obj.hasOwnProperty(key)) {
+			return true; // search for first object prop
+		    }
+		}
+	    }
+	    return false;
+	}
+	for (var key in add) {
+	    if (add.hasOwnProperty(key)) {
+		if (target[key] && isObject(target[key]) && isObject(add[key])) {
+		    this.mergeJSON(target[key], add[key]);
+		} else {
+		    target[key] = add[key];
+		}
+	    }
+	}
+	return target;
+    };
 
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // Main - Request Camera and Mic
