@@ -334,10 +334,10 @@ var PHONE = window.PHONE = function(config) {
         var snap    = { width: 240, height: 180 };
 
         // Video Settings
-        video.width  = snap.width;
-        video.height = snap.height;
-        video.src    = URL.createObjectURL(stream);
-        video.volume = 0.0;
+        video.width     = snap.width;
+        video.height    = snap.height;
+        video.srcObject = stream;
+        video.volume    = 0.0;
         video.play();
 
         // Canvas Settings
@@ -364,7 +364,8 @@ var PHONE = window.PHONE = function(config) {
         var number = (obj.srcElement || obj.target).number;
         var talk   = get_conversation(number);
 
-        vid.setAttribute( 'autoplay', 'autoplay' );
+        vid.setAttribute( 'autoplay',    'autoplay'    );
+        vid.setAttribute( 'playsinline', 'playsinline' );
         vid.src = URL.createObjectURL(stream);
 
         talk.video = vid;
@@ -409,7 +410,7 @@ var PHONE = window.PHONE = function(config) {
     // Prepare Local Media Camera and Mic
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     function startcamera() {
-        navigator.getUserMedia( mediaconf, function(stream) {
+        navigator.mediaDevices.getUserMedia(mediaconf).then(function(stream) {
             if (!stream) return unablecb(stream);
             mystream = stream;
             snapshots_setup(stream);
