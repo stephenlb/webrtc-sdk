@@ -38,7 +38,7 @@ var sounds = (function(){
 
             stop(audio);
             audio.load();
-            audio.play();
+            try { audio.play() } catch(e) {}
 
             // Play a Set Portion of Audio
             clearTimeout(audio.timer);

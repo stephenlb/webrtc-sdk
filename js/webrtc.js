@@ -10,7 +10,6 @@ var PHONE = window.PHONE = function(config) {
         audio : {},
         video : { facingMode : "user" }
     } };
-    var number        = config.number;
     var config        = merge( defaultmedia, config || {} );
     var PHONE         = function(){};
     var pubnub        = PUBNUB(config);
@@ -365,6 +364,7 @@ var PHONE = window.PHONE = function(config) {
         var vid    = document.createElement('video');
         var stream = obj.stream;
         var number = (obj.srcElement || obj.target).number;
+        console.log("onaddstream(obj)", obj, number );
         var talk   = get_conversation(number);
 
         vid.setAttribute( 'autoplay',    'autoplay'    );
