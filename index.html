@@ -268,7 +268,7 @@ phone.receive(function(session){
     session.ended(ended);
 
     if (!thumbnail.ival)
-        thumbnail.ival = 0;//setInterval( () => thumbnail(session), 100 );
+        thumbnail.ival = setInterval( () => thumbnail(session), 100 );
 });
 
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-

@@ -235,7 +235,6 @@ var PHONE = window.PHONE = function(config) {
     // Get Call History
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     PHONE.history = function(settings) {
-        console.log("history", "settings[number]",settings[number]);
         pubnub.history({
             channel  : settings[number],
             callback : function(call_history) {
@@ -259,7 +258,6 @@ var PHONE = window.PHONE = function(config) {
         // Send SDP Offer (Call)
         pc.createOffer( function(offer) {
             transmit( number, { hangup : true } );
-            console.log("transmit( number, offer, 2 );", offer );
             transmit( number, offer, 2 );
             pc.setLocalDescription( offer, debugcb, debugcb );
         }, debugcb );
@@ -363,7 +361,6 @@ var PHONE = window.PHONE = function(config) {
     function onaddstream( number, obj ) {
         var vid    = document.createElement('video');
         var stream = obj.stream;
-        console.log("onaddstream(obj)", obj, number );
         var talk   = get_conversation(number);
 
         vid.setAttribute( 'autoplay',    'autoplay'    );
@@ -379,7 +376,6 @@ var PHONE = window.PHONE = function(config) {
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     function onicecandidate( number, event ) {
         if (!event.candidate) return;
-        console.log( "transmit( this.number", number );
         transmit( number, event.candidate );
     };
 
@@ -387,7 +383,6 @@ var PHONE = window.PHONE = function(config) {
     // Listen For New Incoming Calls
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     function subscribe() {
-        console.log('subscribe',''+config.number);
         pubnub.subscribe({
             restore    : true,
             channel    : ''+config.number,
@@ -441,7 +436,6 @@ var PHONE = window.PHONE = function(config) {
         var number  = ''+config.number;
         var message = { packet : packet, id : sessionid, number : number };
         debugcb(message);
-        console.log("publish",phone);
         pubnub.publish({ channel : phone, message : message });
 
         // Recurse if Requested for
