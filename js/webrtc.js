@@ -59,7 +59,7 @@ var PHONE = window.PHONE = function(config) {
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // STUN Server List Configuration (public STUN list)
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-    var rtcconfig = { iceServers : [{ "url" :
+    var rtcconfig = { iceServers : [{ "urls" :
         navigator.mozGetUserMedia    ? "stun:stun.services.mozilla.com" :
         navigator.webkitGetUserMedia ? "stun:stun.l.google.com:19302"   :
                                        "stun:23.21.150.121"
