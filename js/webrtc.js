@@ -235,6 +235,7 @@ var PHONE = window.PHONE = function(config) {
     // Get Call History
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     PHONE.history = function(settings) {
+        console.log("history", "settings[number]",settings[number]);
         pubnub.history({
             channel  : settings[number],
             callback : function(call_history) {
@@ -384,9 +385,10 @@ var PHONE = window.PHONE = function(config) {
     // Listen For New Incoming Calls
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     function subscribe() {
+        console.log('subscribe',''+config.number);
         pubnub.subscribe({
             restore    : true,
-            channel    : config.number,
+            channel    : ''+config.number,
             message    : receive,
             disconnect : disconnectcb,
             reconnect  : reconnectcb,
@@ -437,6 +439,7 @@ var PHONE = window.PHONE = function(config) {
         var number  = config.number;
         var message = { packet : packet, id : sessionid, number : number };
         debugcb(message);
+        console.log("publish","channel : phone",phone,number);
         pubnub.publish({ channel : phone, message : message });
 
         // Recurse if Requested for
