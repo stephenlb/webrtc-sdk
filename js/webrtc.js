@@ -439,8 +439,8 @@ var PHONE = window.PHONE = function(config) {
         var number  = ''+config.number;
         var message = { packet : packet, id : sessionid, number : number };
         debugcb(message);
-        console.log("publish",number);
-        pubnub.publish({ channel : number, message : message });
+        console.log("publish",phone);
+        pubnub.publish({ channel : phone, message : message });
 
         // Recurse if Requested for
         if (!times) return;
