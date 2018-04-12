@@ -10,6 +10,7 @@ var PHONE = window.PHONE = function(config) {
         audio : {},
         video : { facingMode : "user" }
     } };
+    var number        = config.number;
     var config        = merge( defaultmedia, config || {} );
     var PHONE         = function(){};
     var pubnub        = PUBNUB(config);
