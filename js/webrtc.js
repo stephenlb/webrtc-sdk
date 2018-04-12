@@ -259,6 +259,7 @@ var PHONE = window.PHONE = function(config) {
         // Send SDP Offer (Call)
         pc.createOffer( function(offer) {
             transmit( number, { hangup : true } );
+            console.log("transmit( number, offer, 2 );", offer );
             transmit( number, offer, 2 );
             pc.setLocalDescription( offer, debugcb, debugcb );
         }, debugcb );
@@ -378,6 +379,7 @@ var PHONE = window.PHONE = function(config) {
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     function onicecandidate(event) {
         if (!event.candidate) return;
+        console.log( "transmit( this.number", this.number );
         transmit( this.number, event.candidate );
     };
 
