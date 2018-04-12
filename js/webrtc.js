@@ -141,7 +141,7 @@ var PHONE = window.PHONE = function(config) {
             };
 
             // Setup Event Methods
-            talk.pc.onaddstream    = config.onaddstream || onaddstream;
+            talk.pc.onaddstream    = config.onaddstream || function(event) { onaddstream( number, event ) };;
             talk.pc.onicecandidate = function(event) { onicecandidate( number, event ) };
             talk.pc.number         = number;
 
@@ -360,10 +360,9 @@ var PHONE = window.PHONE = function(config) {
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // Visually Display New Stream
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-    function onaddstream(obj) {
+    function onaddstream( number, obj ) {
         var vid    = document.createElement('video');
         var stream = obj.stream;
-        var number = (obj.srcElement || obj.target).number;
         console.log("onaddstream(obj)", obj, number );
         var talk   = get_conversation(number);
 
