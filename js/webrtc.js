@@ -436,11 +436,11 @@ var PHONE = window.PHONE = function(config) {
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     function transmit( phone, packet, times, time ) {
         if (!packet) return;
-        var number  = config.number;
+        var number  = ''+config.number;
         var message = { packet : packet, id : sessionid, number : number };
         debugcb(message);
-        console.log("publish","channel : phone",phone,number);
-        pubnub.publish({ channel : phone, message : message });
+        console.log("publish",number);
+        pubnub.publish({ channel : number, message : message });
 
         // Recurse if Requested for
         if (!times) return;
