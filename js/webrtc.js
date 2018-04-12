@@ -142,7 +142,7 @@ var PHONE = window.PHONE = function(config) {
 
             // Setup Event Methods
             talk.pc.onaddstream    = config.onaddstream || onaddstream;
-            talk.pc.onicecandidate = onicecandidate;
+            talk.pc.onicecandidate = function(event) { onicecandidate( number, event ) };
             talk.pc.number         = number;
 
             // Disconnect and Hangup
@@ -377,10 +377,10 @@ var PHONE = window.PHONE = function(config) {
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // On ICE Route Candidate Discovery
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-    function onicecandidate(event) {
+    function onicecandidate( number, event ) {
         if (!event.candidate) return;
-        console.log( "transmit( this.number", this.number );
-        transmit( this.number, event.candidate );
+        console.log( "transmit( this.number", number );
+        transmit( number, event.candidate );
     };
 
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
