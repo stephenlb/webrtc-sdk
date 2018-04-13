@@ -568,7 +568,7 @@ var PHONE = window.PHONE = function(config) {
 	for (var key in add) {
 	    if (add.hasOwnProperty(key)) {
 		if (target[key] && isObject(target[key]) && isObject(add[key])) {
-		    this.mergeJSON(target[key], add[key]);
+		    merge(target[key], add[key]);
 		} else {
 		    target[key] = add[key];
 		}
