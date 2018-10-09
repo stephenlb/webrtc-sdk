@@ -2,7 +2,6 @@
 
 [![Known Vulnerabilities](https://snyk.io/test/npm/webrtc-sdk/badge.svg)](https://snyk.io/test/npm/webrtc-sdk)
 [![npm](https://img.shields.io/npm/v/webrtc-sdk.svg)]()
-[![Bower](https://img.shields.io/bower/v/webrtc-sdk.svg)]()
 
 > WebRTC SDK Upgraded! ES6, new camera control and 100x less code than v1.
 
