@@ -441,7 +441,7 @@ const PHONE = window.PHONE = config => {
     // Prepare Local Media Camera and Mic
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     function startcamera() {
-        navigator.mediaDevices.getUserMedia( mediaconf, stream => {
+        navigator.mediaDevices.getUserMedia(mediaconf).then( stream => {
             if (!stream) return unablecb(stream);
             mystream = stream;
             snapshots_setup(stream);

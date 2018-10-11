@@ -5,7 +5,8 @@
 <div id="video-out"></div>
 
 <!-- Libs and Scripts -->
-<script src="https://stephenlb.github.io/webrtc-sdk/js/webrtc-v2.js"></script>
+<!-- <script src="https://cdn.pubnub.com/pubnub.min.js"></script> -->
+<script src="/js/webrtc-v2.js"></script>
 <script>(()=>{
     'use strict';
 
@@ -30,7 +31,7 @@
     });
 
     // Debugging Output
-    //phone.debug( info => console.info(info) );
+    phone.debug( info => console.info(info) );
 
     // As soon as the phone is ready we can make calls
     phone.ready(()=>{
