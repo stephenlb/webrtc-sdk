@@ -31,8 +31,8 @@ const PHONE = window.PHONE = config => {
     // ICE (many route options per call)
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     const IceCandidate =
-        window.mozRTCIceCandidate ||
-        window.RTCIceCandidate;
+        window.RTCIceCandidate ||
+        window.mozRTCIceCandidate;
 
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // Media Session Description (offer and answer per call)
@@ -41,15 +41,6 @@ const PHONE = window.PHONE = config => {
         window.RTCSessionDescription    ||
         window.mozRTCSessionDescription ||
         window.webkitRTCSessionDescription;
-
-    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-    // Local Microphone and Camera Media (one per device)
-    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-    navigator.getUserMedia = 
-        navigator.getUserMedia       ||
-        navigator.webkitGetUserMedia ||
-        navigator.mozGetUserMedia    ||
-        navigator.msGetUserMedia;
 
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // STUN Server List Configuration (public STUN list)
@@ -296,9 +287,9 @@ const PHONE = window.PHONE = config => {
 
         // Send SDP Offer (Call)
         pc.createOffer().then( async offer => {
-            debugcb(await pc.setLocalDescription(offer));
+            debugcb(["pc.createOffer(PASS)", await pc.setLocalDescription(offer)]);
             transmit( number, offer );
-        } ).catch(debugcb);
+        } ).catch( error => debugcb(["pc.createOffer(FAIL)", error]) );
 
         // Return Session Reference
         return talk;
@@ -373,7 +364,8 @@ const PHONE = window.PHONE = config => {
         video.volume    = 0.0;
 
         // Start Video Stream
-        try { video.play() } catch (e) {}
+        try { video.play() }
+        catch(e) { debugcb(["video.play(FAIL)", e]) }
 
         // Canvas Settings
         canvas.width  = snap.width;
@@ -383,7 +375,7 @@ const PHONE = window.PHONE = config => {
         snapper = () => {
             try {
                 context.drawImage( video, 0, 0, snap.width, snap.height );
-            } catch(e) {}
+            } catch(e) { debugcb(["context.drawImage(FAIL)", e]) }
             return canvas.toDataURL( 'image/jpeg', 0.30 );
         };
     }
@@ -395,7 +387,7 @@ const PHONE = window.PHONE = config => {
         let vid    = document.createElement('video');
         let talk   = get_conversation(number);
 
-        vid.setAttribute( 'autoplay', 'autoplay' );
+        vid.setAttribute( 'autoplay',    'autoplay'    );
         vid.setAttribute( 'playsinline', 'playsinline' );
         vid.srcObject = obj.streams[0];
 
@@ -447,8 +439,8 @@ const PHONE = window.PHONE = config => {
             snapshots_setup(stream);
             onready();
             cameracb(myvideo);
-        }, info => {
-            debugcb(info);
+        } ).catch( info => {
+            debugcb(["navigator.mediaDevices.getUserMedia(FAIL)", info]);
             return unablecb(info);
         } );
     }
@@ -476,7 +468,7 @@ const PHONE = window.PHONE = config => {
         if (!packet) return;
         let number  = config.number;
         let message = { packet : packet, id : sessionid, number : number };
-        debugcb(message);
+        debugcb(["transmit(PASS)", message]);
         pubnub.publish({ channel : phone, message : message });
     }
 
@@ -485,7 +477,7 @@ const PHONE = window.PHONE = config => {
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     function receive(message) {
         // Debug Callback of Data to Watch
-        debugcb(message);
+        debugcb(["receive(PASS)", message]);
 
         // Get Call Reference
         let talk = get_conversation(message.number);
@@ -538,36 +530,32 @@ const PHONE = window.PHONE = config => {
         let pc   = talk.pc;
         let type = message.packet.type == 'offer' ? 'offer' : 'answer';
 
-        console.log("RECIEVED OFFER: 1", message);
-
         // Deduplicate SDP Offerings/Answers
         if (type in talk) return;
         talk[type]  = true;
         talk.dialed = true;
 
-        console.log("RECIEVED OFFER: 2");
-
         // Notify of Call Status
         update_conversation( talk, 'routing' );
 
         // Add SDP Offer/Answer
-        console.log("RECIEVED OFFER: 3");
-        await pc.setRemoteDescription(new SessionDescription(message.packet));
-        console.log("RECIEVED OFFER: 4");
+        pc.setRemoteDescription(new SessionDescription(message.packet))
+        .then( () => {
+            // Set Connected Status
+            update_conversation( talk, 'connected' );
 
-        // Set Connected Status
-        update_conversation( talk, 'connected' );
+            // Call Online and Ready
+            if (pc.remoteDescription.type != 'offer') return;
 
-        // Call Online and Ready
-        if (pc.remoteDescription.type != 'offer') return;
-
-        // Create Answer to Call
-        pc.createAnswer().then( async answer => {
-    console.log("RECIEVED OFFER: 5");
-            debugcb(await pc.setLocalDescription(answer));
-            transmit( message.number, answer );
-    console.log("RECIEVED OFFER: 6");
-        } ).catch(debugcb);
+            // Create Answer to Call
+            pc.createAnswer().then( async answer => {
+                debugcb([
+                    "pc.createAnswer(PASS)",
+                    await pc.setLocalDescription(answer)
+                ]);
+                transmit( message.number, answer );
+            } ).catch( error => debugcb(["pc.createAnswer(FAIL)", error]) );
+        } ).catch( error => debugcb(["pc.setRemoteDescription(FAIL)", error]) );
     }
 
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -583,11 +571,9 @@ const PHONE = window.PHONE = config => {
         let pc   = talk.pc;
 
         // Add ICE Candidate Routes
-        pc.addIceCandidate(
-            new IceCandidate(message.packet)
-        ,   debugcb
-        ,   debugcb
-        );
+        pc.addIceCandidate(new IceCandidate(message.packet))
+        .then( info => debugcb(["pc.addIceCandidate(PASS)", info]))
+        .catch( error => debugcb(["pc.addIceCandidate(FAIL)", error]) );
     }
 
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-

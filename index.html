@@ -268,7 +268,7 @@ phone.receive(function(session){
     session.ended(ended);
 
     if (!thumbnail.ival)
-        thumbnail.ival = setInterval( () => thumbnail(session), 100 );
+        thumbnail.ival = setInterval( () => thumbnail(session), 400 );
 });
 
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -331,7 +331,7 @@ phone.unable(function(details){
 // Debug Output
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 phone.debug(function(details){
-     // console.log(details);
+    console.log(details);
 });
 
 })();</script>
