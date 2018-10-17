@@ -7,8 +7,8 @@ var sounds = (function(){
 
     function stop(audio) {
         if (!audio) return;
-        audio.pause();
-        reset(audio);
+        //audio.pause();
+        //reset(audio);
     }
 
     function reset(audio) {
@@ -36,8 +36,8 @@ var sounds = (function(){
 
             setTimeout( () => {
                 stop(audio);
-                audio.load();
-                audio.play();
+                //audio.load();
+                try { audio.play() } catch(e) {}
             }, 10 );
 
             // Play a Set Portion of Audio

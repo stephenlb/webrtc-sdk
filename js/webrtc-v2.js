@@ -295,10 +295,9 @@ const PHONE = window.PHONE = config => {
         talk.dialed = true;
 
         // Send SDP Offer (Call)
-        pc.createOffer().then( offer => {
-            transmit( number, { hangup : true } );
-            transmit( number, offer, 2 );
-            pc.setLocalDescription( offer, debugcb, debugcb );
+        pc.createOffer().then( async offer => {
+            debugcb(await pc.setLocalDescription(offer));
+            transmit( number, offer );
         } ).catch(debugcb);
 
         // Return Session Reference
@@ -408,7 +407,6 @@ const PHONE = window.PHONE = config => {
     // On ICE Route Candidate Discovery
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     function onicecandidate( number, event ) {
-        //console.log( "ONICECANDIDATE:", number, event );
         if (!event.candidate) return;
         transmit( number, event.candidate );
     };
@@ -474,22 +472,12 @@ const PHONE = window.PHONE = config => {
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // Send SDP Call Offers/Answers and ICE Candidates to Peer
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-    function transmit( phone, packet, times, time ) {
-        //console.log( "transmit:", number, phone, packet );
-        //console.log( "transmit:", phone, packet );
+    function transmit( phone, packet ) {
         if (!packet) return;
         let number  = config.number;
         let message = { packet : packet, id : sessionid, number : number };
         debugcb(message);
         pubnub.publish({ channel : phone, message : message });
-
-        // Recurse if Requested for
-        if (!times) return;
-        time = time || 1;
-        if (time++ >= times) return;
-        setTimeout( () => {
-            transmit( phone, packet, times, time );
-        }, 150 );
     }
 
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -544,36 +532,42 @@ const PHONE = window.PHONE = config => {
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // Add SDP Offer/Answers
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-    function add_sdp_offer(message) {
+    async function add_sdp_offer(message) {
         // Get Call Reference
         let talk = get_conversation(message.number);
         let pc   = talk.pc;
         let type = message.packet.type == 'offer' ? 'offer' : 'answer';
+
+        console.log("RECIEVED OFFER: 1", message);
 
         // Deduplicate SDP Offerings/Answers
         if (type in talk) return;
         talk[type]  = true;
         talk.dialed = true;
 
+        console.log("RECIEVED OFFER: 2");
+
         // Notify of Call Status
         update_conversation( talk, 'routing' );
 
         // Add SDP Offer/Answer
-        pc.setRemoteDescription(
-            new SessionDescription(message.packet), () => {
-                // Set Connected Status
-                update_conversation( talk, 'connected' );
+        console.log("RECIEVED OFFER: 3");
+        await pc.setRemoteDescription(new SessionDescription(message.packet));
+        console.log("RECIEVED OFFER: 4");
 
-                // Call Online and Ready
-                if (pc.remoteDescription.type != 'offer') return;
+        // Set Connected Status
+        update_conversation( talk, 'connected' );
 
-                // Create Answer to Call
-                pc.createAnswer( answer => {
-                    pc.setLocalDescription( answer, debugcb, debugcb );
-                    transmit( message.number, answer, 2 );
-                }, debugcb );
-            }, debugcb
-        );
+        // Call Online and Ready
+        if (pc.remoteDescription.type != 'offer') return;
+
+        // Create Answer to Call
+        pc.createAnswer().then( async answer => {
+    console.log("RECIEVED OFFER: 5");
+            debugcb(await pc.setLocalDescription(answer));
+            transmit( message.number, answer );
+    console.log("RECIEVED OFFER: 6");
+        } ).catch(debugcb);
     }
 
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
