@@ -141,7 +141,7 @@ var PHONE = window.PHONE = function(config) {
             };
 
             // Setup Event Methods
-            talk.pc.onaddstream    = config.onaddstream || function(event) { onaddstream( number, event ) };;
+            talk.pc.ontrack        = config.ontrack || function(event) { onaddstream( number, event ) };
             talk.pc.onicecandidate = function(event) { onicecandidate( number, event ) };
             talk.pc.number         = number;
 
@@ -193,7 +193,9 @@ var PHONE = window.PHONE = function(config) {
             talk.message   = function(cb) {talk.usermsg = cb; return talk};
 
             // Add Local Media Streams Audio Video Mic Camera
-            if (mystream) talk.pc.addStream(mystream);
+            if (mystream) mystream.getTracks().forEach(
+                track => talk.pc.addTrack( track, mystream )
+            );
 
             // Notify of Call Status
             update_conversation( talk, 'connecting' );
@@ -256,11 +258,11 @@ var PHONE = window.PHONE = function(config) {
         talk.dialed = true;
 
         // Send SDP Offer (Call)
-        pc.createOffer( function(offer) {
+        pc.createOffer().then( offer => {
             transmit( number, { hangup : true } );
             transmit( number, offer, 2 );
             pc.setLocalDescription( offer, debugcb, debugcb );
-        }, debugcb );
+        } ).catch(debugcb);
 
         // Return Session Reference
         return talk;
@@ -360,12 +362,11 @@ var PHONE = window.PHONE = function(config) {
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     function onaddstream( number, obj ) {
         var vid    = document.createElement('video');
-        var stream = obj.stream;
         var talk   = get_conversation(number);
 
         vid.setAttribute( 'autoplay',    'autoplay'    );
         vid.setAttribute( 'playsinline', 'playsinline' );
-        vid.srcObject = stream;
+        vid.srcObject = obj.streams[0];
 
         talk.video = vid;
         talk.connect(talk);
@@ -375,6 +376,7 @@ var PHONE = window.PHONE = function(config) {
     // On ICE Route Candidate Discovery
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     function onicecandidate( number, event ) {
+        //console.log( "ONICECANDIDATE:", number, event );
         if (!event.candidate) return;
         transmit( number, event.candidate );
     };
@@ -432,6 +434,7 @@ var PHONE = window.PHONE = function(config) {
     // Send SDP Call Offers/Answers and ICE Candidates to Peer
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     function transmit( phone, packet, times, time ) {
+        //console.log( "transmit:", phone, packet );
         if (!packet) return;
         var number  = ''+config.number;
         var message = { packet : packet, id : sessionid, number : number };

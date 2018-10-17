@@ -3,8 +3,7 @@
 // SOUNDS
 // -----------------------------------------------------------------------
 var sounds = (function(){
-    var soundbank = {}
-    ,   p         = PUBNUB;
+    var soundbank = {};
 
     function stop(audio) {
         if (!audio) return;
@@ -20,25 +19,26 @@ var sounds = (function(){
     return {
         play : function( sound, duration ) {
             var audio = soundbank[sound] || (function(){
-                var audio = soundbank[sound] = p.create('audio');
+                var audio = soundbank[sound]=document.createElement('audio');
 
-                p.css(  audio, { display : 'none' } );
-                p.attr( audio, 'prelaod',  'auto' );
-                p.attr( audio, 'autoplay', 'true' );
+                audio.setAttribute( 'style',    'display:none' );
+                audio.setAttribute( 'prelaod',  'auto' );
+                audio.setAttribute( 'autoplay', 'true' );
 
-                audio.innerHTML = p.supplant(
-                    "<source src={file}.ogg><source src={file}.mp3>",
-                    { file : sound }
-                );
+                audio.innerHTML = "<source src="      + sound +
+                                  ".ogg><source src=" + sound +
+                                  ".mp3>";
 
-                p.search('body')[0].appendChild(audio);
+                document.getElementsByTagName('body')[0].appendChild(audio);
 
                 return audio;
             })();
 
-            stop(audio);
-            audio.load();
-            try { audio.play() } catch(e) {}
+            setTimeout( () => {
+                stop(audio);
+                audio.load();
+                audio.play();
+            }, 10 );
 
             // Play a Set Portion of Audio
             clearTimeout(audio.timer);
@@ -50,9 +50,9 @@ var sounds = (function(){
             stop(soundbank[sound]);
         },
         stopAll : function() {
-            p.each( soundbank, function( _, audio ) {
+            soundbank.forEach(function(audio){
                 stop(audio);
-            } );
+            });
         }
     };
 })();
