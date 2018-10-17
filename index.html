@@ -154,10 +154,11 @@ var img_out   = PUBNUB.$('video-thumbnail');
 var img_self  = PUBNUB.$('video-self');
 
 var phone     = window.phone = PHONE({
-    number        : my_number.number, // listen on this line
-    publish_key   : 'pub-c-561a7378-fa06-4c50-a331-5c0056d0163c',
-    subscribe_key : 'sub-c-17b7db8a-3915-11e4-9868-02ee2ddab7fe',
-    ssl           : true
+    number        : my_number.number // listen on this line
+,   media         : { video: { width:640, height:480 } } // <--- Set Camera Resolution
+,   publish_key   : 'pub-c-561a7378-fa06-4c50-a331-5c0056d0163c'
+,   subscribe_key : 'sub-c-17b7db8a-3915-11e4-9868-02ee2ddab7fe'
+,   secure        : true, ssl: true
 });
 
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -331,7 +332,7 @@ phone.unable(function(details){
 // Debug Output
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 phone.debug(function(details){
-    console.log(details);
+    if (JSON.stringify(details).indexOf('FAIL') > 0) console.log(details);
 });
 
 })();</script>
