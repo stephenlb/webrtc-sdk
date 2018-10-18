@@ -452,6 +452,26 @@ const PHONE = window.PHONE = config => {
         if (!mystream) return;
         for (let track of mystream.getTracks()) track.stop();
     }
+
+    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    // Toggle Mic
+    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    function toggleAudio() {
+        if (!mystream) return;
+        for (let track of mystream.getAudioTracks() ){
+            track.enabled = !track.enabled ;
+        }
+    }
+
+    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    // Toggle Camera
+    // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    function toggleVideo() {
+        if (!mystream) return;
+        for (let track of mystream.getVideoTracks() ){
+            track.enabled = !track.enabled ;
+        }
+    }
     
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // Initiate Dialing Socket
@@ -582,6 +602,8 @@ const PHONE = window.PHONE = config => {
     PHONE.startcamera  = startcamera;
     PHONE.camera.start = startcamera;
     PHONE.camera.stop  = stopcamera;
+    PHONE.camera.toggleAudio  = toggleAudio;
+    PHONE.camera.toggleVideo  = toggleVideo;
     PHONE.camera.video = () => myvideo;
     PHONE.camera.ready = PHONE.camera;
 
