@@ -352,7 +352,7 @@ const PHONE = window.PHONE = config => {
     // Grab Local Video Snapshot
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     function snapshots_setup(stream) {
-        let video   = myvideo = document.createElement('video');
+        let video   = myvideo || document.createElement('video');
         let canvas  = document.createElement('canvas');
         let context = canvas.getContext("2d");
         let snap    = { width: 240, height: 180 };
@@ -572,8 +572,8 @@ const PHONE = window.PHONE = config => {
 
         // Add ICE Candidate Routes
         pc.addIceCandidate(new IceCandidate(message.packet))
-        .then( info => debugcb(["pc.addIceCandidate(PASS)", info]))
-        .catch( error => debugcb(["pc.addIceCandidate(FAIL)", error]) );
+        .then( info => debugcb(["pc.addIceCandidate(PASS)", info, message]))
+        .catch( err => debugcb(["pc.addIceCandidate(FAIL)", err, message]) );
     }
 
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
