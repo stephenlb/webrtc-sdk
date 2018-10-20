@@ -599,13 +599,13 @@ const PHONE = window.PHONE = config => {
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // Main - Setup Dialer Socket and Camera
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-    PHONE.startcamera  = startcamera;
-    PHONE.camera.start = startcamera;
-    PHONE.camera.stop  = stopcamera;
-    PHONE.camera.toggleAudio  = toggleAudio;
-    PHONE.camera.toggleVideo  = toggleVideo;
-    PHONE.camera.video = () => myvideo;
-    PHONE.camera.ready = PHONE.camera;
+    PHONE.startcamera        = startcamera;
+    PHONE.camera.start       = startcamera;
+    PHONE.camera.stop        = stopcamera;
+    PHONE.camera.toggleAudio = toggleAudio;
+    PHONE.camera.toggleVideo = toggleVideo;
+    PHONE.camera.video       = () => myvideo;
+    PHONE.camera.ready       = PHONE.camera;
 
     // Start Camera Automatically
     if (autocam) startcamera();
@@ -642,11 +642,28 @@ function socket(setup) {
     // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
     // Publish
     // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+    let publishing     = false;
+    const publishQueue = [];
+
     function publish(data) {
+        publishQueue.push(data);
+        publishSender();
+    }
+
+    // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+    // Publish Queue Worker
+    // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+    function publishSender() {
+        if (publishing) return;
+
+        let data = publishQueue.shift();
+        if (!data) return (publishing = false);
+        publishing = true;
+
         const publisher = requester({
             timeout : 5000
-        ,   success : setup.status || (()=>{})
-        ,   fail    : setup.status || (()=>{})
+        ,   success : () => { publishing = false; publishSender() }
+        ,   fail    : () => publishQueue.unshift(data)
         });
 
         let url = ['https://pubsub.pubnub.com/publish'
@@ -658,6 +675,7 @@ function socket(setup) {
 
         publisher({ url : url });
     }
+
 
     // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
     // Subscribe
