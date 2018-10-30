@@ -829,13 +829,15 @@ var sesionPeerConnection = session.pc;
 ### WebRTC Session Call Rejection and Accept Permissions
 ##### `phone.send`
 
+> `phone.send` allows you to send programmatic messages 
+> between two phones without a video/audio stream.
 > You may wish to setup a Call Accept/Reject phase to 
-allow to users to accept or reject calls.
+> allow to users to accept or reject calls.
 
 Before the Sending the Video/Audio Stream, 
 send a signal to ask for call permission: 
 
-```
+```javascript
 let user_number = "1235445"; // my friends number
 
 function call_request(number) {
