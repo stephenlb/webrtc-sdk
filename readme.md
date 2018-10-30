@@ -826,6 +826,34 @@ session.thumbnail(function(session){
 var sesionPeerConnection = session.pc;
 ```
 
+### WebRTC Session Call Rejection and Accept Permissions
+##### `phone.send`
+
+> You may wish to setup a Call Accept/Reject phase to 
+allow to users to accept or reject calls.
+
+Before the Sending the Video/Audio Stream, 
+send a signal to ask for call permission: 
+
+```
+let user_number = "1235445"; // my friends number
+
+function call_request(number) {
+    phone.send( { "accept" : "Would you like to accept this call?" }, user_number );
+}
+function call_accepted() {
+    // start voice/video session
+    phone.dial(user_number);
+}
+function call_rejected() {
+    // show call rejected screen
+}
+```
+
+This allows you to create a simple contract between 
+two parties before the video and audio stream begins.
+
+
 ### WebRTC Adding Custom STUN and TURN Servers
 
 > You may desire to add your own custom stun or turn servers by using
