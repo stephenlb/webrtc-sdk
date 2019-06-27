@@ -197,6 +197,9 @@ function set_icon(icon) {
 // Start Phone Call
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 function dial(number) {
+    // Hangup an old call
+    phone.hangup();
+
     // Dial Number
     var session = phone.dial(number);
 

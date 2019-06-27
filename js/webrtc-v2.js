@@ -146,7 +146,14 @@ const PHONE = window.PHONE = config => {
                 talk.pc.close();
                 close_conversation(number);
             };
-            
+           
+            // Disconnected?
+            talk.pc.oniceconnectionstatechange = function() {
+                if(talk.pc.iceConnectionState == 'disconnected') {							
+                    talk.hangup();									
+                }
+            }
+
             // Stop Audio/Video Stream
             talk.stop = () => {
                 if (mystream) stopcamera();
