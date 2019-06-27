@@ -155,7 +155,7 @@ var img_self  = PUBNUB.$('video-self');
 
 var phone     = window.phone = PHONE({
     number        : my_number.number // listen on this line
-,   media         : { video: { width:640, height:480 } } // <--- Set Camera Resolution
+,   media         : { video: { width:640, height:480 }, audio: true } // <--- Set Camera Resolution
 ,   publish_key   : 'pub-c-561a7378-fa06-4c50-a331-5c0056d0163c'
 ,   subscribe_key : 'sub-c-17b7db8a-3915-11e4-9868-02ee2ddab7fe'
 ,   secure        : true, ssl: true
