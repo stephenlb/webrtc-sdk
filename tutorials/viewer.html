@@ -1,0 +1,60 @@
+<!-- Styles -->
+<style> video { width: 200px } </style>
+
+<!-- Video Output Zone -->
+<div id="video-out"></div>
+
+<!-- Libs and Scripts -->
+<!-- <script src="https://cdn.pubnub.com/pubnub.min.js"></script> -->
+<script src="/js/webrtc-v2.js"></script>
+<script>(()=>{
+    'use strict';
+
+    // ~Warning~ You must get your own API Keys for non-demo purposes.
+    // ~Warning~ Get your PubNub API Keys: https://www.pubnub.com/get-started/
+    // The phone *number* can by any string value
+    const pubkey = 'pub-c-561a7378-fa06-4c50-a331-5c0056d0163c';
+    const subkey = 'sub-c-17b7db8a-3915-11e4-9868-02ee2ddab7fe';
+    const number = (''+Math.random()*100000).split('.')[0];
+
+    // Phone
+    const phone = PHONE({
+        number        : number
+    ,   publish_key   : pubkey
+    ,   subscribe_key : subkey 
+    });
+
+    // Local Camera Display
+    phone.camera.ready( video => {
+        console.log('Camera Ready');
+
+        //phone.$('video-out').appendChild(video);
+    });
+
+    // Debugging Output
+    phone.debug( info => console.info(info) );
+
+    // As soon as the phone is ready we can make calls
+    phone.ready(()=>{
+        console.log("Calling Broadcaster");
+        let session = phone.dial("BROADCASTER-TEST");
+    });
+
+    // Broadcaster's Video
+    var playing = false;
+    phone.receive(function(broadcaster){
+        console.log("Fetching broadcaster's video");
+
+        // Display Your Friend's Live Video
+        broadcaster.connected( broadcaster => {
+            if (playing) return;
+            playing = true;
+            console.log("Playing broadcaster's video");
+            phone.$('video-out').appendChild(broadcaster.video);
+            setTimeout( () => phone.camera.stop(), 1000 );
+        });
+
+        broadcaster.ended( broadcaster => console.log('Stream ended') );
+    });
+
+})();</script>
