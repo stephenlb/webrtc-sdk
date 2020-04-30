@@ -52,7 +52,7 @@ Then open your browser and point it to your file in
 the directory you ran the python HTTPS server.
 
 ```shell
-open https://0.0.0.0:4443/your-file-here.html
+open https://localhost:4443/tutorials/
 ```
 
 > This is a Simple Python HTTPS Secure Server
