@@ -6,6 +6,7 @@
 
 <!-- Libs and Scripts -->
 <script src="../js/webrtc-v2.js"></script>
+<script src="../js/pubnub-stream.js"></script>
 <script>(()=>{
     'use strict';
 
@@ -14,18 +15,19 @@
     // The phone *number* can by any string value
     const pubkey = 'pub-c-561a7378-fa06-4c50-a331-5c0056d0163c';
     const subkey = 'sub-c-17b7db8a-3915-11e4-9868-02ee2ddab7fe';
-    const number = (''+Math.random()*100000).split('.')[0];
+    const number = "BROADCAST-VIEWER";//(''+Math.random()*100000).split('.')[0];
 
     // Phone
     const phone = PHONE({
         number        : number
+    ,   media         : { audio : true, video : true }
     ,   publish_key   : pubkey
     ,   subscribe_key : subkey 
     });
 
     // Local Camera Display
     phone.camera.ready( video => {
-        console.log('Camera Ready');
+        console.log('Ready');
 
         //phone.$('video-out').appendChild(video);
     });
@@ -33,10 +35,19 @@
     // Debugging Output
     phone.debug( info => console.info(info) );
 
+    // Receive Broadcaster Updates
+    PubNub.subscribe({
+        channel  : "BROADCASTER1234"
+    ,   pubkey   : pubkey
+    ,   subkey   : subkey
+    ,   messages : message => message.notify == "reload" && location.reload(false)
+    });
+
     // As soon as the phone is ready we can make calls
     phone.ready(()=>{
-        console.log("Calling Broadcaster");
-        let session = phone.dial("BROADCASTER-TEST");
+        phone.hangup();
+        phone.dial("BROADCASTER-TEST");
+        //setTimeout( () => playing || location.reload, 6000 );
     });
 
     // Broadcaster's Video
@@ -50,10 +61,15 @@
             playing = true;
             console.log("Playing broadcaster's video");
             phone.$('video-out').appendChild(broadcaster.video);
-            setTimeout( () => phone.camera.stop(), 1000 );
+            setTimeout( phone.camera.stop, 1000 );
+            setTimeout( phone.toggleAudio, 1000 );
+            setTimeout( phone.toggleVideo, 1000 );
         });
 
-        broadcaster.ended( broadcaster => console.log('Stream ended') );
+        broadcaster.ended( broadcaster => {
+            playing = false;
+            console.log('Stream ended');
+        });
     });
 
 })();</script>

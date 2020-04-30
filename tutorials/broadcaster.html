@@ -6,6 +6,7 @@
 
 <!-- Libs and Scripts -->
 <script src="../js/webrtc-v2.js"></script>
+<script src="../js/pubnub-stream.js"></script>
 <script>(()=>{
     'use strict';
 
@@ -33,7 +34,14 @@
     phone.debug( info => console.info(info) );
 
     // As soon as the phone is ready we can make calls
-    0&& phone.ready(()=>{});
+    phone.ready(()=>{
+        PubNub.publish({
+            channel : "BROADCASTER1234"
+        ,   pubkey  : pubkey
+        ,   subkey  : subkey
+        ,   message : { notify : "reload" }
+        });
+    });
 
     // When Call Comes In
     phone.receive(function(session){
