@@ -1,12 +1,13 @@
 <!-- Styles -->
 <style> video { width: 100px } </style>
 
-<div>You should see <strong>4 video streams</strong>.</div>
+<div>You should see <strong>2 + 4 video streams</strong>.</div>
 <!-- Video Output Zone -->
 <div id="video-out"></div>
 
 <!-- Libs and Scripts -->
-<script src="../js/webrtc-v2.js"></script>
+<script src="https://cdn.pubnub.com/pubnub.js"></script>
+<script src="https://stephenlb.github.io/webrtc-sdk/js/webrtc.js"></script>
 <script>(()=>{
     'use strict';
 
@@ -26,6 +27,7 @@
         number        : numberOne
     ,   publish_key   : pubkey
     ,   subscribe_key : subkey 
+    ,   ssl           : true
     });
 
     // Phone Two
@@ -33,11 +35,6 @@
     let   phoneTwoReady   = false;
     const numberTwo       = number();
     let   phoneTwo        = null;
-
-    // Local Camera Display
-    phoneOne.camera.ready( video => {
-        phoneOne.$('video-out').appendChild(video);
-    });
 
     // Debugging Output
     //phoneOne.debug( info => console.info(info) );
@@ -51,19 +48,18 @@
     // As soon as the phone is ready we can make calls
     phoneOne.ready(()=>{
         phoneOneReady = true;
+        PUBNUB.$('video-out').appendChild(phoneOne.video);
 
         phoneTwo = PHONE({
             number        : numberTwo
         ,   publish_key   : pubkey
         ,   subscribe_key : subkey
-        });
-
-        phoneTwo.camera.ready( video => {
-            phoneTwo.$('video-out').appendChild(video);
+        ,   ssl           : true
         });
 
         phoneTwo.ready(()=>{
             phoneTwoReady = true;
+            PUBNUB.$('video-out').appendChild(phoneTwo.video);
             phoneOneCallPhoneTwo();
         });
 
@@ -73,7 +69,7 @@
             // Display Your Friend's Live Video
             session.connected( session => {
                 console.log('SessionTwo: CONNECTED');
-                phoneTwo.$('video-out').appendChild(session.video);
+                PUBNUB.$('video-out').appendChild(session.video);
             });
 
             session.ended( session => console.log('SessionTwo: ENDED') );
@@ -85,7 +81,7 @@
     phoneOne.receive( session => {
         session.connected( session => {
             console.log('SessionOne: CONNECTED');
-            phoneOne.$('video-out').appendChild(session.video);
+            PUBNUB.$('video-out').appendChild(session.video);
         });
         session.ended( session => console.log('SessionOne: ENDED') );
     });

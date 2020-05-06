@@ -21,7 +21,8 @@
 
 <!-- Libs and Scripts -->
 <!-- <script src="https://stephenlb.github.io/webrtc-sdk/js/webrtc-v2.js"></script> -->
-<script src="../js/webrtc-v2.js"></script>
+<script src="https://cdn.pubnub.com/pubnub.js"></script>
+<script src="https://stephenlb.github.io/webrtc-sdk/js/webrtc.js"></script>
 
 <script>
     var session = null;
@@ -39,12 +40,9 @@
 
     phone.ready(function(){
         console.log('Phone is ready');
+        console.log('Camera is ready', phone.video);
+        PUBNUB.$('video-out').append(phone.video);
     });
-
-    phone.camera.ready(function(video){
-        console.log('Camera is ready', video);
-        phone.$('video-out').append(video); //first attempt, all I get is an empty video tag
-    })
 
     // When Call Comes In or is to be Connected
     phone.receive(function(session){
@@ -52,7 +50,7 @@
         session.connected(function(session){
             // Display Your Friend's Live Video
             console.log("Showing your friend's video stream");
-            phone.$('video-out').appendChild(session.video);
+            PUBNUB.$('video-out').appendChild(session.video);
         });
     });
 

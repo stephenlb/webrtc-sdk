@@ -410,11 +410,12 @@ var PHONE = window.PHONE = function(config) {
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     // Prepare Local Media Camera and Mic
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-    function startcamera() {
+    function startcamera(cb) {
         navigator.mediaDevices.getUserMedia(mediaconf).then(function(stream) {
             if (!stream) return unablecb(stream);
             mystream = stream;
             snapshots_setup(stream);
+            cb&&cb()
             if (autocam) startsubscribe();
         }, function(info) {
             debugcb(info);

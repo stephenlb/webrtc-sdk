@@ -96,7 +96,7 @@
 <script src="https://cdn.pubnub.com/pubnub.js"></script>
 
 <!-- WebRTC SDK -->
-<script src="js/webrtc-v2.js"></script>
+<script src="js/webrtc.js"></script>
 <script src="js/sound.js"></script>
 <script>(function(){
 
@@ -335,7 +335,7 @@ phone.unable(function(details){
 // Debug Output
 // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 phone.debug(function(details){
-    if (JSON.stringify(details).indexOf('FAIL') > 0) console.log(details);
+    console.log(details);
 });
 
 })();</script>

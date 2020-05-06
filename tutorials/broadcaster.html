@@ -5,8 +5,8 @@
 <div id="video-out"></div>
 
 <!-- Libs and Scripts -->
-<script src="../js/webrtc-v2.js"></script>
-<script src="../js/pubnub-stream.js"></script>
+<script src="https://cdn.pubnub.com/pubnub.js"></script>
+<script src="https://stephenlb.github.io/webrtc-sdk/js/webrtc.js"></script>
 <script>(()=>{
     'use strict';
 
@@ -22,23 +22,21 @@
         number        : "BROADCASTER-TEST"
     ,   publish_key   : pubkey
     ,   subscribe_key : subkey 
-    });
-
-    // Local Camera Display
-    phone.camera.ready( video => {
-        console.log('Camera Ready');
-        phone.$('video-out').appendChild(video);
+    ,   ssl           : true
     });
 
     // Debugging Output
     phone.debug( info => console.info(info) );
 
     // As soon as the phone is ready we can make calls
-    phone.ready(()=>{
-        PubNub.publish({
-            channel : "BROADCASTER1234"
-        ,   pubkey  : pubkey
+    phone.ready( video => {
+        PUBNUB.$('video-out').appendChild(phone.video);
+        PUBNUB({
+            pubkey  : pubkey
         ,   subkey  : subkey
+        ,   ssl     : true
+        }).publish({
+            channel : "BROADCASTER1234"
         ,   message : { notify : "reload" }
         });
     });

@@ -8,7 +8,8 @@
 <div>Camera will start in 3 seconds after page load.</div>
 
 <!-- Libs and Scripts -->
-<script src="https://stephenlb.github.io/webrtc-sdk/js/webrtc-v2.js"></script>
+<script src="https://cdn.pubnub.com/pubnub.js"></script>
+<script src="../js/webrtc.js"></script>
 <script>(()=>{
     'use strict';
 
@@ -25,16 +26,8 @@
     ,   autocam       : false
     ,   publish_key   : pubkey
     ,   subscribe_key : subkey 
+    ,   ssl           : true
     });
-
-    // Local Camera Display
-    phone.camera.ready( video => {
-        console.log('Camera Ready');
-        phone.$('video-out').appendChild(video);
-    });
-
-    // Debugging Output
-    //phone.debug( info => console.info(info) );
 
     // As soon as the phone is ready we can make calls
     phone.ready(()=>{
@@ -42,7 +35,11 @@
     });
 
     // Start camera in 3 seconds after page is loaded.
-    setTimeout( ()=>{ phone.startcamera() }, 3000 );
+    setTimeout( ()=>{
+        phone.startcamera(() => {
+            PUBNUB.$('video-out').appendChild(phone.video);
+        });
+    }, 3000 );
 
     // When Call Comes In
     phone.receive(function(session){

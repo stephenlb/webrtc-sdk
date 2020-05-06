@@ -5,7 +5,8 @@
 <div id="video-out"></div>
 
 <!-- Libs and Scripts -->
-<script src="https://stephenlb.github.io/webrtc-sdk/js/webrtc-v2.js"></script>
+<script src="https://cdn.pubnub.com/pubnub.js"></script>
+<script src="https://stephenlb.github.io/webrtc-sdk/js/webrtc.js"></script>
 <script>(()=>{
     'use strict';
 
@@ -22,19 +23,13 @@
     ,   media         : { video: { width:1280, height:720 } } // <--- Set Camera Resolution
     ,   publish_key   : pubkey
     ,   subscribe_key : subkey 
+    ,   ssl           : true
     });
-
-    // Local Camera Display
-    phone.camera.ready( video => {
-        console.log('Camera Ready');
-        phone.$('video-out').appendChild(video);
-    });
-
-    // Debugging Output
-    //phone.debug( info => console.info(info) );
 
     // As soon as the phone is ready we can make calls
     phone.ready(()=>{
+        console.log('Camera Ready');
+        PUBNUB.$('video-out').appendChild(phone.video);
         let session = phone.dial(number);
     });
 
@@ -44,7 +39,7 @@
         // Display Your Friend's Live Video
         session.connected( session => {
             console.log('Session: CONNECTED');
-            phone.$('video-out').appendChild(session.video);
+            PUBNUB.$('video-out').appendChild(session.video);
         });
 
         session.ended( session => console.log('Session: ENDED') );
